@@ -2,6 +2,7 @@ package AnaMorf;
 
 import ij.measure.CurveFitter;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Calculates the mean, standard deviation, confidence interval, minimum and
@@ -13,28 +14,41 @@ import java.util.ArrayList;
 public class DataStatistics {
 
     private final int dataSize;
-    private double mean;
-    private double confidenceInterval;
-    private double standardDeviation;
+    private double mean = 0.0;
+    private double median = 0.0;
+    private double confidenceInterval = 0.0;
+    private double standardDeviation = 0.0;
+    private double upper99 = 0.0;
+    private double lower99 = 0.0;
     private double minValue = Double.POSITIVE_INFINITY;
     private double maxValue = Double.NEGATIVE_INFINITY;
     private final double alpha;
     private int nans;
-    private ArrayList<Integer> zerocrossings;
+    private ArrayList<Integer> zerocrossings = null;
 
     public DataStatistics(double a, double data[][], int n) {
-        double newdata[] = new double[n];
-        for (int i = 0; i < data.length; i++) {
-            System.arraycopy(data[i], 0, newdata, data.length * i, data[i].length);
-        }
         if (a > 0 && a < 100) {
             alpha = a;
         } else {
             alpha = 0.05;
         }
         dataSize = n;
+        if (n < 1) {
+            return;
+        }
+        double newdata[] = new double[n];
+        for (int i = 0; i < data.length; i++) {
+            System.arraycopy(data[i], 0, newdata, data.length * i, data[i].length);
+        }
         nans = 0;
-
+        Arrays.sort(newdata);
+        median = newdata[n / 2];
+        int upper99index = (int) Math.round(n * 0.99);
+        if (upper99index >= newdata.length) {
+            upper99index = newdata.length - 1;
+        }
+        upper99 = newdata[upper99index];
+        lower99 = newdata[(int) Math.round(n * 0.01)];
         calcMean(newdata);
         calcStdDev(newdata);
         calcConfInt();
@@ -54,8 +68,19 @@ public class DataStatistics {
             alpha = 0.05;
         }
         dataSize = n;
+        if (n < 1) {
+            return;
+        }
         nans = 0;
 
+        Arrays.sort(data);
+        median = data[n / 2];
+        int upper99index = (int) Math.round(n * 0.99);
+        if (upper99index >= data.length) {
+            upper99index = data.length - 1;
+        }
+        upper99 = data[upper99index];
+        lower99 = data[(int) Math.round(n * 0.05)];
         calcMean(data);
         calcStdDev(data);
         calcConfInt();
@@ -111,6 +136,18 @@ public class DataStatistics {
 
     public double getMean() {
         return mean;
+    }
+
+    public double getMedian() {
+        return median;
+    }
+
+    public double getLower99() {
+        return lower99;
+    }
+
+    public double getUpper99() {
+        return upper99;
     }
 
     public double getStdDev() {
