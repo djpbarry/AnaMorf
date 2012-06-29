@@ -38,7 +38,7 @@ public class DataStatistics {
         }
         double newdata[] = new double[n];
         for (int i = 0; i < data.length; i++) {
-            System.arraycopy(data[i], 0, newdata, data.length * i, data[i].length);
+            System.arraycopy(data[i], 0, newdata, data[i].length * i, data[i].length);
         }
         nans = 0;
         Arrays.sort(newdata);
@@ -72,15 +72,7 @@ public class DataStatistics {
             return;
         }
         nans = 0;
-
-        Arrays.sort(data);
-        median = data[n / 2];
-        int upper99index = (int) Math.round(n * 0.99);
-        if (upper99index >= data.length) {
-            upper99index = data.length - 1;
-        }
-        upper99 = data[upper99index];
-        lower99 = data[(int) Math.round(n * 0.05)];
+        calcPercentiles(data, n);
         calcMean(data);
         calcStdDev(data);
         calcConfInt();
@@ -88,6 +80,19 @@ public class DataStatistics {
 
     public DataStatistics(double a, float data[], int n) {
         this(a, floatArrayToDouble(data), n);
+    }
+
+    private void calcPercentiles(double data[], int n) {
+        double newdata[] = new double[n];
+        System.arraycopy(data, 0, newdata, 0, data.length);
+        Arrays.sort(newdata);
+        median = newdata[n / 2];
+        int upper99index = (int) Math.round(n * 0.99);
+        if (upper99index >= newdata.length) {
+            upper99index = newdata.length - 1;
+        }
+        upper99 = newdata[upper99index];
+        lower99 = newdata[(int) Math.round(n * 0.05)];
     }
 
     private void calcMean(double data[]) {
