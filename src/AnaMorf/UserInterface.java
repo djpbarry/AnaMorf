@@ -1,29 +1,29 @@
 package AnaMorf;
 
-
 import ij.IJ;
 import java.awt.Toolkit;
 import java.text.DecimalFormat;
 
 /**
  * An extension of a JFrame used to obtain input parameters from the user.
- * 
- * @author   David J Barry <davejpbarry@gmail.com>
- * @version  01SEP2010
+ *
+ * @author David J Barry <davejpbarry@gmail.com>
+ * @version 01SEP2010
  */
 public class UserInterface extends javax.swing.JDialog {
 
-    /** Creates new form UserInterface */
+    /**
+     * Creates new form UserInterface
+     */
     public UserInterface(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         exit = true;
         initComponents();
     }
 
-    /** This method is called from within the constructor to
-     * initialize the form.
+    /**
+     * This method is called from within the constructor to initialize the form.
      */
-
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -229,7 +229,7 @@ public class UserInterface extends javax.swing.JDialog {
         Toolkit.getDefaultToolkit().beep();
         ExitDialog exitDialog = new ExitDialog(this, true);
         exitDialog.setVisible(true);
-        if(exitDialog.okButtonPressed()){
+        if (exitDialog.okButtonPressed()) {
             exit = true;
             setVisible(false);
         }
@@ -251,7 +251,9 @@ public class UserInterface extends javax.swing.JDialog {
         branches = branchCheck.isSelected();
 
         int k = imageFormatCombo.getSelectedIndex();
-        if(k >= 0) formatIndex = k;
+        if (k >= 0) {
+            formatIndex = k;
+        }
 
         String branchText = minBranchField.getText();
         String resText = imageResField.getText();
@@ -260,17 +262,18 @@ public class UserInterface extends javax.swing.JDialog {
         String lacText = lacTolField.getText();
         String confText = confField.getText();
         String thresholdText = manualThresholdField.getText();
-        try{
+        try {
             imageRes = (resText != null) ? Double.parseDouble(resText) : imageRes;
             minLength = (branchText != null) ? Double.parseDouble(branchText) : 0.0;
             maxCirc = (circText != null) ? Double.parseDouble(circText) : 0.0;
             minArea = (areaText != null) ? Double.parseDouble(areaText) : 0.0;
             lacTol = (lacText != null) ? Double.parseDouble(lacText) : 0.0;
             confLevel = (confText != null) ? Double.parseDouble(confText) : 0.0;
-            if(!autoThreshold)
+            if (!autoThreshold) {
                 manualThreshold = (thresholdText != null) ? Integer.parseInt(thresholdText) : 0;
+            }
             setVisible(false);
-        } catch(NumberFormatException e) {
+        } catch (NumberFormatException e) {
             Toolkit.getDefaultToolkit().beep();
             IJ.error("All text fields must be numeric.");
         }
@@ -295,13 +298,13 @@ public class UserInterface extends javax.swing.JDialog {
     }//GEN-LAST:event_darkBGRadioActionPerformed
 
     private void imageFormatComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_imageFormatComboActionPerformed
-        // TODO add your handling code here:
     }//GEN-LAST:event_imageFormatComboActionPerformed
 
     /**
-     * Returns true if the user has selected the 'Area' check box, false otherwise.
+     * Returns true if the user has selected the 'Area' check box, false
+     * otherwise.
      */
-    public boolean isArea(){
+    public boolean isArea() {
         return area;
     }
 
@@ -309,7 +312,7 @@ public class UserInterface extends javax.swing.JDialog {
      * Returns true if the user has selected the 'Circularity' check box, false
      * otherwise.
      */
-    public boolean isCirc(){
+    public boolean isCirc() {
         return circ;
     }
 
@@ -317,15 +320,15 @@ public class UserInterface extends javax.swing.JDialog {
      * Returns true if the user has selected the 'Hyphal Growth Unit' check box,
      * false otherwise.
      */
-    public boolean isHGU(){
+    public boolean isHGU() {
         return hgu;
     }
 
     /**
-     * Returns true if the user has selected the 'Total Hyphal Length' check box,
-     * false otherwise.
+     * Returns true if the user has selected the 'Total Hyphal Length' check
+     * box, false otherwise.
      */
-    public boolean isTHL(){
+    public boolean isTHL() {
         return thl;
     }
 
@@ -333,7 +336,7 @@ public class UserInterface extends javax.swing.JDialog {
      * Returns true if the user has selected the 'Number of Tips' check box,
      * false otherwise.
      */
-    public boolean isTips(){
+    public boolean isTips() {
         return tips;
     }
 
@@ -341,7 +344,7 @@ public class UserInterface extends javax.swing.JDialog {
      * Returns true if the user has selected the 'Fractal Dimension' check box,
      * false otherwise.
      */
-    public boolean isFrac(){
+    public boolean isFrac() {
         return frac;
     }
 
@@ -349,31 +352,31 @@ public class UserInterface extends javax.swing.JDialog {
      * Returns true if the user has selected the 'Lacunarity' check box, false
      * otherwise.
      */
-    public boolean isLac(){
+    public boolean isLac() {
         return lac;
     }
 
     /**
-     * Returns true if the user has selected the 'Create Mask Images?' check box,
-     * false otherwise.
+     * Returns true if the user has selected the 'Create Mask Images?' check
+     * box, false otherwise.
      */
-    public boolean isCreateMasks(){
+    public boolean isCreateMasks() {
         return createMasks;
     }
 
     /**
-     * Returns true if the user has selected the 'Subtract Background?' check box,
-     * false otherwise.
+     * Returns true if the user has selected the 'Subtract Background?' check
+     * box, false otherwise.
      */
-    public boolean isSubBackground(){
+    public boolean isSubBackground() {
         return subBackground;
     }
 
     /**
-     * Returns true if the user has selected the 'Light Background' radio button,
-     * false otherwise
+     * Returns true if the user has selected the 'Light Background' radio
+     * button, false otherwise
      */
-    public boolean isLightBackground(){
+    public boolean isLightBackground() {
         return lightBackground;
     }
 
@@ -384,68 +387,70 @@ public class UserInterface extends javax.swing.JDialog {
     /**
      * Returns the image resolution specified by the user.
      */
-    public double getRes(){
+    public double getRes() {
         return imageRes;
     }
 
     /**
      * Returns the image format (file extension) specified by the user.
      */
-    public String getImageFormat(){
-        return (String)imageFormatCombo.getItemAt(formatIndex);
+    public String getImageFormat() {
+        return (String) imageFormatCombo.getItemAt(formatIndex);
     }
 
     /**
      * Returns the minimum projected area specified by the user.
      */
-    public double getMinArea(){
+    public double getMinArea() {
         return minArea;
     }
 
     /**
      * Returns the maximum circularity specified by the user.
      */
-    public double getMaxCirc(){
+    public double getMaxCirc() {
         return maxCirc;
     }
 
     /**
      * Returns the minimum branch length specified by the user.
      */
-    public double getMinLength(){
+    public double getMinLength() {
         return minLength;
     }
 
     /**
      * Returns the lacunarity tolerance specified by the user.
      */
-    public double getLacTol(){
+    public double getLacTol() {
         return lacTol;
     }
 
     /**
      * Returns the confidence level specified by the user.
      */
-    public double getConfLevel(){
+    public double getConfLevel() {
         return confLevel;
     }
 
     /**
-     * Returns the manual grey-level threshold specified by the user if the 'Manual'
-     * radio button was selected or -1 otherwise.
+     * Returns the manual grey-level threshold specified by the user if the
+     * 'Manual' radio button was selected or -1 otherwise.
      */
-    public int getManualThreshold(){
-        if(autoThreshold) return -1;
-        else return manualThreshold;
+    public int getManualThreshold() {
+        if (autoThreshold) {
+            return -1;
+        } else {
+            return manualThreshold;
+        }
     }
 
     /**
      * Returns true if the user exited the application.
      */
-    public boolean exitProgram(){
+    public boolean exitProgram() {
         return exit;
     }
-
     private static int formatIndex = 4, manualThreshold = 235;
     private static double minLength = 40.0, maxCirc = 0.05, minArea = 1000.0,
             lacTol = 100, confLevel = 95.0, imageRes = 1.12347;
@@ -455,7 +460,6 @@ public class UserInterface extends javax.swing.JDialog {
             branches = true;
     private DecimalFormat threePlaces = new DecimalFormat("0.000");
     private DecimalFormat onePlace = new DecimalFormat("0.0");
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox areaCheck;
     private javax.swing.JRadioButton autoThresholdRadio;
@@ -491,5 +495,4 @@ public class UserInterface extends javax.swing.JDialog {
     private javax.swing.JLabel thresholdLabel;
     private javax.swing.JCheckBox tipsCheck;
     // End of variables declaration//GEN-END:variables
-
 }

@@ -1,5 +1,6 @@
 package AnaMorf;
 
+import IAClasses.DataStatistics;
 import ij.measure.Measurements;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.Analyzer;
@@ -7,8 +8,9 @@ import ij.plugin.filter.Analyzer;
 /**
  * Summarises results presented in ImageJ's Results Table. Data is identified
  * using the column headings specified in <i>BatchAnalyser</i>.
- * @author   David J Barry <davejpbarry@gmail.com>
- * @version  06OCT2010
+ *
+ * @author David J Barry <davejpbarry@gmail.com>
+ * @version 06OCT2010
  */
 public class ResultSummariser implements Measurements {
 
@@ -74,9 +76,10 @@ public class ResultSummariser implements Measurements {
 
     /**
      * Analyses the data contained in the column of ImageJ's results table
-     * specified by <i>columnIndex</i>. The mean value is printed at <i>rowNumber</i>
-     * and the confidence interval at <i>rowNumber + 1</i>. If <i>cleanData</i> is
-     * true, only non-zero values are included in the analysis.
+     * specified by <i>columnIndex</i>. The mean value is printed at
+     * <i>rowNumber</i> and the confidence interval at <i>rowNumber + 1</i>. If
+     * <i>cleanData</i> is true, only non-zero values are included in the
+     * analysis.
      */
     public void printStats(int rowNumber, int columnIndex, boolean cleanData) {
         int dataLength;

@@ -1,7 +1,8 @@
 package AnaMorf;
 
-import EMSeg.DSPProcessor;
-import EMSeg.Pixel;
+import IAClasses.OnlyExt;
+import IAClasses.DSPProcessor;
+import IAClasses.Pixel;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.*;
@@ -489,8 +490,8 @@ public class BatchAnalyser implements PlugIn {
                 if (objMask.getPixel(x - objBox.x, y - objBox.y) == BACKGROUND) {
                     if ((binProc.getPixelValue(x, y) == FOREGROUND)
                             && (refProc.getPixel(x, y) == BACKGROUND)) {
-                        xSum += x-objBox.x;
-                        ySum += y-objBox.y;
+                        xSum += x - objBox.x;
+                        ySum += y - objBox.y;
                         pixArea++;
                         if (refProc != null) {
                             refProc.drawPixel(x, y);
