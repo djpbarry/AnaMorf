@@ -26,9 +26,9 @@ public class Utilities {
     /**
      * Attempts to produce a high-contrast greyscale image from an RGB image.
      *
-     * @return a {@link ByteProcessor} containing whichever channel of the input RGB image
-     * exhibits the greatest contrast (measured by comparing the standard deviation
-     * of intensity levels within the three different bands).
+     * @return a {@link ByteProcessor} containing whichever channel of the input
+     * RGB image exhibits the greatest contrast (measured by comparing the
+     * standard deviation of intensity levels within the three different bands).
      */
     public static ByteProcessor getHighContrastGreyImage(ColorProcessor image) {
         int w = image.getWidth(), h = image.getHeight();
@@ -60,13 +60,16 @@ public class Utilities {
      *
      * @return the directory in which the images to be analysed are located
      */
-    public static File getFolder(File currentDirectory) {
+    public static File getFolder(File currentDirectory, String title) {
         boolean validDirectory = false;
         File newDirectory = null;
+        if (title == null) {
+            title = "Select Directory";
+        }
 
         while (!validDirectory) {
             JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Select Directory");
+            fileChooser.setDialogTitle(title);
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             fileChooser.setApproveButtonText("Ok");
 

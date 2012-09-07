@@ -110,7 +110,7 @@ public class BatchAnalyser implements PlugIn {
         if (!getInputParameters()) {
             return;
         }
-        currentDirectory = Utilities.getFolder(currentDirectory);
+        currentDirectory = Utilities.getFolder(currentDirectory, null);
         if (currentDirectory == null) {
             return;
         }
