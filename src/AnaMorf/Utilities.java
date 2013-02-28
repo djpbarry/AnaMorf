@@ -129,7 +129,7 @@ public class Utilities {
         return false;
     }
 
-    public static ImagePlus[] specifyImages() {
+    public static ImagePlus[] specifyImages(String choice1, String choice2) {
         int windIDs[] = WindowManager.getIDList();
         String winTitles[] = new String[windIDs.length + 1];
         for (int i = 0; i < windIDs.length; i++) {
@@ -137,8 +137,8 @@ public class Utilities {
         }
         winTitles[windIDs.length] = "None";
         GenericDialog gd = new GenericDialog("Specify Inputs");
-        gd.addChoice("Cytoplasmic Signal:", winTitles, winTitles[0]);
-        gd.addChoice("Signal to be Correlated:", winTitles, winTitles[1]);
+        gd.addChoice(choice1, winTitles, winTitles[0]);
+        gd.addChoice(choice2, winTitles, winTitles[1]);
         gd.showDialog();
         ImagePlus output[] = new ImagePlus[2];
         output[0] = WindowManager.getImage(windIDs[gd.getNextChoiceIndex()]);
