@@ -150,4 +150,15 @@ public class Utilities {
         }
         return output;
     }
+
+    public static int checkRange(int number, int lowerBound, int upperBound) {
+        int newNo = number;
+        if (newNo < lowerBound) {
+            newNo += upperBound;
+        }
+        if (newNo >= upperBound) {
+            newNo -= upperBound;
+        }
+        return newNo;
+    }
 }
