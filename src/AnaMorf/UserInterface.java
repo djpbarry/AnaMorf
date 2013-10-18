@@ -220,7 +220,7 @@ public class UserInterface extends javax.swing.JDialog {
         branchCheck.setText("Number of Branchpoints");
         jPanel1.add(branchCheck, new org.netbeans.lib.awtextra.AbsoluteConstraints(143, 364, -1, -1));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 300, 480));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

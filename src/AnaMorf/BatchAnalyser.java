@@ -1,11 +1,14 @@
 package AnaMorf;
 
-import IAClasses.OnlyExt;
 import IAClasses.DSPProcessor;
+import IAClasses.OnlyExt;
 import IAClasses.Pixel;
 import ij.IJ;
 import ij.ImagePlus;
-import ij.gui.*;
+import ij.gui.GenericDialog;
+import ij.gui.PolygonRoi;
+import ij.gui.Roi;
+import ij.gui.Wand;
 import ij.measure.Measurements;
 import ij.measure.ResultsTable;
 import ij.plugin.CanvasResizer;
@@ -13,15 +16,7 @@ import ij.plugin.PlugIn;
 import ij.plugin.filter.Analyzer;
 import ij.plugin.filter.BackgroundSubtracter;
 import ij.plugin.filter.RankFilters;
-import ij.process.Blitter;
-import ij.process.ByteBlitter;
-import ij.process.ByteProcessor;
-import ij.process.ColorBlitter;
-import ij.process.ColorProcessor;
-import ij.process.FloodFiller;
-import ij.process.ImageProcessor;
-import ij.process.ImageStatistics;
-import ij.process.TypeConverter;
+import ij.process.*;
 import java.awt.Color;
 import java.awt.Polygon;
 import java.awt.Rectangle;
@@ -93,6 +88,12 @@ public class BatchAnalyser implements PlugIn {
             HYPHAL_GROWTH_UNIT = 64,
             NUMBER_OF_BRANCHES = 128;
 
+    public static void main(String args[]) {
+        BatchAnalyser ba = new BatchAnalyser();
+        ba.run(null);
+        System.exit(0);
+    }
+
     public BatchAnalyser(boolean wholeImage) {
         this.wholeImage = wholeImage;
         noEdge = false;
@@ -107,7 +108,7 @@ public class BatchAnalyser implements PlugIn {
      * @param arg passed by ImageJ.
      */
     public void run(String arg) {
-        if (!getInputParameters()) {
+        if (!showGUI()) {
             return;
         }
         currentDirectory = Utilities.getFolder(currentDirectory, null);
@@ -322,6 +323,47 @@ public class BatchAnalyser implements PlugIn {
         return true;
     }
 
+    /**
+     * Displays a dialog to obtain input parameters from a user.
+     *
+     * @return false if the dialog was closed/exited by the user, true otherwise
+     */
+    public boolean showGUI() {
+        boolean valid = false;
+        while (!valid) {
+            valid = true;
+            UserInterface gui = new UserInterface(IJ.getInstance(), true);
+            gui.setVisible(true);
+            if (!gui.exitProgram()) {
+                imageFormat = gui.getImageFormat();
+                imageRes = gui.getRes();
+                minBranchLength = gui.getMinLength();
+                maxCirc = gui.getMaxCirc();
+                minArea = gui.getMinArea();
+                createMaskImages = gui.isCreateMasks();
+                subtractBackground = gui.isSubBackground();
+                lightBackground = gui.isLightBackground();
+
+                if (gui.isArea()) {
+                    outputData += AREAS;
+                }
+                if (gui.isTHL()) {
+                    outputData += TOTAL_HYPHAL_LENGTH;
+                }
+                if (gui.isTips()) {
+                    outputData += NUMBER_OF_ENDPOINTS;
+                }
+                if (gui.isBranches()) {
+                    outputData += NUMBER_OF_BRANCHES;
+                }
+            } else {
+                return false;
+            }
+        }
+        imageResolution2 = imageRes * imageRes;
+        return true;
+    }
+    
     /**
      * Searches the image (represented by
      * <code>currentImage</code>) for objects, traces the outline of each object
