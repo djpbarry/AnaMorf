@@ -1,6 +1,7 @@
 package AnaMorf;
 
 import ij.IJ;
+import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.text.DecimalFormat;
 
@@ -19,6 +20,10 @@ public class UserInterface extends javax.swing.JDialog {
         super(parent, modal);
         exit = true;
         initComponents();
+        if (parent == null) {
+            Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+            this.setLocation(dim.width / 2 - this.getWidth() / 2, dim.height / 2 - this.getHeight() / 2);
+        }
     }
 
     /**
@@ -295,11 +300,11 @@ public class UserInterface extends javax.swing.JDialog {
     private void imageFormatComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_imageFormatComboActionPerformed
     }//GEN-LAST:event_imageFormatComboActionPerformed
 
-    public boolean[] getOptions(){
-        boolean options[] = {area, circ, hgu, thl, tips, branches, frac, lac}; 
+    public boolean[] getOptions() {
+        boolean options[] = {area, circ, hgu, thl, tips, branches, frac, lac};
         return options;
     }
-    
+
     /**
      * Returns true if the user has selected the 'Area' check box, false
      * otherwise.
