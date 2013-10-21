@@ -295,6 +295,11 @@ public class UserInterface extends javax.swing.JDialog {
     private void imageFormatComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_imageFormatComboActionPerformed
     }//GEN-LAST:event_imageFormatComboActionPerformed
 
+    public boolean[] getOptions(){
+        boolean options[] = {area, circ, hgu, thl, tips, branches, frac, lac}; 
+        return options;
+    }
+    
     /**
      * Returns true if the user has selected the 'Area' check box, false
      * otherwise.

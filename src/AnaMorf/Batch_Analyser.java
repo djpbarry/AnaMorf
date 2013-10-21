@@ -62,8 +62,8 @@ public class Batch_Analyser implements PlugIn {
     private ArrayList detections = new ArrayList();
     private String imageName;
     public static final String title = "AnaMorf v1.0";
-    private double params[] = new double[5];
-
+    private int paramCount = 8;
+    private double params[] = new double[paramCount];
     /*
      * Column headings used for Results Table output
      */
@@ -340,22 +340,15 @@ public class Batch_Analyser implements PlugIn {
                 minBranchLength = gui.getMinLength();
                 maxCirc = gui.getMaxCirc();
                 minArea = gui.getMinArea();
+                boolean options[] = gui.getOptions();
+                for (int n = 0; n < paramCount; n++) {
+                    if (options[n]) {
+                        outputData += (int) Math.round(Math.pow(2.0, n));
+                    }
+                }
                 createMaskImages = gui.isCreateMasks();
                 subtractBackground = gui.isSubBackground();
                 lightBackground = gui.isLightBackground();
-
-                if (gui.isArea()) {
-                    outputData += AREAS;
-                }
-                if (gui.isTHL()) {
-                    outputData += TOTAL_HYPHAL_LENGTH;
-                }
-                if (gui.isTips()) {
-                    outputData += NUMBER_OF_ENDPOINTS;
-                }
-                if (gui.isBranches()) {
-                    outputData += NUMBER_OF_BRANCHES;
-                }
             } else {
                 return false;
             }
@@ -601,11 +594,6 @@ public class Batch_Analyser implements PlugIn {
             binProc.invert(); // Foreground pixels = 255, to ensure non-zero mean
             ImageStatistics objStats = ImageStatistics.getStatistics(binProc,
                     Measurements.MEAN + Measurements.STD_DEV, null);
-//            if (pixArea > 1000) {
-//                new ImagePlus("BinProc",binProc).show();
-//                new ImagePlus("Mask",binProc).show();
-//                IJ.wait(0);
-//            }
             var = Math.pow(objStats.stdDev, 2);
             meanSq = Math.pow(objStats.mean, 2);
             lac = Math.abs((var / meanSq) - 1.0);
@@ -661,8 +649,6 @@ public class Batch_Analyser implements PlugIn {
                 xcoordinates[n] = polyObjRoi.getXCoordinates()[n];
                 ycoordinates[n] = polyObjRoi.getYCoordinates()[n];
             }
-//            Plot plot1 = new Plot("Original", "x", "y", xcoordinates, ycoordinates);
-//            plot1.show();
             Pixel boundPoints[] = DSPProcessor.getDistanceSignal(polyObjRoi.getNCoordinates(),
                     xCent, yCent, polyObjRoi.getXCoordinates(),
                     polyObjRoi.getYCoordinates(), imageRes);
@@ -675,43 +661,16 @@ public class Batch_Analyser implements PlugIn {
                     * upscaledDistInput.length / dist.length;
             double distfracparams[] = DSPProcessor.calcFourierDim(DSPProcessor.calcFourierSpec(upscaledDistInput, sampleRate), sampleRate, 1.0);
             if (distfracparams != null) {
-//                double truncdistfracparams[] = DSPProcessor.calcFourierDim(DSPProcessor.calcFourierSpec(upscaledDistInput, sampleRate), sampleRate, 0.25);
-                distfracDim = distfracparams[2];
-//                distfracDimFit = distfracparams[3];
-//                truncdistfracDim = truncdistfracparams[2];
-//                truncdistfracDimFit = truncdistfracparams[3];
+                distfracDim = (5.0 - Math.abs(distfracparams[2])) / 2.0;
             } else {
                 distfracDim = Double.NaN;
-//                distfracDimFit = Double.NaN;
             }
-
-            //double[][] curvePoints = DSPProcessor.calcKappa(xcoordinates, ycoordinates, imageRes);
             double[] curvePoints = DSPProcessor.smoothSignal(upscaledDistInput, sampleRate);
             if (curvePoints != null) {
-                //Plot plot2 = new Plot("Smoothed", "x", "y", curvePoints[0], curvePoints[1]);
-                //plot2.show();
                 double index[] = new double[curvePoints.length];
                 for (int g = 0; g < curvePoints.length; g++) {
                     index[g] = g;
                 }
-                //Plot plot1 = new Plot("Original", "ArcLength", "Radius", index, upscaledDistInput);
-                //plot1.show();
-                //Plot plot3 = new Plot("Smoothed", "Arclength", "Radius", index, curvePoints);
-                //plot3.show();
-                /*
-                 * double[] upscaledKappa =
-                 * DSPProcessor.upScale(curvePoints[2]); double kappaSampleRate
-                 * = (1.0d / imageRes) upscaledKappa.length /
-                 * curvePoints[2].length;
-                 */
-//                double smoothedfracparams[] = DSPProcessor.calcFourierDim(DSPProcessor.calcFourierSpec(curvePoints, sampleRate), sampleRate, 1.0);
-//                if (smoothedfracparams != null) {
-//                    smoothedfracDim = smoothedfracparams[2];
-//                    smoothedfracDimFit = smoothedfracparams[3];
-//                } else {
-//                    smoothedfracDim = Double.NaN;
-//                    smoothedfracDimFit = Double.NaN;
-//                }
             }
             params[4] = dist.length;
         }
@@ -720,11 +679,6 @@ public class Batch_Analyser implements PlugIn {
         params[1] = objArea;
         params[2] = distfracDim;
         params[3] = lac;
-//        params[5] = smoothedfracDim;
-//        params[6] = distfracDimFit;
-//        params[7] = smoothedfracDimFit;
-//        params[8] = truncdistfracDim;
-//        params[9] = truncdistfracDimFit;
 
         if (outputResults && (outputData != 0)) {
             /*
