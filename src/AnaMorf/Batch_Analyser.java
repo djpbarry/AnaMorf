@@ -42,7 +42,7 @@ import java.util.ArrayList;
  * @author David J Barry <davejpbarry@gmail.com>
  * @version 01SEP2010
  */
-public class BatchAnalyser implements PlugIn {
+public class Batch_Analyser implements PlugIn {
 
     private static File currentDirectory = new File("C:\\Users\\barry05\\Desktop\\TestAnaMorf"); // The current working directory from which images are opened
     private File maskImageDirectory = null; // The directory in which generated mask images are stored
@@ -61,7 +61,7 @@ public class BatchAnalyser implements PlugIn {
     private ColorProcessor skelImage;
     private ArrayList detections = new ArrayList();
     private String imageName;
-    public static final String title = "AnaMorf v2.02";
+    public static final String title = "AnaMorf v1.0";
     private double params[] = new double[5];
 
     /*
@@ -89,17 +89,17 @@ public class BatchAnalyser implements PlugIn {
             NUMBER_OF_BRANCHES = 128;
 
     public static void main(String args[]) {
-        BatchAnalyser ba = new BatchAnalyser();
+        Batch_Analyser ba = new Batch_Analyser();
         ba.run(null);
         System.exit(0);
     }
 
-    public BatchAnalyser(boolean wholeImage) {
+    public Batch_Analyser(boolean wholeImage) {
         this.wholeImage = wholeImage;
         noEdge = false;
     }
 
-    public BatchAnalyser() {
+    public Batch_Analyser() {
     }
 
     /**
@@ -116,7 +116,7 @@ public class BatchAnalyser implements PlugIn {
             return;
         }
         if (analyseFiles(currentDirectory)) {
-            (new ResultSummariser(confInterval)).summarise();
+//            (new ResultSummariser(confInterval)).summarise();
         }
         IJ.showStatus(title + ": done.");
     }
@@ -363,7 +363,7 @@ public class BatchAnalyser implements PlugIn {
         imageResolution2 = imageRes * imageRes;
         return true;
     }
-    
+
     /**
      * Searches the image (represented by
      * <code>currentImage</code>) for objects, traces the outline of each object
@@ -906,7 +906,7 @@ public class BatchAnalyser implements PlugIn {
         } else if (getClass() != object.getClass()) {
             return false;
         } else {
-            BatchAnalyser otherAnamorf = (BatchAnalyser) object;
+            Batch_Analyser otherAnamorf = (Batch_Analyser) object;
             return (imageFormat.equals(otherAnamorf.imageFormat)
                     && minBranchLength == otherAnamorf.minBranchLength
                     && maxCirc == otherAnamorf.maxCirc

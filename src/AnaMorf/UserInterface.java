@@ -105,7 +105,6 @@ public class UserInterface extends javax.swing.JDialog {
 
         circCheck.setSelected(circ);
         circCheck.setText("Circularity");
-        circCheck.setEnabled(false);
         jPanel1.add(circCheck, new org.netbeans.lib.awtextra.AbsoluteConstraints(143, 295, -1, -1));
 
         thlCheck.setSelected(thl);
@@ -118,17 +117,14 @@ public class UserInterface extends javax.swing.JDialog {
 
         hguCheck.setSelected(hgu);
         hguCheck.setText("Hyphal Growth Unit");
-        hguCheck.setEnabled(false);
         jPanel1.add(hguCheck, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 341, -1, -1));
 
         fracCheck.setSelected(frac);
         fracCheck.setText("Fractal Dimension");
-        fracCheck.setEnabled(false);
         jPanel1.add(fracCheck, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 364, -1, -1));
 
         lacCheck.setSelected(lac);
         lacCheck.setText("Lacunarity");
-        lacCheck.setEnabled(false);
         jPanel1.add(lacCheck, new org.netbeans.lib.awtextra.AbsoluteConstraints(143, 341, -1, -1));
 
         minBranchLabel.setText("Minimum Branch Length ("+IJ.micronSymbol+"m):");
@@ -153,7 +149,6 @@ public class UserInterface extends javax.swing.JDialog {
         jPanel1.add(minAreaField, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 115, -1, -1));
 
         lacTolField.setText(threePlaces.format(lacTol));
-        lacTolField.setEnabled(false);
         jPanel1.add(lacTolField, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 141, -1, -1));
 
         maskImageCheck.setSelected(createMasks);

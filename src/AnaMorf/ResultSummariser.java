@@ -44,14 +44,16 @@ public class ResultSummariser implements Measurements {
             return;
         }
 
-        areaIndex = results.getColumnIndex(BatchAnalyser.AREA_HEAD);
-        circIndex = results.getColumnIndex(BatchAnalyser.CIRC_HEAD);
-        fracIndex = results.getColumnIndex(BatchAnalyser.FRAC_HEAD);
-        lacIndex = results.getColumnIndex(BatchAnalyser.LAC_HEAD);
-        hguIndex = results.getColumnIndex(BatchAnalyser.HGU_HEAD);
-        lengthIndex = results.getColumnIndex(BatchAnalyser.LENGTH_HEAD);
-        tipIndex = results.getColumnIndex(BatchAnalyser.TIP_HEAD);
-        branchIndex = results.getColumnIndex(BatchAnalyser.BRANCH_HEAD);
+        int cols = results.getLastColumn();
+        
+//        areaIndex = results.getColumnIndex(Batch_Analyser.AREA_HEAD);
+//        circIndex = results.getColumnIndex(Batch_Analyser.CIRC_HEAD);
+//        fracIndex = results.getColumnIndex(Batch_Analyser.FRAC_HEAD);
+//        lacIndex = results.getColumnIndex(Batch_Analyser.LAC_HEAD);
+        hguIndex = results.getColumnIndex(Batch_Analyser.HGU_HEAD);
+//        lengthIndex = results.getColumnIndex(Batch_Analyser.LENGTH_HEAD);
+//        tipIndex = results.getColumnIndex(Batch_Analyser.TIP_HEAD);
+//        branchIndex = results.getColumnIndex(Batch_Analyser.BRANCH_HEAD);
 
         row = results.getCounter();
         results.incrementCounter();
@@ -61,14 +63,18 @@ public class ResultSummariser implements Measurements {
         results.incrementCounter();
         results.setLabel((1.0 - alpha) + "% Confidence Interval", row + 2);
 
-        printStats(row, areaIndex, false);
-        printStats(row, circIndex, false);
-        printStats(row, fracIndex, false);
-        printStats(row, lacIndex, false);
-        printStats(row, hguIndex, true);
-        printStats(row, lengthIndex, false);
-        printStats(row, tipIndex, false);
-        printStats(row, branchIndex, false);
+        for(int i=1; i<=cols; i++){
+            printStats(row, i, i==hguIndex);
+        }
+        
+//        printStats(row, areaIndex, false);
+//        printStats(row, circIndex, false);
+//        printStats(row, fracIndex, false);
+//        printStats(row, lacIndex, false);
+//        printStats(row, hguIndex, true);
+//        printStats(row, lengthIndex, false);
+//        printStats(row, tipIndex, false);
+//        printStats(row, branchIndex, false);
 
         analyserObject.displayResults();
         analyserObject.updateHeadings();
