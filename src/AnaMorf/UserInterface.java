@@ -41,39 +41,37 @@ public class UserInterface extends javax.swing.JDialog {
         minBranchLabel = new javax.swing.JLabel();
         maxCircLabel = new javax.swing.JLabel();
         minAreaLabel = new javax.swing.JLabel();
-        lacTolLabel = new javax.swing.JLabel();
-        ciLabel = new javax.swing.JLabel();
-        thresholdLabel = new javax.swing.JLabel();
         jPanel11 = new javax.swing.JPanel();
         imageFormatCombo = new javax.swing.JComboBox();
         imageResField = new javax.swing.JTextField();
         minBranchField = new javax.swing.JTextField();
         maxCircField = new javax.swing.JTextField();
         minAreaField = new javax.swing.JTextField();
-        lacTolField = new javax.swing.JTextField();
-        confField = new javax.swing.JTextField();
-        manualThresholdField = new javax.swing.JTextField();
-        jPanel1 = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
-        manualThresholdRadio = new javax.swing.JRadioButton();
-        lightBGRadio = new javax.swing.JRadioButton();
-        jPanel5 = new javax.swing.JPanel();
-        autoThresholdRadio = new javax.swing.JRadioButton();
-        darkBGRadio = new javax.swing.JRadioButton();
         jPanel8 = new javax.swing.JPanel();
         jPanel12 = new javax.swing.JPanel();
-        maskImageCheck = new javax.swing.JCheckBox();
         areaCheck = new javax.swing.JCheckBox();
         thlCheck = new javax.swing.JCheckBox();
         hguCheck = new javax.swing.JCheckBox();
         fracCheck = new javax.swing.JCheckBox();
         jPanel13 = new javax.swing.JPanel();
-        subBackgroundCheck = new javax.swing.JCheckBox();
         circCheck = new javax.swing.JCheckBox();
         tipsCheck = new javax.swing.JCheckBox();
         lacCheck = new javax.swing.JCheckBox();
         branchCheck = new javax.swing.JCheckBox();
         jPanel6 = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
+        lightBGRadio = new javax.swing.JRadioButton();
+        darkBGRadio = new javax.swing.JRadioButton();
+        maskImageCheck = new javax.swing.JCheckBox();
+        subBackgroundCheck = new javax.swing.JCheckBox();
+        jPanel5 = new javax.swing.JPanel();
+        autoThresholdRadio = new javax.swing.JRadioButton();
+        manualThresholdRadio = new javax.swing.JRadioButton();
+        thresholdLabel = new javax.swing.JLabel();
+        manualThresholdField = new javax.swing.JTextField();
+        jPanel14 = new javax.swing.JPanel();
+        lacTolLabel = new javax.swing.JLabel();
+        lacTolField = new javax.swing.JTextField();
         jPanel7 = new javax.swing.JPanel();
         jPanel9 = new javax.swing.JPanel();
         okButton = new javax.swing.JButton();
@@ -83,7 +81,7 @@ public class UserInterface extends javax.swing.JDialog {
         setTitle("AnaMorf");
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.PAGE_AXIS));
 
-        jTabbedPane1.setPreferredSize(new java.awt.Dimension(400, 500));
+        jTabbedPane1.setPreferredSize(new java.awt.Dimension(400, 300));
 
         jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.PAGE_AXIS));
 
@@ -92,7 +90,7 @@ public class UserInterface extends javax.swing.JDialog {
         jPanel4.setPreferredSize(new java.awt.Dimension(216, 180));
         jPanel4.setLayout(new java.awt.GridLayout());
 
-        jPanel10.setLayout(new java.awt.GridLayout(8, 0));
+        jPanel10.setLayout(new java.awt.GridLayout(5, 0));
 
         imageFormatLabel.setText("Image Format:");
         jPanel10.add(imageFormatLabel);
@@ -109,18 +107,9 @@ public class UserInterface extends javax.swing.JDialog {
         minAreaLabel.setText("Minimum Area ("+IJ.micronSymbol+"m^2):");
         jPanel10.add(minAreaLabel);
 
-        lacTolLabel.setText("Lacunarity Tolerance:");
-        jPanel10.add(lacTolLabel);
-
-        ciLabel.setText("Confidence Level (%):");
-        jPanel10.add(ciLabel);
-
-        thresholdLabel.setText("Manual Grey Level Threshold:");
-        jPanel10.add(thresholdLabel);
-
         jPanel4.add(jPanel10);
 
-        jPanel11.setLayout(new java.awt.GridLayout(8, 0));
+        jPanel11.setLayout(new java.awt.GridLayout(5, 0));
 
         imageFormatCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "BMP", "GIF", "JPG", "PNG", "TIF" }));
         imageFormatCombo.setSelectedIndex(formatIndex);
@@ -143,77 +132,14 @@ public class UserInterface extends javax.swing.JDialog {
         minAreaField.setText(onePlace.format(minArea));
         jPanel11.add(minAreaField);
 
-        lacTolField.setText(threePlaces.format(lacTol));
-        jPanel11.add(lacTolField);
-
-        confField.setText(onePlace.format(confLevel));
-        jPanel11.add(confField);
-
-        manualThresholdField.setText(""+manualThreshold);
-        manualThresholdField.setEnabled(manualThresholdRadio.isSelected());
-        jPanel11.add(manualThresholdField);
-
         jPanel4.add(jPanel11);
 
         jPanel2.add(jPanel4);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jPanel1.setLayout(new java.awt.GridLayout());
-
-        jPanel3.setLayout(new java.awt.GridLayout(2, 0));
-
-        manualThresholdRadio.setSelected(!autoThreshold);
-        manualThresholdRadio.setText("Manual Threshold");
-        manualThresholdRadio.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                manualThresholdRadioActionPerformed(evt);
-            }
-        });
-        jPanel3.add(manualThresholdRadio);
-
-        lightBGRadio.setSelected(lightBackground);
-        lightBGRadio.setText("Light Background");
-        lightBGRadio.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                lightBGRadioActionPerformed(evt);
-            }
-        });
-        jPanel3.add(lightBGRadio);
-
-        jPanel1.add(jPanel3);
-
-        jPanel5.setLayout(new java.awt.GridLayout(2, 0));
-
-        autoThresholdRadio.setSelected(autoThreshold);
-        autoThresholdRadio.setText("Auto Threshold");
-        autoThresholdRadio.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                autoThresholdRadioActionPerformed(evt);
-            }
-        });
-        jPanel5.add(autoThresholdRadio);
-
-        darkBGRadio.setSelected(!lightBackground);
-        darkBGRadio.setText("Dark Background");
-        darkBGRadio.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                darkBGRadioActionPerformed(evt);
-            }
-        });
-        jPanel5.add(darkBGRadio);
-
-        jPanel1.add(jPanel5);
-
-        jPanel2.add(jPanel1);
-
         jPanel8.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanel8.setLayout(new java.awt.GridLayout());
 
-        jPanel12.setLayout(new java.awt.GridLayout(5, 0));
-
-        maskImageCheck.setSelected(createMasks);
-        maskImageCheck.setText("Create Mask Images?");
-        jPanel12.add(maskImageCheck);
+        jPanel12.setLayout(new java.awt.GridLayout(4, 0));
 
         areaCheck.setSelected(area);
         areaCheck.setText("Projected Area");
@@ -233,11 +159,7 @@ public class UserInterface extends javax.swing.JDialog {
 
         jPanel8.add(jPanel12);
 
-        jPanel13.setLayout(new java.awt.GridLayout(5, 0));
-
-        subBackgroundCheck.setSelected(subBackground);
-        subBackgroundCheck.setText("Subtract Background?");
-        jPanel13.add(subBackgroundCheck);
+        jPanel13.setLayout(new java.awt.GridLayout(4, 0));
 
         circCheck.setSelected(circ);
         circCheck.setText("Circularity");
@@ -260,6 +182,81 @@ public class UserInterface extends javax.swing.JDialog {
         jPanel2.add(jPanel8);
 
         jTabbedPane1.addTab("Basic", jPanel2);
+
+        jPanel6.setLayout(new javax.swing.BoxLayout(jPanel6, javax.swing.BoxLayout.PAGE_AXIS));
+
+        jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanel3.setLayout(new java.awt.GridLayout(2, 2));
+
+        lightBGRadio.setSelected(lightBackground);
+        lightBGRadio.setText("Light Background");
+        lightBGRadio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                lightBGRadioActionPerformed(evt);
+            }
+        });
+        jPanel3.add(lightBGRadio);
+
+        darkBGRadio.setSelected(!lightBackground);
+        darkBGRadio.setText("Dark Background");
+        darkBGRadio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                darkBGRadioActionPerformed(evt);
+            }
+        });
+        jPanel3.add(darkBGRadio);
+
+        maskImageCheck.setSelected(createMasks);
+        maskImageCheck.setText("Create Mask Images?");
+        jPanel3.add(maskImageCheck);
+
+        subBackgroundCheck.setSelected(subBackground);
+        subBackgroundCheck.setText("Subtract Background?");
+        jPanel3.add(subBackgroundCheck);
+
+        jPanel6.add(jPanel3);
+
+        jPanel5.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanel5.setLayout(new java.awt.GridLayout(2, 0));
+
+        autoThresholdRadio.setSelected(autoThreshold);
+        autoThresholdRadio.setText("Auto Threshold");
+        autoThresholdRadio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                autoThresholdRadioActionPerformed(evt);
+            }
+        });
+        jPanel5.add(autoThresholdRadio);
+
+        manualThresholdRadio.setSelected(!autoThreshold);
+        manualThresholdRadio.setText("Manual Threshold");
+        manualThresholdRadio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                manualThresholdRadioActionPerformed(evt);
+            }
+        });
+        jPanel5.add(manualThresholdRadio);
+
+        thresholdLabel.setText("Manual Grey Level Threshold:");
+        jPanel5.add(thresholdLabel);
+
+        manualThresholdField.setText(""+manualThreshold);
+        manualThresholdField.setEnabled(manualThresholdRadio.isSelected());
+        jPanel5.add(manualThresholdField);
+
+        jPanel6.add(jPanel5);
+
+        jPanel14.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanel14.setLayout(new java.awt.GridLayout());
+
+        lacTolLabel.setText("Lacunarity Tolerance:");
+        jPanel14.add(lacTolLabel);
+
+        lacTolField.setText(threePlaces.format(lacTol));
+        jPanel14.add(lacTolField);
+
+        jPanel6.add(jPanel14);
+
         jTabbedPane1.addTab("Advanced", jPanel6);
 
         getContentPane().add(jTabbedPane1);
@@ -324,7 +321,6 @@ public class UserInterface extends javax.swing.JDialog {
         String circText = maxCircField.getText();
         String areaText = minAreaField.getText();
         String lacText = lacTolField.getText();
-        String confText = confField.getText();
         String thresholdText = manualThresholdField.getText();
         try {
             imageRes = (resText != null) ? Double.parseDouble(resText) : imageRes;
@@ -332,7 +328,6 @@ public class UserInterface extends javax.swing.JDialog {
             maxCirc = (circText != null) ? Double.parseDouble(circText) : 0.0;
             minArea = (areaText != null) ? Double.parseDouble(areaText) : 0.0;
             lacTol = (lacText != null) ? Double.parseDouble(lacText) : 0.0;
-            confLevel = (confText != null) ? Double.parseDouble(confText) : 0.0;
             if (!autoThreshold) {
                 manualThreshold = (thresholdText != null) ? Integer.parseInt(thresholdText) : 0;
             }
@@ -496,13 +491,6 @@ public class UserInterface extends javax.swing.JDialog {
     }
 
     /**
-     * Returns the confidence level specified by the user.
-     */
-    public double getConfLevel() {
-        return confLevel;
-    }
-
-    /**
      * Returns the manual grey-level threshold specified by the user if the
      * 'Manual' radio button was selected or -1 otherwise.
      */
@@ -522,7 +510,7 @@ public class UserInterface extends javax.swing.JDialog {
     }
     private static int formatIndex = 4, manualThreshold = 235;
     private static double minLength = 40.0, maxCirc = 0.05, minArea = 1000.0,
-            lacTol = 100, confLevel = 95.0, imageRes = 1.12347;
+            lacTol = 100, imageRes = 1.12347;
     private static boolean createMasks = true, subBackground = true, area = true,
             circ = false, thl = true, tips = true, hgu = false, frac = false,
             lac = false, exit, autoThreshold = true, lightBackground = false,
@@ -533,9 +521,7 @@ public class UserInterface extends javax.swing.JDialog {
     private javax.swing.JCheckBox areaCheck;
     private javax.swing.JRadioButton autoThresholdRadio;
     private javax.swing.JCheckBox branchCheck;
-    private javax.swing.JLabel ciLabel;
     private javax.swing.JCheckBox circCheck;
-    private javax.swing.JTextField confField;
     private javax.swing.JRadioButton darkBGRadio;
     private javax.swing.JButton exitButton;
     private javax.swing.JCheckBox fracCheck;
@@ -543,11 +529,11 @@ public class UserInterface extends javax.swing.JDialog {
     private javax.swing.JComboBox imageFormatCombo;
     private javax.swing.JLabel imageFormatLabel;
     private javax.swing.JTextField imageResField;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
+    private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
