@@ -32,57 +32,95 @@ public class UserInterface extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel2 = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JPanel();
+        jPanel10 = new javax.swing.JPanel();
         imageFormatLabel = new javax.swing.JLabel();
-        okButton = new javax.swing.JButton();
-        imageFormatCombo = new javax.swing.JComboBox();
-        exitButton = new javax.swing.JButton();
         resLabel = new javax.swing.JLabel();
-        areaCheck = new javax.swing.JCheckBox();
-        circCheck = new javax.swing.JCheckBox();
-        thlCheck = new javax.swing.JCheckBox();
-        tipsCheck = new javax.swing.JCheckBox();
-        hguCheck = new javax.swing.JCheckBox();
-        fracCheck = new javax.swing.JCheckBox();
-        lacCheck = new javax.swing.JCheckBox();
         minBranchLabel = new javax.swing.JLabel();
         maxCircLabel = new javax.swing.JLabel();
         minAreaLabel = new javax.swing.JLabel();
         lacTolLabel = new javax.swing.JLabel();
+        ciLabel = new javax.swing.JLabel();
+        thresholdLabel = new javax.swing.JLabel();
+        jPanel11 = new javax.swing.JPanel();
+        imageFormatCombo = new javax.swing.JComboBox();
+        imageResField = new javax.swing.JTextField();
         minBranchField = new javax.swing.JTextField();
         maxCircField = new javax.swing.JTextField();
         minAreaField = new javax.swing.JTextField();
         lacTolField = new javax.swing.JTextField();
-        maskImageCheck = new javax.swing.JCheckBox();
-        subBackgroundCheck = new javax.swing.JCheckBox();
-        ciLabel = new javax.swing.JLabel();
         confField = new javax.swing.JTextField();
-        thresholdLabel = new javax.swing.JLabel();
-        manualThresholdRadio = new javax.swing.JRadioButton();
-        autoThresholdRadio = new javax.swing.JRadioButton();
         manualThresholdField = new javax.swing.JTextField();
+        jPanel1 = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
+        manualThresholdRadio = new javax.swing.JRadioButton();
         lightBGRadio = new javax.swing.JRadioButton();
+        jPanel5 = new javax.swing.JPanel();
+        autoThresholdRadio = new javax.swing.JRadioButton();
         darkBGRadio = new javax.swing.JRadioButton();
-        imageResField = new javax.swing.JTextField();
+        jPanel8 = new javax.swing.JPanel();
+        jPanel12 = new javax.swing.JPanel();
+        maskImageCheck = new javax.swing.JCheckBox();
+        areaCheck = new javax.swing.JCheckBox();
+        thlCheck = new javax.swing.JCheckBox();
+        hguCheck = new javax.swing.JCheckBox();
+        fracCheck = new javax.swing.JCheckBox();
+        jPanel13 = new javax.swing.JPanel();
+        subBackgroundCheck = new javax.swing.JCheckBox();
+        circCheck = new javax.swing.JCheckBox();
+        tipsCheck = new javax.swing.JCheckBox();
+        lacCheck = new javax.swing.JCheckBox();
         branchCheck = new javax.swing.JCheckBox();
+        jPanel6 = new javax.swing.JPanel();
+        jPanel7 = new javax.swing.JPanel();
+        jPanel9 = new javax.swing.JPanel();
+        okButton = new javax.swing.JButton();
+        exitButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("AnaMorf");
-        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.PAGE_AXIS));
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jTabbedPane1.setPreferredSize(new java.awt.Dimension(400, 500));
+
+        jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.PAGE_AXIS));
+
+        jPanel4.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanel4.setMinimumSize(new java.awt.Dimension(260, 160));
+        jPanel4.setPreferredSize(new java.awt.Dimension(216, 180));
+        jPanel4.setLayout(new java.awt.GridLayout());
+
+        jPanel10.setLayout(new java.awt.GridLayout(8, 0));
 
         imageFormatLabel.setText("Image Format:");
-        jPanel1.add(imageFormatLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 16, -1, -1));
+        jPanel10.add(imageFormatLabel);
 
-        okButton.setText("OK");
-        okButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                okButtonActionPerformed(evt);
-            }
-        });
-        jPanel1.add(okButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(143, 450, -1, -1));
+        resLabel.setText("Image Resolution ("+IJ.micronSymbol+"m/pixel):");
+        jPanel10.add(resLabel);
+
+        minBranchLabel.setText("Minimum Branch Length ("+IJ.micronSymbol+"m):");
+        jPanel10.add(minBranchLabel);
+
+        maxCircLabel.setText("Maximum Circularity:");
+        jPanel10.add(maxCircLabel);
+
+        minAreaLabel.setText("Minimum Area ("+IJ.micronSymbol+"m^2):");
+        jPanel10.add(minAreaLabel);
+
+        lacTolLabel.setText("Lacunarity Tolerance:");
+        jPanel10.add(lacTolLabel);
+
+        ciLabel.setText("Confidence Level (%):");
+        jPanel10.add(ciLabel);
+
+        thresholdLabel.setText("Manual Grey Level Threshold:");
+        jPanel10.add(thresholdLabel);
+
+        jPanel4.add(jPanel10);
+
+        jPanel11.setLayout(new java.awt.GridLayout(8, 0));
 
         imageFormatCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "BMP", "GIF", "JPG", "PNG", "TIF" }));
         imageFormatCombo.setSelectedIndex(formatIndex);
@@ -91,109 +129,47 @@ public class UserInterface extends javax.swing.JDialog {
                 imageFormatComboActionPerformed(evt);
             }
         });
-        jPanel1.add(imageFormatCombo, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 13, 72, -1));
+        jPanel11.add(imageFormatCombo);
 
-        exitButton.setText("EXIT");
-        exitButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exitButtonActionPerformed(evt);
-            }
-        });
-        jPanel1.add(exitButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(196, 450, -1, -1));
-
-        resLabel.setText("Image Resolution ("+IJ.micronSymbol+"m/pixel):");
-        jPanel1.add(resLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 40, -1, -1));
-
-        areaCheck.setSelected(area);
-        areaCheck.setText("Projected Area");
-        jPanel1.add(areaCheck, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 295, -1, -1));
-
-        circCheck.setSelected(circ);
-        circCheck.setText("Circularity");
-        jPanel1.add(circCheck, new org.netbeans.lib.awtextra.AbsoluteConstraints(143, 295, -1, -1));
-
-        thlCheck.setSelected(thl);
-        thlCheck.setText("Total Length");
-        jPanel1.add(thlCheck, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 318, -1, -1));
-
-        tipsCheck.setSelected(tips);
-        tipsCheck.setText("Number of Endpoints");
-        jPanel1.add(tipsCheck, new org.netbeans.lib.awtextra.AbsoluteConstraints(143, 318, -1, -1));
-
-        hguCheck.setSelected(hgu);
-        hguCheck.setText("Hyphal Growth Unit");
-        jPanel1.add(hguCheck, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 341, -1, -1));
-
-        fracCheck.setSelected(frac);
-        fracCheck.setText("Fractal Dimension");
-        jPanel1.add(fracCheck, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 364, -1, -1));
-
-        lacCheck.setSelected(lac);
-        lacCheck.setText("Lacunarity");
-        jPanel1.add(lacCheck, new org.netbeans.lib.awtextra.AbsoluteConstraints(143, 341, -1, -1));
-
-        minBranchLabel.setText("Minimum Branch Length ("+IJ.micronSymbol+"m):");
-        jPanel1.add(minBranchLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 66, -1, -1));
-
-        maxCircLabel.setText("Maximum Circularity:");
-        jPanel1.add(maxCircLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 92, -1, -1));
-
-        minAreaLabel.setText("<html>Minimum Area ("+IJ.micronSymbol+"m<sup>2</sup>):</html>");
-        jPanel1.add(minAreaLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 118, -1, -1));
-
-        lacTolLabel.setText("Lacunarity Tolerance:");
-        jPanel1.add(lacTolLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 144, -1, -1));
+        imageResField.setText(threePlaces.format(imageRes));
+        jPanel11.add(imageResField);
 
         minBranchField.setText(onePlace.format(minLength));
-        jPanel1.add(minBranchField, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 63, -1, -1));
+        jPanel11.add(minBranchField);
 
         maxCircField.setText(threePlaces.format(maxCirc));
-        jPanel1.add(maxCircField, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 89, -1, -1));
+        jPanel11.add(maxCircField);
 
         minAreaField.setText(onePlace.format(minArea));
-        jPanel1.add(minAreaField, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 115, -1, -1));
+        jPanel11.add(minAreaField);
 
         lacTolField.setText(threePlaces.format(lacTol));
-        jPanel1.add(lacTolField, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 141, -1, -1));
-
-        maskImageCheck.setSelected(createMasks);
-        maskImageCheck.setText("Create Mask Images?");
-        jPanel1.add(maskImageCheck, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 267, -1, -1));
-
-        subBackgroundCheck.setSelected(subBackground);
-        subBackgroundCheck.setText("Subtract Background?");
-        jPanel1.add(subBackgroundCheck, new org.netbeans.lib.awtextra.AbsoluteConstraints(143, 267, -1, -1));
-
-        ciLabel.setText("Confidence Level (%):");
-        jPanel1.add(ciLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 170, -1, -1));
+        jPanel11.add(lacTolField);
 
         confField.setText(onePlace.format(confLevel));
-        jPanel1.add(confField, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 167, -1, -1));
+        jPanel11.add(confField);
 
-        thresholdLabel.setText("Grey Level Threshold:");
-        jPanel1.add(thresholdLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 196, -1, -1));
+        manualThresholdField.setText(""+manualThreshold);
+        manualThresholdField.setEnabled(manualThresholdRadio.isSelected());
+        jPanel11.add(manualThresholdField);
+
+        jPanel4.add(jPanel11);
+
+        jPanel2.add(jPanel4);
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanel1.setLayout(new java.awt.GridLayout());
+
+        jPanel3.setLayout(new java.awt.GridLayout(2, 0));
 
         manualThresholdRadio.setSelected(!autoThreshold);
-        manualThresholdRadio.setText("Manual:");
+        manualThresholdRadio.setText("Manual Threshold");
         manualThresholdRadio.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 manualThresholdRadioActionPerformed(evt);
             }
         });
-        jPanel1.add(manualThresholdRadio, new org.netbeans.lib.awtextra.AbsoluteConstraints(117, 192, -1, -1));
-
-        autoThresholdRadio.setSelected(autoThreshold);
-        autoThresholdRadio.setText("Auto");
-        autoThresholdRadio.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                autoThresholdRadioActionPerformed(evt);
-            }
-        });
-        jPanel1.add(autoThresholdRadio, new org.netbeans.lib.awtextra.AbsoluteConstraints(117, 215, -1, -1));
-
-        manualThresholdField.setText(""+manualThreshold);
-        manualThresholdField.setEnabled(manualThresholdRadio.isSelected());
-        jPanel1.add(manualThresholdField, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 193, -1, -1));
+        jPanel3.add(manualThresholdRadio);
 
         lightBGRadio.setSelected(lightBackground);
         lightBGRadio.setText("Light Background");
@@ -202,7 +178,20 @@ public class UserInterface extends javax.swing.JDialog {
                 lightBGRadioActionPerformed(evt);
             }
         });
-        jPanel1.add(lightBGRadio, new org.netbeans.lib.awtextra.AbsoluteConstraints(12, 241, -1, -1));
+        jPanel3.add(lightBGRadio);
+
+        jPanel1.add(jPanel3);
+
+        jPanel5.setLayout(new java.awt.GridLayout(2, 0));
+
+        autoThresholdRadio.setSelected(autoThreshold);
+        autoThresholdRadio.setText("Auto Threshold");
+        autoThresholdRadio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                autoThresholdRadioActionPerformed(evt);
+            }
+        });
+        jPanel5.add(autoThresholdRadio);
 
         darkBGRadio.setSelected(!lightBackground);
         darkBGRadio.setText("Dark Background");
@@ -211,16 +200,91 @@ public class UserInterface extends javax.swing.JDialog {
                 darkBGRadioActionPerformed(evt);
             }
         });
-        jPanel1.add(darkBGRadio, new org.netbeans.lib.awtextra.AbsoluteConstraints(143, 241, -1, -1));
+        jPanel5.add(darkBGRadio);
 
-        imageResField.setText(threePlaces.format(imageRes));
-        jPanel1.add(imageResField, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 37, -1, -1));
+        jPanel1.add(jPanel5);
+
+        jPanel2.add(jPanel1);
+
+        jPanel8.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanel8.setLayout(new java.awt.GridLayout());
+
+        jPanel12.setLayout(new java.awt.GridLayout(5, 0));
+
+        maskImageCheck.setSelected(createMasks);
+        maskImageCheck.setText("Create Mask Images?");
+        jPanel12.add(maskImageCheck);
+
+        areaCheck.setSelected(area);
+        areaCheck.setText("Projected Area");
+        jPanel12.add(areaCheck);
+
+        thlCheck.setSelected(thl);
+        thlCheck.setText("Total Length");
+        jPanel12.add(thlCheck);
+
+        hguCheck.setSelected(hgu);
+        hguCheck.setText("Hyphal Growth Unit");
+        jPanel12.add(hguCheck);
+
+        fracCheck.setSelected(frac);
+        fracCheck.setText("Fractal Dimension");
+        jPanel12.add(fracCheck);
+
+        jPanel8.add(jPanel12);
+
+        jPanel13.setLayout(new java.awt.GridLayout(5, 0));
+
+        subBackgroundCheck.setSelected(subBackground);
+        subBackgroundCheck.setText("Subtract Background?");
+        jPanel13.add(subBackgroundCheck);
+
+        circCheck.setSelected(circ);
+        circCheck.setText("Circularity");
+        jPanel13.add(circCheck);
+
+        tipsCheck.setSelected(tips);
+        tipsCheck.setText("Number of Endpoints");
+        jPanel13.add(tipsCheck);
+
+        lacCheck.setSelected(lac);
+        lacCheck.setText("Lacunarity");
+        jPanel13.add(lacCheck);
 
         branchCheck.setSelected(branches);
         branchCheck.setText("Number of Branchpoints");
-        jPanel1.add(branchCheck, new org.netbeans.lib.awtextra.AbsoluteConstraints(143, 364, -1, -1));
+        jPanel13.add(branchCheck);
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 300, 480));
+        jPanel8.add(jPanel13);
+
+        jPanel2.add(jPanel8);
+
+        jTabbedPane1.addTab("Basic", jPanel2);
+        jTabbedPane1.addTab("Advanced", jPanel6);
+
+        getContentPane().add(jTabbedPane1);
+
+        jPanel7.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+
+        okButton.setText("OK");
+        okButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                okButtonActionPerformed(evt);
+            }
+        });
+        jPanel9.add(okButton);
+
+        exitButton.setText("EXIT");
+        exitButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exitButtonActionPerformed(evt);
+            }
+        });
+        jPanel9.add(exitButton);
+
+        jPanel7.add(jPanel9);
+
+        getContentPane().add(jPanel7);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -480,6 +544,19 @@ public class UserInterface extends javax.swing.JDialog {
     private javax.swing.JLabel imageFormatLabel;
     private javax.swing.JTextField imageResField;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel10;
+    private javax.swing.JPanel jPanel11;
+    private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel13;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
+    private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JCheckBox lacCheck;
     private javax.swing.JTextField lacTolField;
     private javax.swing.JLabel lacTolLabel;
