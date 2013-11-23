@@ -5,7 +5,6 @@ import IAClasses.OnlyExt;
 import IAClasses.Pixel;
 import ij.IJ;
 import ij.ImagePlus;
-import ij.gui.GenericDialog;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.gui.Wand;
@@ -20,7 +19,6 @@ import ij.process.*;
 import java.awt.Color;
 import java.awt.Polygon;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
@@ -44,14 +42,13 @@ import java.util.ArrayList;
  */
 public class Batch_Analyser implements PlugIn {
 
-    private static File currentDirectory = new File("C:\\Users\\barry05\\Desktop\\TestAnaMorf"); // The current working directory from which images are opened
+    private static File currentDirectory; // The current working directory from which images are opened
     private File maskImageDirectory = null; // The directory in which generated mask images are stored
-    private double minBranchLength = 40.0, maxCirc = 0.05, minCirc = 0.0, minArea = 1000.0, maxArea = Double.MAX_VALUE, lacTol = 100.0; // Morphological thresholds used during analysis
-    private double confInterval = 95.0; // Confidence Interval for statistical anaylis of results
-    private double imageRes = 1.12347, imageResolution2 = imageRes * imageRes; // Side length of one pixel in microns
+    private double minBranchLength = 40.0, maxCirc = 0.05, minCirc = 0.0, minArea = 100.0, maxArea = Double.MAX_VALUE, lacTol = 100.0; // Morphological thresholds used during analysis
+    private double imageRes = 1.0, imageResolution2 = imageRes * imageRes; // Side length of one pixel in microns
     private boolean createMaskImages = true; // Folder of mask images created if set to true
     private boolean subtractBackground = true; // Background subtraction performed on each image if set to true
-    private boolean lightBackground = false; // If set to true, images assumed to be dark objects on light backgrounds
+    private boolean lightBackground = true; // If set to true, images assumed to be dark objects on light backgrounds
     private boolean outputResults, useMorphFilters, wholeImage, noEdge;
     private int outputData = 0; // Determines what metrics will be output to Results Table
     private int manualThreshold = -1; // Grey level threshold - if < 0, autoThreshold() used
@@ -182,20 +179,21 @@ public class Batch_Analyser implements PlugIn {
             }
             refProc.setValue(BACKGROUND);
             refProc.fill();
-            searchImage(preProcessImage(currImage), noEdge, null, true);
-            ImagePlus maskOutput = new ImagePlus(imageName + " - Mask", maskImage.duplicate());
-            maskImage.invert();
-            if (createMaskImages) {
-                IJ.saveAs(maskOutput, "png", maskImageDirectory + "//" + maskOutput.getTitle());
-            }
-            if (wholeImage && maskOutput != null) {
-                outputResults = true;
-                useMorphFilters = false;
-                analyseImage(maskImage, maskOutput.getProcessor(), null, noEdge, null);
-            }
-            ImagePlus skelOutput = new ImagePlus(imageName + " - Skeleton", skelImage);
-            if (createMaskImages) {
-                IJ.saveAs(skelOutput, "png", maskImageDirectory + "//" + skelOutput.getTitle());
+            if (searchImage(preProcessImage(currImage), noEdge, null, true) > 0) {
+                ImagePlus maskOutput = new ImagePlus(imageName + " - Mask", maskImage.duplicate());
+                maskImage.invert();
+                if (createMaskImages) {
+                    IJ.saveAs(maskOutput, "png", maskImageDirectory + "//" + maskOutput.getTitle());
+                }
+                if (wholeImage && maskOutput != null) {
+                    outputResults = true;
+                    useMorphFilters = false;
+                    analyseImage(maskImage, maskOutput.getProcessor(), null, noEdge, null);
+                }
+                ImagePlus skelOutput = new ImagePlus(imageName + " - Skeleton", skelImage);
+                if (createMaskImages) {
+                    IJ.saveAs(skelOutput, "png", maskImageDirectory + "//" + skelOutput.getTitle());
+                }
             }
             IJ.showProgress(i, imageFilenames.length);
         }
@@ -263,64 +261,6 @@ public class Batch_Analyser implements PlugIn {
         binaryProcessor.setRoi(new Rectangle(iterations, iterations,
                 (width - 2 * iterations), (height - 2 * iterations)));
         return binaryProcessor.crop();
-    }
-
-    /**
-     * Displays a dialog to obtain input parameters from a user.
-     *
-     * @return false if the dialog was closed/exited by the user, true otherwise
-     */
-    public boolean getInputParameters() {
-        boolean valid = false;
-        while (!valid) {
-            valid = true;
-            GenericDialog gui = new GenericDialog(title);
-            String[] imageFormats = {"BMP", "GIF", "JPG", "PNG", "TIF"};
-            String[] checkLabels = {"Create Mask Images?", "Subtract Background?", "Light Background?"};
-            String[] optionLabels = {"Area", "Total Length", "Number of Endpoints", "Number of Branchpoints"};
-            boolean[] optionChoices = {true, true, true, true};
-            boolean[] checkValues = {createMaskImages, subtractBackground, lightBackground};
-            gui.addChoice("Image Format:", imageFormats, imageFormat);
-            gui.addNumericField("Image Resolution:", imageRes, 3, 5, IJ.micronSymbol + "m/pixel");
-            gui.addNumericField("Minimum Branch Length:", minBranchLength, 1, 5, IJ.micronSymbol + "m");
-            gui.addNumericField("Maximum Circularity:", maxCirc, 3, 5, "");
-            gui.addNumericField("Minimum Area:", minArea, 3, 5, IJ.micronSymbol + "m^2");
-            gui.addCheckboxGroup(2, 2, checkLabels, checkValues);
-            gui.addCheckboxGroup(2, 2, optionLabels, optionChoices);
-            gui.showDialog();
-            if (!gui.wasCanceled()) {
-                imageFormat = gui.getNextChoice();
-                imageRes = gui.getNextNumber();
-                minBranchLength = gui.getNextNumber();
-                maxCirc = gui.getNextNumber();
-                minArea = gui.getNextNumber();
-                createMaskImages = gui.getNextBoolean();
-                subtractBackground = gui.getNextBoolean();
-                lightBackground = gui.getNextBoolean();
-
-                if (gui.getNextBoolean()) {
-                    outputData += AREAS;
-                }
-                if (gui.getNextBoolean()) {
-                    outputData += TOTAL_HYPHAL_LENGTH;
-                }
-                if (gui.getNextBoolean()) {
-                    outputData += NUMBER_OF_ENDPOINTS;
-                }
-                if (gui.getNextBoolean()) {
-                    outputData += NUMBER_OF_BRANCHES;
-                }
-                if (gui.invalidNumber()) {
-                    Toolkit.getDefaultToolkit().beep();
-                    IJ.error("Entries must be numeric!");
-                    valid = false;
-                }
-            } else {
-                return false;
-            }
-        }
-        imageResolution2 = imageRes * imageRes;
-        return true;
     }
 
     /**
@@ -412,7 +352,6 @@ public class Batch_Analyser implements PlugIn {
                      * Ensure that a foreground pixel exists 'south-east' of the
                      * current position
                      */
-                    //n = neighbourhood(x, y, binaryProcessor);
                     IJ.showStatus("Generating Outline");
                     wand.autoOutline(x, y, 0.0, Wand.EIGHT_CONNECTED);
                     if (analyseObject(wand.xpoints, wand.ypoints, wand.npoints,
@@ -458,23 +397,6 @@ public class Batch_Analyser implements PlugIn {
     }
 
     /**
-     * Ensures compatability with <i>Wand.autoOutline()</i> - checks whether the
-     * pixel 'south-east' of the current pixel is FOREGROUND.
-     *
-     * @param x x position in image
-     * @param y y position in image
-     * @param processor the image being analysed
-     * @return 1 if (x + 1, y + 1) is a FOREGROUND pixel, 0 otherwise
-     */
-    public int neighbourhood(int x, int y, ImageProcessor processor) {
-        if (processor.getPixelValue(x + 1, y + 1) == FOREGROUND) {
-            return 1;
-        } else {
-            return 0;
-        }
-    }
-
-    /**
      * The morphology of an object, the boundary of which is specified by the
      * points stored in <i>xPoints</i> and <i>yPoints</i>, within the image
      * represented by <i>image</i>, is analysed, subject to the thresholds
@@ -504,10 +426,10 @@ public class Batch_Analyser implements PlugIn {
 
     public boolean analyseImage(ByteProcessor objMask,
             ImageProcessor binProc, PolygonRoi objRoi, boolean excludeEdges, Roi imageRoi) {
-        int x, y, pixArea = 0, numEnds = 0, numBranches = 0, perimPoints;
+        int x, y, pixArea = 0, numEnds = 0, numBranches = 0;
         int minPixLength = (int) Math.round(minBranchLength / imageRes);
         double var, meanSq, objArea, objCirc, xCent, yCent;
-        double objectPerim = 1.0, lac = 1.0, distfracDim = Double.NaN;;//, smoothedfracDim = Double.NaN, distfracDimFit = Double.NaN, smoothedfracDimFit = Double.NaN, truncdistfracDim = Double.NaN, truncdistfracDimFit = Double.NaN;
+        double objectPerim = 1.0, lac = 1.0, distfracDim = Double.NaN;
         double xSum = 0.0, ySum = 0.0, growthUnit = 0.0, totalLength = 0.0;
         Rectangle objBox, imageBox = new Rectangle(0, 0, binProc.getWidth(), binProc.getHeight());
         if (objRoi != null) {
@@ -640,15 +562,8 @@ public class Batch_Analyser implements PlugIn {
             ByteProcessor polyproc = new ByteProcessor(binProc.getWidth(), binProc.getHeight());
             polyproc.setColor(Color.white);
             polyproc.draw(polyObjRoi);
-            //perimPoints = (int) Math.round(polyObjRoi.getLength());
             xCent = xSum / pixArea;
             yCent = ySum / pixArea;
-            double[] xcoordinates = new double[polyObjRoi.getNCoordinates()];
-            double[] ycoordinates = new double[polyObjRoi.getNCoordinates()];
-            for (int n = 0; n < xcoordinates.length; n++) {
-                xcoordinates[n] = polyObjRoi.getXCoordinates()[n];
-                ycoordinates[n] = polyObjRoi.getYCoordinates()[n];
-            }
             Pixel boundPoints[] = DSPProcessor.getDistanceSignal(polyObjRoi.getNCoordinates(),
                     xCent, yCent, polyObjRoi.getXCoordinates(),
                     polyObjRoi.getYCoordinates(), imageRes);
@@ -661,16 +576,9 @@ public class Batch_Analyser implements PlugIn {
                     * upscaledDistInput.length / dist.length;
             double distfracparams[] = DSPProcessor.calcFourierDim(DSPProcessor.calcFourierSpec(upscaledDistInput, sampleRate), sampleRate, 1.0);
             if (distfracparams != null) {
-                distfracDim = (5.0 - Math.abs(distfracparams[2])) / 2.0;
+                distfracDim = (5.0 - Math.abs(distfracparams[1])) / 2.0;
             } else {
                 distfracDim = Double.NaN;
-            }
-            double[] curvePoints = DSPProcessor.smoothSignal(upscaledDistInput, sampleRate);
-            if (curvePoints != null) {
-                double index[] = new double[curvePoints.length];
-                for (int g = 0; g < curvePoints.length; g++) {
-                    index[g] = g;
-                }
             }
             params[4] = dist.length;
         }
@@ -766,8 +674,7 @@ public class Batch_Analyser implements PlugIn {
      * @param confidence the confidence interval used in statistical analysis of
      * the results.
      */
-    public void initialise(String format, double length, double minArea, double maxArea,
-            double minCirc, double maxCirc, double lacTol, double resolution, double confidence) {
+    public void initialise(String format, double length, double minArea, double maxArea, double minCirc, double maxCirc, double lacTol, double resolution) {
         minBranchLength = length;
         this.minArea = minArea;
         this.maxCirc = maxCirc;
@@ -775,12 +682,9 @@ public class Batch_Analyser implements PlugIn {
         this.minCirc = minCirc;
         this.lacTol = lacTol;
         imageFormat = format;
-        confInterval = confidence;
         imageRes = resolution;
         imageResolution2 = imageRes * imageRes;
         useMorphFilters = true;
-
-        return;
     }
 
     public void setOutputData(int outputData) {
@@ -835,19 +739,7 @@ public class Batch_Analyser implements PlugIn {
      * Returns a String representation of this BatchAnalyser object.
      */
     public String toString() {
-        return "\nCurrent Working Directory: " + currentDirectory
-                + "\nImage Format: " + imageFormat
-                + "\nMinimum Branch Length: " + minBranchLength
-                + "\nMaximum Circularity: " + maxCirc
-                + "\nMinimum Area: " + minArea
-                + "\nLacunarity Tolerance: " + lacTol
-                + "\nConfidence Interval: " + confInterval
-                + "\nCreate Mask Images: " + createMaskImages
-                + "\nSubtract Background: " + subtractBackground
-                + "\nLight Background: " + lightBackground
-                + "\nOutput Data: " + outputData
-                + "\nManual Threshold: " + manualThreshold
-                + "\nImage Resolution: " + imageRes;
+        return null;
     }
 
     /**
@@ -855,24 +747,6 @@ public class Batch_Analyser implements PlugIn {
      * otherwise.
      */
     public boolean equals(Object object) {
-        if (object == null) {
-            return false;
-        } else if (getClass() != object.getClass()) {
-            return false;
-        } else {
-            Batch_Analyser otherAnamorf = (Batch_Analyser) object;
-            return (imageFormat.equals(otherAnamorf.imageFormat)
-                    && minBranchLength == otherAnamorf.minBranchLength
-                    && maxCirc == otherAnamorf.maxCirc
-                    && minArea == otherAnamorf.minArea
-                    && lacTol == otherAnamorf.lacTol
-                    && confInterval == otherAnamorf.confInterval
-                    && createMaskImages == otherAnamorf.createMaskImages
-                    && subtractBackground == otherAnamorf.subtractBackground
-                    && lightBackground == otherAnamorf.lightBackground
-                    && outputData == otherAnamorf.outputData
-                    && manualThreshold == otherAnamorf.manualThreshold
-                    && imageRes == otherAnamorf.imageRes);
-        }
+        return false;
     }
 }
