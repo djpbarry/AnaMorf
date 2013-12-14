@@ -44,23 +44,19 @@ public class Batch_Analyser implements PlugIn {
 
     private static File currentDirectory; // The current working directory from which images are opened
     private File maskImageDirectory = null; // The directory in which generated mask images are stored
-    private double minBranchLength = 40.0, maxCirc = 0.05, minCirc = 0.0, minArea = 100.0, maxArea = Double.MAX_VALUE, lacTol = 100.0; // Morphological thresholds used during analysis
-    private double imageRes = 1.0, imageResolution2 = imageRes * imageRes; // Side length of one pixel in microns
-    private boolean createMaskImages = true; // Folder of mask images created if set to true
-    private boolean subtractBackground = true; // Background subtraction performed on each image if set to true
-    private boolean lightBackground = true; // If set to true, images assumed to be dark objects on light backgrounds
+    private double minCirc = 0.0, maxArea = Double.MAX_VALUE; // Morphological thresholds used during analysis
+    private double imageResolution2; // Side length of one pixel in microns
     private boolean outputResults, useMorphFilters, wholeImage, noEdge;
     private int outputData = 0; // Determines what metrics will be output to Results Table
-    private int manualThreshold = -1; // Grey level threshold - if < 0, autoThreshold() used
     private static final int FOREGROUND = 0, BACKGROUND = 255; // Values for foreground & background pixels
-    private String imageFormat = "TIF"; // Only images of this format are processed
     private ByteProcessor maskImage, refProc;
     private ColorProcessor skelImage;
-    private ArrayList detections = new ArrayList();
+    private final ArrayList detections = new ArrayList();
     private String imageName;
     public static final String title = "AnaMorf v1.0";
     private int paramCount = 8;
     private double params[] = new double[paramCount];
+    UserInterface gui;
     /*
      * Column headings used for Results Table output
      */
@@ -90,7 +86,6 @@ public class Batch_Analyser implements PlugIn {
         ba.run(null);
         System.exit(0);
     }
-
     public Batch_Analyser(boolean wholeImage) {
         this.wholeImage = wholeImage;
         noEdge = false;
@@ -133,16 +128,16 @@ public class Batch_Analyser implements PlugIn {
     public boolean analyseFiles(File directory) {
         int width, height;
         currentDirectory = directory;
-        FilenameFilter directoryFilter = new OnlyExt(imageFormat);
+        FilenameFilter directoryFilter = new OnlyExt(gui.getImageFormat());
         String imageFilenames[] = currentDirectory.list(directoryFilter); // Generates a list of image filenames of the format specified by the user
         if (imageFilenames.length < 1) {
-            IJ.showMessage("'" + currentDirectory + "' contains no images of type ." + imageFormat);
+            IJ.showMessage("'" + currentDirectory + "' contains no images of type ." + gui.getImageFormat());
             return false;
         }
         /*
          * A folder for storing mask images is created if required
          */
-        if (createMaskImages) {
+        if (gui.isCreateMasks()) {
             try {
                 if (IJ.isMacintosh()) {
                     maskImageDirectory = new File(currentDirectory + "//Ana Morf Mask Images");
@@ -182,7 +177,7 @@ public class Batch_Analyser implements PlugIn {
             if (searchImage(preProcessImage(currImage), noEdge, null, true) > 0) {
                 ImagePlus maskOutput = new ImagePlus(imageName + " - Mask", maskImage.duplicate());
                 maskImage.invert();
-                if (createMaskImages) {
+                if (gui.isCreateMasks()) {
                     IJ.saveAs(maskOutput, "png", maskImageDirectory + "//" + maskOutput.getTitle());
                 }
                 if (wholeImage && maskOutput != null) {
@@ -191,7 +186,7 @@ public class Batch_Analyser implements PlugIn {
                     analyseImage(maskImage, maskOutput.getProcessor(), null, noEdge, null);
                 }
                 ImagePlus skelOutput = new ImagePlus(imageName + " - Skeleton", skelImage);
-                if (createMaskImages) {
+                if (gui.isCreateMasks()) {
                     IJ.saveAs(skelOutput, "png", maskImageDirectory + "//" + skelOutput.getTitle());
                 }
             }
@@ -207,7 +202,7 @@ public class Batch_Analyser implements PlugIn {
                     + currentDirectory.getPath());
             return null;
         }
-        double filterRadius = 2.0 * 1.12347 / imageRes;
+        double filterRadius = 2.0 * 1.12347 / gui.getRes();
         ByteProcessor binaryProcessor;
         BackgroundSubtracter backgroundSubtractor = new BackgroundSubtracter();
         int iterations = (int) Math.round(filterRadius);
@@ -224,15 +219,15 @@ public class Batch_Analyser implements PlugIn {
             TypeConverter converter = new TypeConverter(currentProcessor, false);
             binaryProcessor = (ByteProcessor) converter.convertToByte();
         }
-        if (!lightBackground) {
+        if (!gui.isLightBackground()) {
             binaryProcessor.invert();
         }
         /*
          * Low-frequency noise removal
          */
-        if (subtractBackground) {
+        if (gui.isSubBackground()) {
             backgroundSubtractor.rollingBallBackground(binaryProcessor,
-                    50.0d / imageRes, false, true, false, false, false);
+                    50.0d / gui.getRes(), false, true, false, false, false);
         }
         /*
          * High-frequency noise removal
@@ -243,10 +238,10 @@ public class Batch_Analyser implements PlugIn {
         /*
          * Generate binary image
          */
-        if (manualThreshold < 0) {
+        if (gui.getManualThreshold() < 0) {
             binaryProcessor.autoThreshold();
         } else {
-            binaryProcessor.threshold(manualThreshold);
+            binaryProcessor.threshold(gui.getManualThreshold());
         }
         /*
          * Perfom morphological 'close'
@@ -272,28 +267,20 @@ public class Batch_Analyser implements PlugIn {
         boolean valid = false;
         while (!valid) {
             valid = true;
-            UserInterface gui = new UserInterface(IJ.getInstance(), true);
+            gui = new UserInterface(IJ.getInstance(), true);
             gui.setVisible(true);
             if (!gui.exitProgram()) {
-                imageFormat = gui.getImageFormat();
-                imageRes = gui.getRes();
-                minBranchLength = gui.getMinLength();
-                maxCirc = gui.getMaxCirc();
-                minArea = gui.getMinArea();
                 boolean options[] = gui.getOptions();
                 for (int n = 0; n < paramCount; n++) {
                     if (options[n]) {
                         outputData += (int) Math.round(Math.pow(2.0, n));
                     }
                 }
-                createMaskImages = gui.isCreateMasks();
-                subtractBackground = gui.isSubBackground();
-                lightBackground = gui.isLightBackground();
             } else {
                 return false;
             }
         }
-        imageResolution2 = imageRes * imageRes;
+        imageResolution2 = Math.pow(gui.getRes(), 2.0);
         return true;
     }
 
@@ -321,7 +308,7 @@ public class Batch_Analyser implements PlugIn {
             refProc.setValue(BACKGROUND);
             refProc.fill();
         }
-        if (maskImage == null && createMaskImages) {
+        if (maskImage == null && gui.isCreateMasks()) {
             maskImage = new ByteProcessor(width, height);
             maskImage.setColor(BACKGROUND);
             maskImage.fill();
@@ -427,7 +414,7 @@ public class Batch_Analyser implements PlugIn {
     public boolean analyseImage(ByteProcessor objMask,
             ImageProcessor binProc, PolygonRoi objRoi, boolean excludeEdges, Roi imageRoi) {
         int x, y, pixArea = 0, numEnds = 0, numBranches = 0;
-        int minPixLength = (int) Math.round(minBranchLength / imageRes);
+        int minPixLength = (int) Math.round(gui.getMinLength() / gui.getRes());
         double var, meanSq, objArea, objCirc, xCent, yCent;
         double objectPerim = 1.0, lac = 1.0, distfracDim = Double.NaN;
         double xSum = 0.0, ySum = 0.0, growthUnit = 0.0, totalLength = 0.0;
@@ -484,8 +471,8 @@ public class Batch_Analyser implements PlugIn {
              * Check area and circularity against user-specified threshold
              * values.
              */
-            if ((objArea < minArea) || (objArea > maxArea)
-                    || (objCirc < minCirc) || (objCirc > maxCirc)) {
+            if ((objArea < gui.getMinArea()) || (objArea > maxArea)
+                    || (objCirc < minCirc) || (objCirc > gui.getMaxCirc())) {
                 return false;
             }
             binProc.setRoi(objBox);
@@ -519,7 +506,7 @@ public class Batch_Analyser implements PlugIn {
             var = Math.pow(objStats.stdDev, 2);
             meanSq = Math.pow(objStats.mean, 2);
             lac = Math.abs((var / meanSq) - 1.0);
-            if (Math.abs(1.0 - lac) < lacTol) {
+            if (Math.abs(1.0 - lac) < gui.getLacTol()) {
                 IJ.showStatus("Calculating HGU");
                 binProc.invert(); // Reverse inversion above
                 CanvasResizer resizer = new CanvasResizer();
@@ -539,7 +526,7 @@ public class Batch_Analyser implements PlugIn {
                  */
                 SkeletonPruner pruner = new SkeletonPruner(minPixLength, objProc);
                 objProc = pruner.getPrunedImage();
-                HyphalAnalyser analyser = new HyphalAnalyser(objProc, imageRes, imageBox, objBox);
+                HyphalAnalyser analyser = new HyphalAnalyser(objProc, gui.getRes(), imageBox, objBox);
                 analyser.analyse(); // Analyse pruned skeleton
                 growthUnit = analyser.getHGU();
                 totalLength = analyser.getLength();
@@ -566,13 +553,13 @@ public class Batch_Analyser implements PlugIn {
             yCent = ySum / pixArea;
             Pixel boundPoints[] = DSPProcessor.getDistanceSignal(polyObjRoi.getNCoordinates(),
                     xCent, yCent, polyObjRoi.getXCoordinates(),
-                    polyObjRoi.getYCoordinates(), imageRes);
+                    polyObjRoi.getYCoordinates(), gui.getRes());
             double dist[] = new double[boundPoints.length];
             for (int i = 0; i < boundPoints.length; i++) {
                 dist[i] = boundPoints[i].getZ();
             }
             double[] upscaledDistInput = DSPProcessor.upScale(dist);
-            double sampleRate = (1.0d / imageRes)
+            double sampleRate = (1.0d / gui.getRes())
                     * upscaledDistInput.length / dist.length;
             double distfracparams[] = DSPProcessor.calcFourierDim(DSPProcessor.calcFourierSpec(upscaledDistInput, sampleRate), sampleRate, 1.0);
             if (distfracparams != null) {
@@ -608,13 +595,13 @@ public class Batch_Analyser implements PlugIn {
                 resultsTable.addValue(LAC_HEAD, lac);
             }
             if ((outputData & TOTAL_HYPHAL_LENGTH) != 0) {
-                resultsTable.addValue(LENGTH_HEAD, (totalLength * imageRes));
+                resultsTable.addValue(LENGTH_HEAD, (totalLength * gui.getRes()));
             }
             if ((outputData & NUMBER_OF_ENDPOINTS) != 0) {
                 resultsTable.addValue(TIP_HEAD, numEnds);
             }
             if ((outputData & HYPHAL_GROWTH_UNIT) != 0) {
-                resultsTable.addValue(HGU_HEAD, (growthUnit * imageRes));
+                resultsTable.addValue(HGU_HEAD, (growthUnit * gui.getRes()));
             }
             if ((outputData & NUMBER_OF_BRANCHES) != 0) {
                 resultsTable.addValue(BRANCH_HEAD, numBranches);
@@ -674,16 +661,10 @@ public class Batch_Analyser implements PlugIn {
      * @param confidence the confidence interval used in statistical analysis of
      * the results.
      */
-    public void initialise(String format, double length, double minArea, double maxArea, double minCirc, double maxCirc, double lacTol, double resolution) {
-        minBranchLength = length;
-        this.minArea = minArea;
-        this.maxCirc = maxCirc;
+    public void initialise(double maxArea, double minCirc, double resolution) {
         this.maxArea = maxArea;
         this.minCirc = minCirc;
-        this.lacTol = lacTol;
-        imageFormat = format;
-        imageRes = resolution;
-        imageResolution2 = imageRes * imageRes;
+        imageResolution2 = Math.pow(gui.getRes(), 2.0);
         useMorphFilters = true;
     }
 
