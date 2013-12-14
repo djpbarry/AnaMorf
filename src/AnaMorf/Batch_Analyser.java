@@ -86,6 +86,7 @@ public class Batch_Analyser implements PlugIn {
         ba.run(null);
         System.exit(0);
     }
+
     public Batch_Analyser(boolean wholeImage) {
         this.wholeImage = wholeImage;
         noEdge = false;
@@ -115,12 +116,10 @@ public class Batch_Analyser implements PlugIn {
 
     /**
      * Carries out processing on a batch of images stored in the location
-     * specified by
-     * <code>directory</code>. Each image is converted to greyscale, Background-
-     * subtracted, median filtered and then thresholded to produce a binary
-     * image. Each image is then subjected to a <i>close</i> operation and sent
-     * to
-     * <code>analyseObjects()</code>.
+     * specified by <code>directory</code>. Each image is converted to
+     * greyscale, Background- subtracted, median filtered and then thresholded
+     * to produce a binary image. Each image is then subjected to a <i>close</i>
+     * operation and sent to <code>analyseObjects()</code>.
      *
      * @return true if images in <i>directory</i> were successfully processed,
      * false otherwise.
@@ -229,33 +228,37 @@ public class Batch_Analyser implements PlugIn {
             backgroundSubtractor.rollingBallBackground(binaryProcessor,
                     50.0d / gui.getRes(), false, true, false, false, false);
         }
-        /*
-         * High-frequency noise removal
-         */
-        RankFilters rankFilterObject = new RankFilters();
-        rankFilterObject.rank(binaryProcessor, filterRadius, RankFilters.MIN);
-        rankFilterObject.rank(binaryProcessor, filterRadius, RankFilters.MEDIAN);
-        /*
-         * Generate binary image
-         */
-        if (gui.getManualThreshold() < 0) {
-            binaryProcessor.autoThreshold();
+        if (gui.isDoMorphFiltering()) {
+            /*
+             * High-frequency noise removal
+             */
+            RankFilters rankFilterObject = new RankFilters();
+            rankFilterObject.rank(binaryProcessor, filterRadius, RankFilters.MIN);
+            rankFilterObject.rank(binaryProcessor, filterRadius, RankFilters.MEDIAN);
+            /*
+             * Generate binary image
+             */
+            if (gui.getManualThreshold() < 0) {
+                binaryProcessor.autoThreshold();
+            } else {
+                binaryProcessor.threshold(gui.getManualThreshold());
+            }
+            /*
+             * Perfom morphological 'close'
+             */
+            if (iterations > 0) {
+                binaryProcessor.dilate(iterations, 255);
+                binaryProcessor.erode(iterations, 255);
+            }
+            /*
+             * Specify new ROI to compensate for erosion operation above
+             */
+            binaryProcessor.setRoi(new Rectangle(iterations, iterations,
+                    (width - 2 * iterations), (height - 2 * iterations)));
+            return binaryProcessor.crop();
         } else {
-            binaryProcessor.threshold(gui.getManualThreshold());
+            return binaryProcessor;
         }
-        /*
-         * Perfom morphological 'close'
-         */
-        if (iterations > 0) {
-            binaryProcessor.dilate(iterations, 255);
-            binaryProcessor.erode(iterations, 255);
-        }
-        /*
-         * Specify new ROI to compensate for erosion operation above
-         */
-        binaryProcessor.setRoi(new Rectangle(iterations, iterations,
-                (width - 2 * iterations), (height - 2 * iterations)));
-        return binaryProcessor.crop();
     }
 
     /**
@@ -285,9 +288,8 @@ public class Batch_Analyser implements PlugIn {
     }
 
     /**
-     * Searches the image (represented by
-     * <code>currentImage</code>) for objects, traces the outline of each object
-     * using {@link Wand}
+     * Searches the image (represented by <code>currentImage</code>) for
+     * objects, traces the outline of each object using {@link Wand}
      * <code>.autoOutline()</code> and sends each detected boundary to
      * <code>analyseImage()</code> for morphological analysis.
      *
