@@ -3,6 +3,7 @@ package AnaMorf;
 import IAClasses.DSPProcessor;
 import IAClasses.OnlyExt;
 import IAClasses.Pixel;
+import UtilClasses.GenUtils;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.PolygonRoi;
@@ -20,7 +21,10 @@ import java.awt.Color;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 /**
@@ -43,10 +47,10 @@ import java.util.ArrayList;
 public class Batch_Analyser implements PlugIn {
 
     private static File currentDirectory; // The current working directory from which images are opened
-    private File maskImageDirectory = null; // The directory in which generated mask images are stored
+    private File resultsDirectory = null; // The directory in which generated mask images are stored
     private double minCirc = 0.0, maxArea = Double.MAX_VALUE; // Morphological thresholds used during analysis
     private double imageResolution2; // Side length of one pixel in microns
-    private boolean outputResults, useMorphFilters, wholeImage, noEdge;
+    private boolean outputResults, useMorphFilters, wholeImage, noEdge=true;
     private int outputData = 0; // Determines what metrics will be output to Results Table
     private static final int FOREGROUND = 0, BACKGROUND = 255; // Values for foreground & background pixels
     private ByteProcessor maskImage, refProc;
@@ -56,6 +60,7 @@ public class Batch_Analyser implements PlugIn {
     public static final String title = "AnaMorf v1.0";
     private int paramCount = 8;
     private double params[] = new double[paramCount];
+    private String delimiter;
     UserInterface gui;
     /*
      * Column headings used for Results Table output
@@ -81,11 +86,11 @@ public class Batch_Analyser implements PlugIn {
             HYPHAL_GROWTH_UNIT = 64,
             NUMBER_OF_BRANCHES = 128;
 
-    public static void main(String args[]) {
-        Batch_Analyser ba = new Batch_Analyser();
-        ba.run(null);
-        System.exit(0);
-    }
+//    public static void main(String args[]) {
+//        Batch_Analyser ba = new Batch_Analyser();
+//        ba.run(null);
+//        System.exit(0);
+//    }
 
     public Batch_Analyser(boolean wholeImage) {
         this.wholeImage = wholeImage;
@@ -101,6 +106,11 @@ public class Batch_Analyser implements PlugIn {
      * @param arg passed by ImageJ.
      */
     public void run(String arg) {
+        if (IJ.isMacintosh()) {
+            delimiter = "//";
+        } else {
+            delimiter = "\\";
+        }
         if (!showGUI()) {
             return;
         }
@@ -111,6 +121,7 @@ public class Batch_Analyser implements PlugIn {
         if (analyseFiles(currentDirectory)) {
 //            (new ResultSummariser(confInterval)).summarise();
         }
+        generateParamsFile(resultsDirectory);
         IJ.showStatus(title + ": done.");
     }
 
@@ -136,28 +147,13 @@ public class Batch_Analyser implements PlugIn {
         /*
          * A folder for storing mask images is created if required
          */
-        if (gui.isCreateMasks()) {
-            try {
-                if (IJ.isMacintosh()) {
-                    maskImageDirectory = new File(currentDirectory + "//Ana Morf Mask Images");
-                } else {
-                    maskImageDirectory = new File(currentDirectory + "\\Ana Morf Mask Images");
-                }
-                if (!maskImageDirectory.exists()) {
-                    if (!maskImageDirectory.mkdir()) {
-                        IJ.error("Failed to create mask image directory.");
-                    }
-                }
-            } catch (Exception e) {
-                IJ.error(e.toString());
-            }
-        }
+        resultsDirectory = new File(GenUtils.openResultsDirectory(currentDirectory.getAbsolutePath() + delimiter + title, delimiter));
         for (int i = 0; i < imageFilenames.length; i++) {
             useMorphFilters = true;
             outputResults = !wholeImage;
             imageName = imageFilenames[i];
             IJ.showStatus("Scanning " + imageName);
-            ImagePlus currImage = new ImagePlus(currentDirectory + "\\" + imageName);
+            ImagePlus currImage = new ImagePlus(currentDirectory + delimiter + imageName);
             width = currImage.getWidth();
             height = currImage.getHeight();
             maskImage = new ByteProcessor(width, height);
@@ -177,7 +173,7 @@ public class Batch_Analyser implements PlugIn {
                 ImagePlus maskOutput = new ImagePlus(imageName + " - Mask", maskImage.duplicate());
                 maskImage.invert();
                 if (gui.isCreateMasks()) {
-                    IJ.saveAs(maskOutput, "png", maskImageDirectory + "//" + maskOutput.getTitle());
+                    IJ.saveAs(maskOutput, "png", resultsDirectory + "//" + maskOutput.getTitle());
                 }
                 if (wholeImage && maskOutput != null) {
                     outputResults = true;
@@ -186,7 +182,7 @@ public class Batch_Analyser implements PlugIn {
                 }
                 ImagePlus skelOutput = new ImagePlus(imageName + " - Skeleton", skelImage);
                 if (gui.isCreateMasks()) {
-                    IJ.saveAs(skelOutput, "png", maskImageDirectory + "//" + skelOutput.getTitle());
+                    IJ.saveAs(skelOutput, "png", resultsDirectory + "//" + skelOutput.getTitle());
                 }
             }
             IJ.showProgress(i, imageFilenames.length);
@@ -446,6 +442,7 @@ public class Batch_Analyser implements PlugIn {
                      * else { objMask.putPixel(x - objBox.x, y - objBox.y,
                      * FOREGROUND); }
                      */
+
                 }
             }
         }
@@ -718,18 +715,24 @@ public class Batch_Analyser implements PlugIn {
         }
     }
 
-    /**
-     * Returns a String representation of this BatchAnalyser object.
-     */
-    public String toString() {
-        return null;
-    }
-
-    /**
-     * Returns true if <i>object</i> is this BatchAnalyser object, false
-     * otherwise.
-     */
-    public boolean equals(Object object) {
-        return false;
+    void generateParamsFile(File dir) {
+        File params;
+        PrintWriter outputStream;
+        try {
+            params = new File(dir + delimiter + "parameters.txt");
+        } catch (Exception e) {
+            IJ.error(e.toString());
+            return;
+        }
+        try {
+            outputStream = new PrintWriter(new FileOutputStream(params));
+        } catch (FileNotFoundException e) {
+            IJ.error("Could not write to results file.");
+            return;
+        }
+        outputStream.println(title);
+        outputStream.println();
+        outputStream.println(gui.toString());
+        outputStream.close();
     }
 }

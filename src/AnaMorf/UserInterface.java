@@ -546,6 +546,21 @@ public class UserInterface extends javax.swing.JDialog {
         return doMorphFiltering;
     }
 
+    @Override
+    public String toString() {
+        return "Measure Area: " + areaCheck.isEnabled() + ", Auto-Threshold: "
+                + autoThresholdRadio.isEnabled() + ", Count Branchpoints: " + branchCheck.isEnabled() + ", Measure Circularity: "
+                + circCheck.isEnabled() + ", Dark Background: " + darkBGRadio.isEnabled() + ", Do Morphogical Filtering: "
+                + doMorphFilterCheck.isEnabled() + ", Measure Fractal Dimensions: " + fracCheck.isEnabled() + ", Measure Hyphal Growth Unit: "
+                + hguCheck.isEnabled() + ", Image Format: " + (String)imageFormatCombo.getSelectedItem() + ", Image Resolution: "
+                + imageResField.getText() + ", Measure Lacunarity: " + lacCheck.isEnabled()
+                + ", Lacunarity Tolerance: " + lacTolField.getText() + ", Light Background: " + lightBGRadio.isEnabled()
+                + ", Manual Threshold Value: " + manualThresholdField.getText() + ", Use Manual Threshold: "
+                + manualThresholdRadio.isEnabled() + ", Create Mask Images: " + maskImageCheck.isEnabled()
+                + ", Subtract Background: " + subBackgroundCheck.isEnabled() + ", Measure Total Hyphal Length: "
+                + thlCheck.isEnabled() + ", Count Tips: " + tipsCheck.isEnabled();
+    }
+
     /**
      * Returns true if the user exited the application.
      */
