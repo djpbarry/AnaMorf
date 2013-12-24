@@ -50,7 +50,7 @@ public class Batch_Analyser implements PlugIn {
     private File resultsDirectory = null; // The directory in which generated mask images are stored
     private double minCirc = 0.0, maxArea = Double.MAX_VALUE; // Morphological thresholds used during analysis
     private double imageResolution2; // Side length of one pixel in microns
-    private boolean outputResults, useMorphFilters, wholeImage, noEdge=true;
+    private boolean outputResults, useMorphFilters, wholeImage, noEdge = true;
     private int outputData = 0; // Determines what metrics will be output to Results Table
     private static final int FOREGROUND = 0, BACKGROUND = 255; // Values for foreground & background pixels
     private ByteProcessor maskImage, refProc;
@@ -91,7 +91,7 @@ public class Batch_Analyser implements PlugIn {
 //        ba.run(null);
 //        System.exit(0);
 //    }
-
+    
     public Batch_Analyser(boolean wholeImage) {
         this.wholeImage = wholeImage;
         noEdge = false;
@@ -118,11 +118,12 @@ public class Batch_Analyser implements PlugIn {
         if (currentDirectory == null) {
             return;
         }
+        long startTime = System.currentTimeMillis();
         if (analyseFiles(currentDirectory)) {
 //            (new ResultSummariser(confInterval)).summarise();
         }
         generateParamsFile(resultsDirectory);
-        IJ.showStatus(title + ": done.");
+        IJ.showStatus(title + " done: " + ((double) (System.currentTimeMillis() - startTime)) / 1000.0 + " s");
     }
 
     /**

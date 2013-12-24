@@ -354,7 +354,7 @@
                         <Property name="selected" type="boolean" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                           <Connection code="doMorphFiltering" type="code"/>
                         </Property>
-                        <Property name="text" type="java.lang.String" value="Perform Morphological Filtering?"/>
+                        <Property name="text" type="java.lang.String" value="Morphological Filtering?"/>
                       </Properties>
                     </Component>
                   </SubComponents>

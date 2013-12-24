@@ -229,7 +229,7 @@ public class UserInterface extends javax.swing.JDialog {
         jPanel15.add(maskImageCheck);
 
         doMorphFilterCheck.setSelected(doMorphFiltering);
-        doMorphFilterCheck.setText("Perform Morphological Filtering?");
+        doMorphFilterCheck.setText("Morphological Filtering?");
         jPanel15.add(doMorphFilterCheck);
 
         jPanel3.add(jPanel15);
@@ -548,17 +548,28 @@ public class UserInterface extends javax.swing.JDialog {
 
     @Override
     public String toString() {
-        return "Measure Area: " + areaCheck.isEnabled() + ", Auto-Threshold: "
-                + autoThresholdRadio.isEnabled() + ", Count Branchpoints: " + branchCheck.isEnabled() + ", Measure Circularity: "
-                + circCheck.isEnabled() + ", Dark Background: " + darkBGRadio.isEnabled() + ", Do Morphogical Filtering: "
-                + doMorphFilterCheck.isEnabled() + ", Measure Fractal Dimensions: " + fracCheck.isEnabled() + ", Measure Hyphal Growth Unit: "
-                + hguCheck.isEnabled() + ", Image Format: " + (String)imageFormatCombo.getSelectedItem() + ", Image Resolution: "
-                + imageResField.getText() + ", Measure Lacunarity: " + lacCheck.isEnabled()
-                + ", Lacunarity Tolerance: " + lacTolField.getText() + ", Light Background: " + lightBGRadio.isEnabled()
-                + ", Manual Threshold Value: " + manualThresholdField.getText() + ", Use Manual Threshold: "
-                + manualThresholdRadio.isEnabled() + ", Create Mask Images: " + maskImageCheck.isEnabled()
-                + ", Subtract Background: " + subBackgroundCheck.isEnabled() + ", Measure Total Hyphal Length: "
-                + thlCheck.isEnabled() + ", Count Tips: " + tipsCheck.isEnabled();
+        return "Image Format: " + (String) imageFormatCombo.getSelectedItem()
+                + ", Image Resolution: " + imageRes
+                + ", Minimum Branch Length: " + minLength
+                + ", Maximum Circularity: " + maxCirc
+                + ", Minimum Area: " + minArea
+                + ", Measure Area: " + areaCheck.isSelected()
+                + ", Measure Circularity: " + circCheck.isSelected()
+                + ", Measure Total Length: " + thlCheck.isSelected()
+                + ", Count End-points: " + tipsCheck.isSelected()
+                + ", Measure Hyphal Growth Unit: " + hguCheck.isSelected()
+                + ", Measure Lacunarity: " + lacCheck.isSelected()
+                + ", Measure Fractal Dimensions: " + fracCheck.isSelected()
+                + ", Count Branch-points: " + branchCheck.isSelected()
+                + ", Light Background: " + lightBGRadio.isSelected()
+                + ", Dark Background: " + darkBGRadio.isSelected()
+                + ", Subtract Background: " + subBackgroundCheck.isSelected()
+                + ", Create Mask Images: " + maskImageCheck.isSelected()
+                + ", Do Morphogical Filtering: " + doMorphFilterCheck.isSelected()
+                + ", Auto-Threshold: " + autoThresholdRadio.isSelected()
+                + ", Use Manual Threshold: " + manualThresholdRadio.isSelected()
+                + ", Manual Threshold Value: " + manualThresholdField.getText()
+                + ", Lacunarity Tolerance: " + lacTol;
     }
 
     /**
@@ -568,7 +579,7 @@ public class UserInterface extends javax.swing.JDialog {
         return exit;
     }
     private static int formatIndex = 3, manualThreshold = 100;
-    private static double minLength = 20.0, maxCirc = 0.05, minArea = 1000.0,
+    private static double minLength = 2.0, maxCirc = 0.25, minArea = 100.0,
             lacTol = 0.1, imageRes = 1.0;
     private static boolean createMasks = true, subBackground = true, area = true,
             circ = true, thl = true, tips = true, hgu = true, frac = true,
