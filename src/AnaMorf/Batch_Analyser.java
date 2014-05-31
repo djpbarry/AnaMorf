@@ -16,6 +16,7 @@ import ij.plugin.CanvasResizer;
 import ij.plugin.PlugIn;
 import ij.plugin.filter.Analyzer;
 import ij.plugin.filter.BackgroundSubtracter;
+import ij.plugin.filter.GaussianBlur;
 import ij.plugin.filter.RankFilters;
 import ij.process.*;
 import java.awt.Color;
@@ -216,6 +217,7 @@ public class Batch_Analyser implements PlugIn {
             return null;
         }
         double filterRadius = 2.0 * 1.12347 / gui.getRes();
+        (new GaussianBlur()).blurGaussian(currentProcessor, filterRadius, filterRadius, 0.01);
         ByteProcessor binaryProcessor;
         BackgroundSubtracter backgroundSubtractor = new BackgroundSubtracter();
         int iterations = (int) Math.round(filterRadius);
