@@ -65,6 +65,7 @@ public class UserInterface extends javax.swing.JDialog {
         subBackgroundCheck = new javax.swing.JCheckBox();
         maskImageCheck = new javax.swing.JCheckBox();
         doMorphFilterCheck = new javax.swing.JCheckBox();
+        watershedCheckBox = new javax.swing.JCheckBox();
         jPanel5 = new javax.swing.JPanel();
         jPanel16 = new javax.swing.JPanel();
         autoThresholdRadio = new javax.swing.JRadioButton();
@@ -73,13 +74,6 @@ public class UserInterface extends javax.swing.JDialog {
         thresholdLabel = new javax.swing.JLabel();
         manualThresholdField = new javax.swing.JTextField();
         filler4 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
-        jPanel14 = new javax.swing.JPanel();
-        jPanel18 = new javax.swing.JPanel();
-        lacTolLabel = new javax.swing.JLabel();
-        jPanel19 = new javax.swing.JPanel();
-        lacTolField = new javax.swing.JTextField();
-        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
-        filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
         jPanel7 = new javax.swing.JPanel();
         jPanel9 = new javax.swing.JPanel();
         okButton = new javax.swing.JButton();
@@ -232,6 +226,10 @@ public class UserInterface extends javax.swing.JDialog {
         doMorphFilterCheck.setText("Morphological Filtering?");
         jPanel15.add(doMorphFilterCheck);
 
+        watershedCheckBox.setSelected(doWatershed);
+        watershedCheckBox.setText("Separate Touching Objects?");
+        jPanel15.add(watershedCheckBox);
+
         jPanel3.add(jPanel15);
 
         jPanel6.add(jPanel3);
@@ -274,27 +272,6 @@ public class UserInterface extends javax.swing.JDialog {
         jPanel5.add(filler4);
 
         jPanel6.add(jPanel5);
-
-        jPanel14.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jPanel14.setLayout(new java.awt.GridLayout(2, 0));
-
-        jPanel18.setLayout(new java.awt.GridLayout(1, 0));
-
-        lacTolLabel.setText("Lacunarity Tolerance:");
-        jPanel18.add(lacTolLabel);
-
-        jPanel14.add(jPanel18);
-
-        jPanel19.setLayout(new java.awt.GridLayout(1, 0));
-
-        lacTolField.setText(threePlaces.format(lacTol));
-        jPanel19.add(lacTolField);
-
-        jPanel14.add(jPanel19);
-        jPanel14.add(filler2);
-        jPanel14.add(filler3);
-
-        jPanel6.add(jPanel14);
 
         jTabbedPane1.addTab("Advanced", jPanel6);
 
@@ -350,6 +327,7 @@ public class UserInterface extends javax.swing.JDialog {
         lightBackground = lightBGRadio.isSelected();
         branches = branchCheck.isSelected();
         doMorphFiltering = doMorphFilterCheck.isSelected();
+        doWatershed = watershedCheckBox.isSelected();
 
         int k = imageFormatCombo.getSelectedIndex();
         if (k >= 0) {
@@ -360,14 +338,12 @@ public class UserInterface extends javax.swing.JDialog {
         String resText = imageResField.getText();
         String circText = maxCircField.getText();
         String areaText = minAreaField.getText();
-        String lacText = lacTolField.getText();
         String thresholdText = manualThresholdField.getText();
         try {
             imageRes = (resText != null) ? Double.parseDouble(resText) : imageRes;
             minLength = (branchText != null) ? Double.parseDouble(branchText) : 0.0;
             maxCirc = (circText != null) ? Double.parseDouble(circText) : 0.0;
             minArea = (areaText != null) ? Double.parseDouble(areaText) : 0.0;
-            lacTol = (lacText != null) ? Double.parseDouble(lacText) : 0.0;
             if (!autoThreshold) {
                 manualThreshold = (thresholdText != null) ? Integer.parseInt(thresholdText) : 0;
             }
@@ -524,13 +500,6 @@ public class UserInterface extends javax.swing.JDialog {
     }
 
     /**
-     * Returns the lacunarity tolerance specified by the user.
-     */
-    public double getLacTol() {
-        return lacTol;
-    }
-
-    /**
      * Returns the manual grey-level threshold specified by the user if the
      * 'Manual' radio button was selected or -1 otherwise.
      */
@@ -544,6 +513,10 @@ public class UserInterface extends javax.swing.JDialog {
 
     public boolean isDoMorphFiltering() {
         return doMorphFiltering;
+    }
+
+    public boolean isDoWatershed() {
+        return doWatershed;
     }
 
     @Override
@@ -566,10 +539,10 @@ public class UserInterface extends javax.swing.JDialog {
                 + ", Subtract Background: " + subBackgroundCheck.isSelected()
                 + ", Create Mask Images: " + maskImageCheck.isSelected()
                 + ", Do Morphogical Filtering: " + doMorphFilterCheck.isSelected()
+                + ", Do Watershed Filtering: " + watershedCheckBox.isSelected()
                 + ", Auto-Threshold: " + autoThresholdRadio.isSelected()
                 + ", Use Manual Threshold: " + manualThresholdRadio.isSelected()
-                + ", Manual Threshold Value: " + manualThresholdField.getText()
-                + ", Lacunarity Tolerance: " + lacTol;
+                + ", Manual Threshold Value: " + manualThresholdField.getText();
     }
 
     /**
@@ -580,11 +553,11 @@ public class UserInterface extends javax.swing.JDialog {
     }
     private static int formatIndex = 3, manualThreshold = 100;
     private static double minLength = 2.0, maxCirc = 0.25, minArea = 100.0,
-            lacTol = 0.1, imageRes = 1.0;
+            imageRes = 1.0;
     private static boolean createMasks = true, subBackground = true, area = true,
             circ = true, thl = true, tips = true, hgu = true, frac = true,
             lac = true, exit, autoThreshold = true, lightBackground = true,
-            branches = true, doMorphFiltering = true;
+            branches = true, doMorphFiltering = true, doWatershed = false;
     private DecimalFormat threePlaces = new DecimalFormat("0.000");
     private DecimalFormat onePlace = new DecimalFormat("0.0");
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -595,8 +568,6 @@ public class UserInterface extends javax.swing.JDialog {
     private javax.swing.JRadioButton darkBGRadio;
     private javax.swing.JCheckBox doMorphFilterCheck;
     private javax.swing.JButton exitButton;
-    private javax.swing.Box.Filler filler2;
-    private javax.swing.Box.Filler filler3;
     private javax.swing.Box.Filler filler4;
     private javax.swing.JCheckBox fracCheck;
     private javax.swing.JCheckBox hguCheck;
@@ -608,12 +579,9 @@ public class UserInterface extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
-    private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel17;
-    private javax.swing.JPanel jPanel18;
-    private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -624,8 +592,6 @@ public class UserInterface extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel9;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JCheckBox lacCheck;
-    private javax.swing.JTextField lacTolField;
-    private javax.swing.JLabel lacTolLabel;
     private javax.swing.JRadioButton lightBGRadio;
     private javax.swing.JTextField manualThresholdField;
     private javax.swing.JRadioButton manualThresholdRadio;
@@ -642,5 +608,6 @@ public class UserInterface extends javax.swing.JDialog {
     private javax.swing.JCheckBox thlCheck;
     private javax.swing.JLabel thresholdLabel;
     private javax.swing.JCheckBox tipsCheck;
+    private javax.swing.JCheckBox watershedCheckBox;
     // End of variables declaration//GEN-END:variables
 }

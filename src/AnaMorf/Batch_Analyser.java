@@ -16,9 +16,18 @@ import ij.plugin.CanvasResizer;
 import ij.plugin.PlugIn;
 import ij.plugin.filter.Analyzer;
 import ij.plugin.filter.BackgroundSubtracter;
+import ij.plugin.filter.EDM;
 import ij.plugin.filter.GaussianBlur;
 import ij.plugin.filter.RankFilters;
-import ij.process.*;
+import ij.process.Blitter;
+import ij.process.ByteBlitter;
+import ij.process.ByteProcessor;
+import ij.process.ColorBlitter;
+import ij.process.ColorProcessor;
+import ij.process.FloodFiller;
+import ij.process.ImageProcessor;
+import ij.process.ImageStatistics;
+import ij.process.TypeConverter;
 import java.awt.Color;
 import java.awt.Polygon;
 import java.awt.Rectangle;
@@ -81,18 +90,18 @@ public class Batch_Analyser implements PlugIn {
      */
     public static final int AREAS = 1,
             CIRC = 2,
-            FRACTAL_DIMENSION = 4,
-            LACUNARITY = 8,
-            TOTAL_HYPHAL_LENGTH = 16,
-            NUMBER_OF_ENDPOINTS = 32,
-            HYPHAL_GROWTH_UNIT = 64,
-            NUMBER_OF_BRANCHES = 128;
+            HYPHAL_GROWTH_UNIT = 4,
+            TOTAL_HYPHAL_LENGTH = 8,
+            NUMBER_OF_ENDPOINTS = 16,
+            NUMBER_OF_BRANCHES = 32,
+            FRACTAL_DIMENSION = 64,
+            LACUNARITY = 128;
 
-//    public static void main(String args[]) {
-//        Batch_Analyser ba = new Batch_Analyser();
-//        ba.run(null);
-//        System.exit(0);
-//    }
+    public static void main(String args[]) {
+        Batch_Analyser ba = new Batch_Analyser();
+        ba.run(null);
+        System.exit(0);
+    }
 
     public Batch_Analyser(boolean wholeImage) {
         this.wholeImage = wholeImage;
@@ -199,9 +208,12 @@ public class Batch_Analyser implements PlugIn {
                     useMorphFilters = false;
                     analyseImage(maskImage, maskOutput.getProcessor(), null, noEdge, null);
                 }
-                ImagePlus skelOutput = new ImagePlus(imageName + " - Skeleton", skelImage);
-                if (gui.isCreateMasks()) {
-                    IJ.saveAs(skelOutput, "png", resultsDirectory + "//" + skelOutput.getTitle());
+                if (((outputData & HYPHAL_GROWTH_UNIT) != 0) || ((outputData & NUMBER_OF_ENDPOINTS) != 0)
+                        || ((outputData & TOTAL_HYPHAL_LENGTH) != 0)) {
+                    ImagePlus skelOutput = new ImagePlus(imageName + " - Skeleton", skelImage);
+                    if (gui.isCreateMasks()) {
+                        IJ.saveAs(skelOutput, "png", resultsDirectory + "//" + skelOutput.getTitle());
+                    }
                 }
             }
             IJ.showProgress(i, imageFilenames.length);
@@ -216,24 +228,15 @@ public class Batch_Analyser implements PlugIn {
                     + currentDirectory.getPath());
             return null;
         }
+        TypeConverter converter = new TypeConverter(currentProcessor, false);
+        ByteProcessor binaryProcessor = (ByteProcessor) converter.convertToByte();
         double filterRadius = 2.0 * 1.12347 / gui.getRes();
         (new GaussianBlur()).blurGaussian(currentProcessor, filterRadius, filterRadius, 0.01);
-        ByteProcessor binaryProcessor;
         BackgroundSubtracter backgroundSubtractor = new BackgroundSubtracter();
         int iterations = (int) Math.round(filterRadius);
         int width = currentProcessor.getWidth();
         int height = currentProcessor.getHeight();
-        /*
-         * Colour images are seperated into their constituent channels and that
-         * with the highest contrast is retained for analysis. All other
-         * processor types are simply converted to ByteProcessor.
-         */
-        if (currentProcessor instanceof ColorProcessor) {
-            binaryProcessor = Utilities.getHighContrastGreyImage((ColorProcessor) currentProcessor);
-        } else {
-            TypeConverter converter = new TypeConverter(currentProcessor, false);
-            binaryProcessor = (ByteProcessor) converter.convertToByte();
-        }
+
         if (!gui.isLightBackground()) {
             binaryProcessor.invert();
         }
@@ -251,14 +254,16 @@ public class Batch_Analyser implements PlugIn {
             RankFilters rankFilterObject = new RankFilters();
             rankFilterObject.rank(binaryProcessor, filterRadius, RankFilters.MIN);
             rankFilterObject.rank(binaryProcessor, filterRadius, RankFilters.MEDIAN);
-            /*
-             * Generate binary image
-             */
-            if (gui.getManualThreshold() < 0) {
-                binaryProcessor.autoThreshold();
-            } else {
-                binaryProcessor.threshold(gui.getManualThreshold());
-            }
+        }
+        /*
+         * Generate binary image
+         */
+        if (gui.getManualThreshold() < 0) {
+            binaryProcessor.autoThreshold();
+        } else {
+            binaryProcessor.threshold(gui.getManualThreshold());
+        }
+        if (gui.isDoMorphFiltering()) {
             /*
              * Perfom morphological 'close'
              */
@@ -271,10 +276,14 @@ public class Batch_Analyser implements PlugIn {
              */
             binaryProcessor.setRoi(new Rectangle(iterations, iterations,
                     (width - 2 * iterations), (height - 2 * iterations)));
-            return binaryProcessor.crop();
-        } else {
-            return binaryProcessor;
+            binaryProcessor = (ByteProcessor) binaryProcessor.crop();
         }
+        if (gui.isDoWatershed()) {
+            binaryProcessor.invert();
+            (new EDM()).toWatershed(binaryProcessor);
+            binaryProcessor.invert();
+        }
+        return binaryProcessor;
     }
 
     /**
@@ -485,6 +494,9 @@ public class Batch_Analyser implements PlugIn {
          * to area, circularity tends to zero.
          */
         objCirc = (4 * Math.PI * pixArea) / (objectPerim * objectPerim);
+        if (objCirc > 1.0) {
+            objCirc = 1.0;
+        }
         if (useMorphFilters) {
             /*
              * Check area and circularity against user-specified threshold
@@ -525,7 +537,8 @@ public class Batch_Analyser implements PlugIn {
             var = Math.pow(objStats.stdDev, 2);
             meanSq = Math.pow(objStats.mean, 2);
             lac = Math.abs((var / meanSq) - 1.0);
-            if (Math.abs(1.0 - lac) < gui.getLacTol()) {
+            if (((outputData & HYPHAL_GROWTH_UNIT) != 0) || ((outputData & NUMBER_OF_ENDPOINTS) != 0)
+                    || ((outputData & TOTAL_HYPHAL_LENGTH) != 0)) {
                 IJ.showStatus("Calculating HGU");
                 binProc.invert(); // Reverse inversion above
                 CanvasResizer resizer = new CanvasResizer();
