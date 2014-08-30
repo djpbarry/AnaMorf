@@ -97,11 +97,11 @@ public class Batch_Analyser implements PlugIn {
             FRACTAL_DIMENSION = 64,
             LACUNARITY = 128;
 
-    public static void main(String args[]) {
-        Batch_Analyser ba = new Batch_Analyser();
-        ba.run(null);
-        System.exit(0);
-    }
+//    public static void main(String args[]) {
+//        Batch_Analyser ba = new Batch_Analyser();
+//        ba.run(null);
+//        System.exit(0);
+//    }
 
     public Batch_Analyser(boolean wholeImage) {
         this.wholeImage = wholeImage;
@@ -228,11 +228,9 @@ public class Batch_Analyser implements PlugIn {
                     + currentDirectory.getPath());
             return null;
         }
-        TypeConverter converter = new TypeConverter(currentProcessor, false);
-        ByteProcessor binaryProcessor = (ByteProcessor) converter.convertToByte();
+        ByteProcessor binaryProcessor = (ByteProcessor) (new TypeConverter(currentProcessor, false)).convertToByte();
         double filterRadius = 2.0 * 1.12347 / gui.getRes();
         (new GaussianBlur()).blurGaussian(currentProcessor, filterRadius, filterRadius, 0.01);
-        BackgroundSubtracter backgroundSubtractor = new BackgroundSubtracter();
         int iterations = (int) Math.round(filterRadius);
         int width = currentProcessor.getWidth();
         int height = currentProcessor.getHeight();
@@ -244,8 +242,9 @@ public class Batch_Analyser implements PlugIn {
          * Low-frequency noise removal
          */
         if (gui.isSubBackground()) {
-            backgroundSubtractor.rollingBallBackground(binaryProcessor,
-                    50.0d / gui.getRes(), false, true, false, false, false);
+            (new BackgroundSubtracter()).rollingBallBackground(binaryProcessor,
+                    gui.getBackgroundRadius() / gui.getRes(), false, true, false,
+                    false, false);
         }
         if (gui.isDoMorphFiltering()) {
             /*
