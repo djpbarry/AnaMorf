@@ -1,5 +1,6 @@
 package AnaMorf;
 
+import IAClasses.SkeletonProcessor;
 import ij.process.ByteProcessor;
 import ij.process.ByteStatistics;
 import ij.process.ImageProcessor;

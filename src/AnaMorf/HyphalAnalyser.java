@@ -1,5 +1,6 @@
 package AnaMorf;
 
+import IAClasses.SkeletonProcessor;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import java.awt.Color;
