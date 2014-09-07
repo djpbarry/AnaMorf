@@ -57,12 +57,14 @@ public class UserInterface extends javax.swing.JDialog {
         lacCheck = new javax.swing.JCheckBox();
         branchCheck = new javax.swing.JCheckBox();
         jPanel6 = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         lightBGRadio = new javax.swing.JRadioButton();
         darkBGRadio = new javax.swing.JRadioButton();
-        jPanel15 = new javax.swing.JPanel();
         subBackgroundCheck = new javax.swing.JCheckBox();
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 32767));
+        jLabel1 = new javax.swing.JLabel();
+        backgroundTextField = new javax.swing.JTextField();
+        jPanel15 = new javax.swing.JPanel();
         maskImageCheck = new javax.swing.JCheckBox();
         doMorphFilterCheck = new javax.swing.JCheckBox();
         watershedCheckBox = new javax.swing.JCheckBox();
@@ -187,10 +189,8 @@ public class UserInterface extends javax.swing.JDialog {
 
         jPanel6.setLayout(new javax.swing.BoxLayout(jPanel6, javax.swing.BoxLayout.PAGE_AXIS));
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jPanel3.setLayout(new java.awt.GridLayout(2, 2));
-
-        jPanel1.setLayout(new java.awt.GridLayout(1, 0));
+        jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanel1.setLayout(new java.awt.GridLayout(3, 2));
 
         lightBGRadio.setSelected(lightBackground);
         lightBGRadio.setText("Light Background");
@@ -210,29 +210,41 @@ public class UserInterface extends javax.swing.JDialog {
         });
         jPanel1.add(darkBGRadio);
 
-        jPanel3.add(jPanel1);
-
-        jPanel15.setLayout(new java.awt.GridLayout(2, 2));
-
         subBackgroundCheck.setSelected(subBackground);
-        subBackgroundCheck.setText("Subtract Background?");
-        jPanel15.add(subBackgroundCheck);
+        subBackgroundCheck.setText("Remove Uneven Background?");
+        subBackgroundCheck.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                subBackgroundCheckActionPerformed(evt);
+            }
+        });
+        jPanel1.add(subBackgroundCheck);
+        jPanel1.add(filler1);
+
+        jLabel1.setText("Maximum Object Size ("+IJ.micronSymbol+"m^2):");
+        jPanel1.add(jLabel1);
+
+        backgroundTextField.setText(""+backgroundRadius);
+        backgroundTextField.setEnabled(subBackgroundCheck.isSelected());
+        jPanel1.add(backgroundTextField);
+
+        jPanel6.add(jPanel1);
+
+        jPanel15.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanel15.setLayout(new java.awt.GridLayout(2, 2));
 
         maskImageCheck.setSelected(createMasks);
         maskImageCheck.setText("Create Mask Images?");
         jPanel15.add(maskImageCheck);
 
         doMorphFilterCheck.setSelected(doMorphFiltering);
-        doMorphFilterCheck.setText("Morphological Filtering?");
+        doMorphFilterCheck.setText("Attempt to Fix Breaks?");
         jPanel15.add(doMorphFilterCheck);
 
         watershedCheckBox.setSelected(doWatershed);
         watershedCheckBox.setText("Separate Touching Objects?");
         jPanel15.add(watershedCheckBox);
 
-        jPanel3.add(jPanel15);
-
-        jPanel6.add(jPanel3);
+        jPanel6.add(jPanel15);
 
         jPanel5.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanel5.setLayout(new java.awt.GridLayout(3, 0));
@@ -339,11 +351,13 @@ public class UserInterface extends javax.swing.JDialog {
         String circText = maxCircField.getText();
         String areaText = minAreaField.getText();
         String thresholdText = manualThresholdField.getText();
+        String backgroundText = backgroundTextField.getText();
         try {
             imageRes = (resText != null) ? Double.parseDouble(resText) : imageRes;
             minLength = (branchText != null) ? Double.parseDouble(branchText) : 0.0;
             maxCirc = (circText != null) ? Double.parseDouble(circText) : 0.0;
             minArea = (areaText != null) ? Double.parseDouble(areaText) : 0.0;
+            backgroundRadius = (backgroundText != null) ? Double.parseDouble(backgroundText) : 0.0;
             if (!autoThreshold) {
                 manualThreshold = (thresholdText != null) ? Integer.parseInt(thresholdText) : 0;
             }
@@ -374,6 +388,10 @@ public class UserInterface extends javax.swing.JDialog {
 
     private void imageFormatComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_imageFormatComboActionPerformed
     }//GEN-LAST:event_imageFormatComboActionPerformed
+
+    private void subBackgroundCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subBackgroundCheckActionPerformed
+        backgroundTextField.setEnabled(subBackgroundCheck.isSelected());
+    }//GEN-LAST:event_subBackgroundCheckActionPerformed
 
     public boolean[] getOptions() {
         boolean options[] = {area, circ, hgu, thl, tips, branches, frac, lac};
@@ -519,6 +537,10 @@ public class UserInterface extends javax.swing.JDialog {
         return doWatershed;
     }
 
+    public double getBackgroundRadius() {
+        return backgroundRadius;
+    }
+
     @Override
     public String toString() {
         return "Image Format: " + (String) imageFormatCombo.getSelectedItem()
@@ -537,6 +559,7 @@ public class UserInterface extends javax.swing.JDialog {
                 + ", Light Background: " + lightBGRadio.isSelected()
                 + ", Dark Background: " + darkBGRadio.isSelected()
                 + ", Subtract Background: " + subBackgroundCheck.isSelected()
+                + ", Background Radius: " + backgroundRadius
                 + ", Create Mask Images: " + maskImageCheck.isSelected()
                 + ", Do Morphogical Filtering: " + doMorphFilterCheck.isSelected()
                 + ", Do Watershed Filtering: " + watershedCheckBox.isSelected()
@@ -553,7 +576,7 @@ public class UserInterface extends javax.swing.JDialog {
     }
     private static int formatIndex = 3, manualThreshold = 100;
     private static double minLength = 2.0, maxCirc = 0.25, minArea = 100.0,
-            imageRes = 1.0;
+            imageRes = 1.0, backgroundRadius = 16000.0;
     private static boolean createMasks = true, subBackground = true, area = true,
             circ = true, thl = true, tips = true, hgu = true, frac = true,
             lac = true, exit, autoThreshold = true, lightBackground = true,
@@ -563,17 +586,20 @@ public class UserInterface extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox areaCheck;
     private javax.swing.JRadioButton autoThresholdRadio;
+    private javax.swing.JTextField backgroundTextField;
     private javax.swing.JCheckBox branchCheck;
     private javax.swing.JCheckBox circCheck;
     private javax.swing.JRadioButton darkBGRadio;
     private javax.swing.JCheckBox doMorphFilterCheck;
     private javax.swing.JButton exitButton;
+    private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler4;
     private javax.swing.JCheckBox fracCheck;
     private javax.swing.JCheckBox hguCheck;
     private javax.swing.JComboBox imageFormatCombo;
     private javax.swing.JLabel imageFormatLabel;
     private javax.swing.JTextField imageResField;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
@@ -583,7 +609,6 @@ public class UserInterface extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel17;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
