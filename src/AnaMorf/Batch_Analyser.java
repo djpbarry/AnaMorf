@@ -97,11 +97,11 @@ public class Batch_Analyser implements PlugIn {
             FRACTAL_DIMENSION = 64,
             LACUNARITY = 128;
 
-//    public static void main(String args[]) {
-//        Batch_Analyser ba = new Batch_Analyser();
-//        ba.run(null);
-//        System.exit(0);
-//    }
+    public static void main(String args[]) {
+        Batch_Analyser ba = new Batch_Analyser();
+        ba.run(null);
+        System.exit(0);
+    }
 
     public Batch_Analyser(boolean wholeImage) {
         this.wholeImage = wholeImage;

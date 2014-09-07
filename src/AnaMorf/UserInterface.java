@@ -220,7 +220,7 @@ public class UserInterface extends javax.swing.JDialog {
         jPanel1.add(subBackgroundCheck);
         jPanel1.add(filler1);
 
-        jLabel1.setText("Maximum Object Size ("+IJ.micronSymbol+"m):");
+        jLabel1.setText("Maximum Object Size ("+IJ.micronSymbol+"m^2):");
         jPanel1.add(jLabel1);
 
         backgroundTextField.setText(""+backgroundRadius);
