@@ -29,6 +29,7 @@ public class UserInterface extends javax.swing.JDialog {
      */
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
@@ -50,11 +51,11 @@ public class UserInterface extends javax.swing.JDialog {
         areaCheck = new javax.swing.JCheckBox();
         thlCheck = new javax.swing.JCheckBox();
         hguCheck = new javax.swing.JCheckBox();
-        fracCheck = new javax.swing.JCheckBox();
-        jPanel13 = new javax.swing.JPanel();
+        fourierFracCheck = new javax.swing.JCheckBox();
+        boxFracCheck = new javax.swing.JCheckBox();
         circCheck = new javax.swing.JCheckBox();
-        tipsCheck = new javax.swing.JCheckBox();
         lacCheck = new javax.swing.JCheckBox();
+        tipsCheck = new javax.swing.JCheckBox();
         branchCheck = new javax.swing.JCheckBox();
         jPanel6 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
@@ -65,9 +66,11 @@ public class UserInterface extends javax.swing.JDialog {
         jLabel1 = new javax.swing.JLabel();
         backgroundTextField = new javax.swing.JTextField();
         jPanel15 = new javax.swing.JPanel();
-        maskImageCheck = new javax.swing.JCheckBox();
         doMorphFilterCheck = new javax.swing.JCheckBox();
         watershedCheckBox = new javax.swing.JCheckBox();
+        maskImageCheck = new javax.swing.JCheckBox();
+        wholeImageCheckBox = new javax.swing.JCheckBox();
+        edgeCheckBox = new javax.swing.JCheckBox();
         jPanel5 = new javax.swing.JPanel();
         jPanel16 = new javax.swing.JPanel();
         autoThresholdRadio = new javax.swing.JRadioButton();
@@ -83,6 +86,7 @@ public class UserInterface extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("AnaMorf");
+        setPreferredSize(new java.awt.Dimension(640, 480));
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.PAGE_AXIS));
 
         jTabbedPane1.setPreferredSize(new java.awt.Dimension(400, 300));
@@ -143,45 +147,114 @@ public class UserInterface extends javax.swing.JDialog {
         jPanel8.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanel8.setLayout(new java.awt.GridLayout(1, 0));
 
-        jPanel12.setLayout(new java.awt.GridLayout(4, 0));
+        jPanel12.setLayout(new java.awt.GridBagLayout());
 
         areaCheck.setSelected(area);
         areaCheck.setText("Projected Area");
-        jPanel12.add(areaCheck);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 0.3;
+        gridBagConstraints.weighty = 0.3;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
+        jPanel12.add(areaCheck, gridBagConstraints);
 
         thlCheck.setSelected(thl);
         thlCheck.setText("Total Length");
-        jPanel12.add(thlCheck);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 0.3;
+        gridBagConstraints.weighty = 0.3;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
+        jPanel12.add(thlCheck, gridBagConstraints);
 
         hguCheck.setSelected(hgu);
         hguCheck.setText("Hyphal Growth Unit");
-        jPanel12.add(hguCheck);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 0.3;
+        gridBagConstraints.weighty = 0.3;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
+        jPanel12.add(hguCheck, gridBagConstraints);
 
-        fracCheck.setSelected(frac);
-        fracCheck.setText("Fractal Dimension");
-        jPanel12.add(fracCheck);
+        fourierFracCheck.setSelected(fourfrac);
+        fourierFracCheck.setText("Fourier Fractal Dimension");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 0.3;
+        gridBagConstraints.weighty = 0.3;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
+        jPanel12.add(fourierFracCheck, gridBagConstraints);
 
-        jPanel8.add(jPanel12);
-
-        jPanel13.setLayout(new java.awt.GridLayout(4, 0));
+        boxFracCheck.setText("Box-Counting Fractal Dimension");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 0.3;
+        gridBagConstraints.weighty = 0.3;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
+        jPanel12.add(boxFracCheck, gridBagConstraints);
 
         circCheck.setSelected(circ);
         circCheck.setText("Circularity");
-        jPanel13.add(circCheck);
-
-        tipsCheck.setSelected(tips);
-        tipsCheck.setText("Number of Endpoints");
-        jPanel13.add(tipsCheck);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 0.3;
+        gridBagConstraints.weighty = 0.3;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
+        jPanel12.add(circCheck, gridBagConstraints);
 
         lacCheck.setSelected(lac);
         lacCheck.setText("Lacunarity");
-        jPanel13.add(lacCheck);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 0.3;
+        gridBagConstraints.weighty = 0.3;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
+        jPanel12.add(lacCheck, gridBagConstraints);
+
+        tipsCheck.setSelected(tips);
+        tipsCheck.setText("Number of Endpoints");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 0.3;
+        gridBagConstraints.weighty = 0.3;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
+        jPanel12.add(tipsCheck, gridBagConstraints);
 
         branchCheck.setSelected(branches);
         branchCheck.setText("Number of Branchpoints");
-        jPanel13.add(branchCheck);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 0.3;
+        gridBagConstraints.weighty = 0.3;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
+        jPanel12.add(branchCheck, gridBagConstraints);
 
-        jPanel8.add(jPanel13);
+        jPanel8.add(jPanel12);
 
         jPanel2.add(jPanel8);
 
@@ -232,10 +305,6 @@ public class UserInterface extends javax.swing.JDialog {
         jPanel15.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         jPanel15.setLayout(new java.awt.GridLayout(2, 2));
 
-        maskImageCheck.setSelected(createMasks);
-        maskImageCheck.setText("Create Mask Images?");
-        jPanel15.add(maskImageCheck);
-
         doMorphFilterCheck.setSelected(doMorphFiltering);
         doMorphFilterCheck.setText("Attempt to Fix Breaks?");
         jPanel15.add(doMorphFilterCheck);
@@ -243,6 +312,16 @@ public class UserInterface extends javax.swing.JDialog {
         watershedCheckBox.setSelected(doWatershed);
         watershedCheckBox.setText("Separate Touching Objects?");
         jPanel15.add(watershedCheckBox);
+
+        maskImageCheck.setSelected(createMasks);
+        maskImageCheck.setText("Create Mask Images?");
+        jPanel15.add(maskImageCheck);
+
+        wholeImageCheckBox.setText("Analyse Whole Image?");
+        jPanel15.add(wholeImageCheckBox);
+
+        edgeCheckBox.setText("Exclude Edge Objects?");
+        jPanel15.add(edgeCheckBox);
 
         jPanel6.add(jPanel15);
 
@@ -335,11 +414,14 @@ public class UserInterface extends javax.swing.JDialog {
         subBackground = subBackgroundCheck.isSelected();
         circ = circCheck.isSelected();
         area = areaCheck.isSelected();
-        frac = fracCheck.isSelected();
+        fourfrac = fourierFracCheck.isSelected();
+        boxfrac = boxFracCheck.isSelected();
         lightBackground = lightBGRadio.isSelected();
         branches = branchCheck.isSelected();
         doMorphFiltering = doMorphFilterCheck.isSelected();
         doWatershed = watershedCheckBox.isSelected();
+        wholeImage = wholeImageCheckBox.isSelected();
+        excludeEdges = edgeCheckBox.isSelected();
 
         int k = imageFormatCombo.getSelectedIndex();
         if (k >= 0) {
@@ -394,7 +476,7 @@ public class UserInterface extends javax.swing.JDialog {
     }//GEN-LAST:event_subBackgroundCheckActionPerformed
 
     public boolean[] getOptions() {
-        boolean options[] = {area, circ, hgu, thl, tips, branches, frac, lac};
+        boolean options[] = {area, circ, hgu, thl, tips, branches, fourfrac, boxfrac, lac};
         return options;
     }
 
@@ -443,7 +525,7 @@ public class UserInterface extends javax.swing.JDialog {
      * false otherwise.
      */
     public boolean isFrac() {
-        return frac;
+        return fourfrac;
     }
 
     /**
@@ -541,6 +623,14 @@ public class UserInterface extends javax.swing.JDialog {
         return backgroundRadius;
     }
 
+    public boolean isWholeImage() {
+        return wholeImage;
+    }
+
+    public boolean isExcludeEdges() {
+        return excludeEdges;
+    }
+
     @Override
     public String toString() {
         return "Image Format: " + (String) imageFormatCombo.getSelectedItem()
@@ -554,7 +644,8 @@ public class UserInterface extends javax.swing.JDialog {
                 + ", Count End-points: " + tipsCheck.isSelected()
                 + ", Measure Hyphal Growth Unit: " + hguCheck.isSelected()
                 + ", Measure Lacunarity: " + lacCheck.isSelected()
-                + ", Measure Fractal Dimensions: " + fracCheck.isSelected()
+                + ", Measure Fourier Dimensions: " + fourierFracCheck.isSelected()
+                + ", Measure Box-Counting Fractal Dimensions: " + boxFracCheck.isSelected()
                 + ", Count Branch-points: " + branchCheck.isSelected()
                 + ", Light Background: " + lightBGRadio.isSelected()
                 + ", Dark Background: " + darkBGRadio.isSelected()
@@ -565,7 +656,9 @@ public class UserInterface extends javax.swing.JDialog {
                 + ", Do Watershed Filtering: " + watershedCheckBox.isSelected()
                 + ", Auto-Threshold: " + autoThresholdRadio.isSelected()
                 + ", Use Manual Threshold: " + manualThresholdRadio.isSelected()
-                + ", Manual Threshold Value: " + manualThresholdField.getText();
+                + ", Manual Threshold Value: " + manualThresholdField.getText()
+                + ", Analyse Whole Image: " + wholeImageCheckBox.isSelected()
+                + ", Exclude Edge Objects: " + edgeCheckBox.isSelected();
     }
 
     /**
@@ -574,27 +667,30 @@ public class UserInterface extends javax.swing.JDialog {
     public boolean exitProgram() {
         return exit;
     }
-    private static int formatIndex = 3, manualThreshold = 100;
-    private static double minLength = 2.0, maxCirc = 0.25, minArea = 100.0,
-            imageRes = 1.0, backgroundRadius = 16000.0;
+    private static int formatIndex = 4, manualThreshold = 100;
+    private static double minLength = 0.0, maxCirc = 1.0, minArea = 10.0,
+            imageRes = 1.0, backgroundRadius = 5.0;
     private static boolean createMasks = true, subBackground = true, area = true,
-            circ = true, thl = true, tips = true, hgu = true, frac = true,
-            lac = true, exit, autoThreshold = true, lightBackground = true,
-            branches = true, doMorphFiltering = true, doWatershed = false;
+            circ = true, thl = true, tips = true, hgu = true, fourfrac = true,
+            boxfrac = false, lac = true, exit, autoThreshold = true, lightBackground = false,
+            branches = true, doMorphFiltering = false, doWatershed = false,
+            wholeImage = false, excludeEdges = true;
     private DecimalFormat threePlaces = new DecimalFormat("0.000");
     private DecimalFormat onePlace = new DecimalFormat("0.0");
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox areaCheck;
     private javax.swing.JRadioButton autoThresholdRadio;
     private javax.swing.JTextField backgroundTextField;
+    private javax.swing.JCheckBox boxFracCheck;
     private javax.swing.JCheckBox branchCheck;
     private javax.swing.JCheckBox circCheck;
     private javax.swing.JRadioButton darkBGRadio;
     private javax.swing.JCheckBox doMorphFilterCheck;
+    private javax.swing.JCheckBox edgeCheckBox;
     private javax.swing.JButton exitButton;
     private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler4;
-    private javax.swing.JCheckBox fracCheck;
+    private javax.swing.JCheckBox fourierFracCheck;
     private javax.swing.JCheckBox hguCheck;
     private javax.swing.JComboBox imageFormatCombo;
     private javax.swing.JLabel imageFormatLabel;
@@ -604,7 +700,6 @@ public class UserInterface extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
-    private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
     private javax.swing.JPanel jPanel17;
@@ -634,5 +729,6 @@ public class UserInterface extends javax.swing.JDialog {
     private javax.swing.JLabel thresholdLabel;
     private javax.swing.JCheckBox tipsCheck;
     private javax.swing.JCheckBox watershedCheckBox;
+    private javax.swing.JCheckBox wholeImageCheckBox;
     // End of variables declaration//GEN-END:variables
 }

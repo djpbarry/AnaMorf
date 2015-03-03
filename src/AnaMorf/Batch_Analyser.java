@@ -2,6 +2,7 @@ package AnaMorf;
 
 import UtilClasses.Utilities;
 import IAClasses.DSPProcessor;
+import IAClasses.FractalEstimator;
 import IAClasses.OnlyExt;
 import IAClasses.Pixel;
 import UtilClasses.GenUtils;
@@ -19,6 +20,7 @@ import ij.plugin.filter.BackgroundSubtracter;
 import ij.plugin.filter.EDM;
 import ij.plugin.filter.GaussianBlur;
 import ij.plugin.filter.RankFilters;
+import ij.process.AutoThresholder;
 import ij.process.Blitter;
 import ij.process.ByteBlitter;
 import ij.process.ByteProcessor;
@@ -57,11 +59,11 @@ import java.util.ArrayList;
  */
 public class Batch_Analyser implements PlugIn {
 
-    private static File currentDirectory; // The current working directory from which images are opened
+    private static File currentDirectory = new File("C:\\Users\\barry05\\Desktop\\arp23"); // The current working directory from which images are opened
     private File resultsDirectory = null; // The directory in which generated mask images are stored
     private double minCirc = 0.0, maxArea = Double.MAX_VALUE; // Morphological thresholds used during analysis
     private double imageResolution2; // Side length of one pixel in microns
-    private boolean outputResults, useMorphFilters, wholeImage, noEdge = true;
+    private boolean outputResults, useMorphFilters;
     private int outputData = 0; // Determines what metrics will be output to Results Table
     private static final int FOREGROUND = 0, BACKGROUND = 255; // Values for foreground & background pixels
     private ByteProcessor maskImage, refProc;
@@ -78,7 +80,9 @@ public class Batch_Analyser implements PlugIn {
      */
     public static final String CIRC_HEAD = "Circularity",
             AREA_HEAD = "Area (" + IJ.micronSymbol + "m^2)",
-            FRAC_HEAD = "Fractal Dimension",
+            TOT_AREA_HEAD = "Total Area (" + IJ.micronSymbol + "m^2)",
+            FOUR_FRAC_HEAD = "Fourier Fractal Dimension",
+            BOX_FRAC_HEAD = "Box-Counting Fractal Dimension",
             LAC_HEAD = "Lacunarity",
             LENGTH_HEAD = "Total Length (" + IJ.micronSymbol + "m)",
             TIP_HEAD = "Endpoints",
@@ -94,8 +98,9 @@ public class Batch_Analyser implements PlugIn {
             TOTAL_HYPHAL_LENGTH = 8,
             NUMBER_OF_ENDPOINTS = 16,
             NUMBER_OF_BRANCHES = 32,
-            FRACTAL_DIMENSION = 64,
-            LACUNARITY = 128;
+            FOURIER_FRACTAL_DIMENSION = 64,
+            BOX_FRACTAL_DIMENSION = 128,
+            LACUNARITY = 256;
 
     public static void main(String args[]) {
         Batch_Analyser ba = new Batch_Analyser();
@@ -103,11 +108,10 @@ public class Batch_Analyser implements PlugIn {
         System.exit(0);
     }
 
-    public Batch_Analyser(boolean wholeImage) {
-        this.wholeImage = wholeImage;
-        noEdge = false;
-    }
-
+//    public Batch_Analyser(boolean wholeImage) {
+//        this.wholeImage = wholeImage;
+//        noEdge = false;
+//    }
     public Batch_Analyser() {
     }
 
@@ -141,7 +145,7 @@ public class Batch_Analyser implements PlugIn {
         if (!showGUI()) {
             return;
         }
-        currentDirectory = Utilities.getFolder(currentDirectory, null);
+        currentDirectory = Utilities.getFolder(currentDirectory, null, true);
         if (currentDirectory == null) {
             return;
         }
@@ -178,7 +182,7 @@ public class Batch_Analyser implements PlugIn {
         resultsDirectory = new File(GenUtils.openResultsDirectory(currentDirectory.getAbsolutePath() + delimiter + title, delimiter));
         for (int i = 0; i < imageFilenames.length; i++) {
             useMorphFilters = true;
-            outputResults = !wholeImage;
+            outputResults = !gui.isWholeImage();
             imageName = imageFilenames[i];
             IJ.showStatus("Scanning " + imageName);
             ImagePlus currImage = new ImagePlus(currentDirectory + delimiter + imageName);
@@ -197,25 +201,26 @@ public class Batch_Analyser implements PlugIn {
             }
             refProc.setValue(BACKGROUND);
             refProc.fill();
-            if (searchImage(preProcessImage(currImage), noEdge, null, true) > 0) {
-                ImagePlus maskOutput = new ImagePlus(imageName + " - Mask", maskImage.duplicate());
-                maskImage.invert();
+            searchImage(preProcessImage(currImage), gui.isExcludeEdges(), null, true);
+//            if (searchImage(preProcessImage(currImage), noEdge, null, true) > 0) {
+            ImagePlus maskOutput = new ImagePlus(imageName + " - Mask", maskImage.duplicate());
+            maskImage.invert();
+            if (gui.isCreateMasks()) {
+                IJ.saveAs(maskOutput, "png", resultsDirectory + "//" + maskOutput.getTitle());
+            }
+            if (gui.isWholeImage() && maskOutput != null) {
+                outputResults = true;
+                useMorphFilters = false;
+                analyseImage(maskImage, maskOutput.getProcessor(), null, gui.isExcludeEdges(), null);
+            }
+            if (((outputData & HYPHAL_GROWTH_UNIT) != 0) || ((outputData & NUMBER_OF_ENDPOINTS) != 0)
+                    || ((outputData & TOTAL_HYPHAL_LENGTH) != 0)) {
+                ImagePlus skelOutput = new ImagePlus(imageName + " - Skeleton", skelImage);
                 if (gui.isCreateMasks()) {
-                    IJ.saveAs(maskOutput, "png", resultsDirectory + "//" + maskOutput.getTitle());
-                }
-                if (wholeImage && maskOutput != null) {
-                    outputResults = true;
-                    useMorphFilters = false;
-                    analyseImage(maskImage, maskOutput.getProcessor(), null, noEdge, null);
-                }
-                if (((outputData & HYPHAL_GROWTH_UNIT) != 0) || ((outputData & NUMBER_OF_ENDPOINTS) != 0)
-                        || ((outputData & TOTAL_HYPHAL_LENGTH) != 0)) {
-                    ImagePlus skelOutput = new ImagePlus(imageName + " - Skeleton", skelImage);
-                    if (gui.isCreateMasks()) {
-                        IJ.saveAs(skelOutput, "png", resultsDirectory + "//" + skelOutput.getTitle());
-                    }
+                    IJ.saveAs(skelOutput, "png", resultsDirectory + "//" + skelOutput.getTitle());
                 }
             }
+//            }
             IJ.showProgress(i, imageFilenames.length);
         }
         return true;
@@ -228,24 +233,24 @@ public class Batch_Analyser implements PlugIn {
                     + currentDirectory.getPath());
             return null;
         }
-        ByteProcessor binaryProcessor = (ByteProcessor) (new TypeConverter(currentProcessor, false)).convertToByte();
-        double filterRadius = 2.0 * 1.12347 / gui.getRes();
-        (new GaussianBlur()).blurGaussian(currentProcessor, filterRadius, filterRadius, 0.01);
-        int iterations = (int) Math.round(filterRadius);
-        int width = currentProcessor.getWidth();
-        int height = currentProcessor.getHeight();
-
+        double filterRadius = 1.0 / gui.getRes();
         if (!gui.isLightBackground()) {
-            binaryProcessor.invert();
+            currentProcessor.invert();
         }
+        ByteProcessor binaryProcessor = (ByteProcessor) (new TypeConverter(currentProcessor, true)).convertToByte();
         /*
          * Low-frequency noise removal
          */
         if (gui.isSubBackground()) {
             (new BackgroundSubtracter()).rollingBallBackground(binaryProcessor,
                     gui.getBackgroundRadius() / gui.getRes(), false, true, false,
-                    false, false);
+                    true, false);
         }
+        (new GaussianBlur()).blurGaussian(binaryProcessor, filterRadius, filterRadius, 0.01);
+        int iterations = (int) Math.round(filterRadius);
+        int width = currentProcessor.getWidth();
+        int height = currentProcessor.getHeight();
+
         if (gui.isDoMorphFiltering()) {
             /*
              * High-frequency noise removal
@@ -258,7 +263,10 @@ public class Batch_Analyser implements PlugIn {
          * Generate binary image
          */
         if (gui.getManualThreshold() < 0) {
-            binaryProcessor.autoThreshold();
+            binaryProcessor.threshold(
+                    new AutoThresholder().getThreshold(
+                            AutoThresholder.Method.Huang, binaryProcessor.getStatistics().histogram
+                    ));
         } else {
             binaryProcessor.threshold(gui.getManualThreshold());
         }
@@ -298,7 +306,7 @@ public class Batch_Analyser implements PlugIn {
             gui.setVisible(true);
             if (!gui.exitProgram()) {
                 boolean options[] = gui.getOptions();
-                for (int n = 0; n < paramCount; n++) {
+                for (int n = 0; n < options.length; n++) {
                     if (options[n]) {
                         outputData += (int) Math.round(Math.pow(2.0, n));
                     }
@@ -445,11 +453,15 @@ public class Batch_Analyser implements PlugIn {
         double objectPerim = 1.0, lac = 1.0, distfracDim = Double.NaN;
         double xSum = 0.0, ySum = 0.0, growthUnit = 0.0, totalLength = 0.0;
         Rectangle objBox, imageBox = new Rectangle(0, 0, binProc.getWidth(), binProc.getHeight());
+        double boxFracDims[] = null;
         if (objRoi != null) {
             Polygon poly = objRoi.getPolygon();
             objBox = poly.getBounds();
         } else {
             objBox = new Rectangle(0, 0, objMask.getWidth(), objMask.getHeight());
+        }
+        if (gui.isWholeImage() && outputResults) {
+            boxFracDims = (new FractalEstimator()).do2DEstimate(binProc);
         }
         IJ.showStatus("Calculating Area");
         if (refProc != null) {
@@ -568,7 +580,7 @@ public class Batch_Analyser implements PlugIn {
             }
         }
 
-        if ((outputData & FRACTAL_DIMENSION) != 0) {
+        if ((outputData & FOURIER_FRACTAL_DIMENSION) != 0 && objRoi != null) {
             IJ.showStatus("Calculating Boundary Fractal");
             /*
              * A different form of <i>PolygonRoi</i> (<i>Roi.POLYGON</i>) is
@@ -619,8 +631,8 @@ public class Batch_Analyser implements PlugIn {
             if ((outputData & AREAS) != 0) {
                 resultsTable.addValue(AREA_HEAD, objArea);
             }
-            if ((outputData & FRACTAL_DIMENSION) != 0) {
-                resultsTable.addValue(FRAC_HEAD, distfracDim);
+            if ((outputData & FOURIER_FRACTAL_DIMENSION) != 0) {
+                resultsTable.addValue(FOUR_FRAC_HEAD, distfracDim);
             }
             if ((outputData & LACUNARITY) != 0) {
                 resultsTable.addValue(LAC_HEAD, lac);
@@ -637,8 +649,17 @@ public class Batch_Analyser implements PlugIn {
             if ((outputData & NUMBER_OF_BRANCHES) != 0) {
                 resultsTable.addValue(BRANCH_HEAD, numBranches);
             }
+            if (boxFracDims != null) {
+                resultsTable.addValue(BOX_FRAC_HEAD, boxFracDims[0]);
+                resultsTable.addValue(TOT_AREA_HEAD, binProc.getStatistics().histogram[FOREGROUND]);
+            }
             resultsTable.addLabel("Image", imageName);
             analyserObject.displayResults();
+            try {
+                resultsTable.saveAs(resultsDirectory + delimiter + "results.csv");
+            } catch (Exception e) {
+                GenUtils.error("Could not save results file.");
+            }
         }
 
         return true;

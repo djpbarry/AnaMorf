@@ -25,7 +25,8 @@ public class HyphalAnalyser {
         this.processor = image;
         imageBounds = imageBox;
         objBounds = objBox;
-        radius = (int) Math.round(4.0 * 1.12347 / res);
+//        radius = (int) Math.round(4.0 * 1.12347 / res);
+        radius = 2;
         output = new ColorProcessor(imageBox.width, imageBox.height);
         output.setLineWidth(radius / 2);
         output.setColor(Color.black);

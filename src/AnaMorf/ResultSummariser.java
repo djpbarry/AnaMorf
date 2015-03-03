@@ -102,7 +102,7 @@ public class ResultSummariser implements Measurements {
         DataStatistics stats = new DataStatistics(alpha, data, dataLength);
         results.setValue(columnIndex, rowNumber, stats.getMean());
         results.setValue(columnIndex, (rowNumber + 1), stats.getStdDev());
-        results.setValue(columnIndex, (rowNumber + 2), stats.getConfidenceInterval());
+//        results.setValue(columnIndex, (rowNumber + 2), stats.getConfidenceInterval());
     }
 
     private int removeZeros(float data[], int size) {
