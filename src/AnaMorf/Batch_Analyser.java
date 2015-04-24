@@ -118,11 +118,11 @@ public class Batch_Analyser implements PlugIn {
             BOX_FRACTAL_DIMENSION = 128,
             LACUNARITY = 256;
 
-    public static void main(String args[]) {
-        Batch_Analyser ba = new Batch_Analyser();
-        ba.run(null);
-        System.exit(0);
-    }
+//    public static void main(String args[]) {
+//        Batch_Analyser ba = new Batch_Analyser();
+//        ba.run(null);
+//        System.exit(0);
+//    }
 
 //    public Batch_Analyser(boolean wholeImage) {
 //        this.wholeImage = wholeImage;
