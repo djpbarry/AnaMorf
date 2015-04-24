@@ -282,7 +282,7 @@ public class Batch_Analyser implements PlugIn {
         if (gui.getManualThreshold() < 0) {
             binaryProcessor.threshold(
                     new AutoThresholder().getThreshold(
-                            AutoThresholder.Method.Huang, binaryProcessor.getStatistics().histogram
+                            AutoThresholder.Method.Default, binaryProcessor.getStatistics().histogram
                     ));
         } else {
             binaryProcessor.threshold(gui.getManualThreshold());
@@ -341,8 +341,6 @@ public class Batch_Analyser implements PlugIn {
      * objects, traces the outline of each object using {@link Wand}
      * <code>.autoOutline()</code> and sends each detected boundary to
      * <code>analyseImage()</code> for morphological analysis.
-     *
-     * @param currentImage the image to be searched
      */
     public int searchImage(ImageProcessor binaryProcessor, boolean excludeEdges, Roi roi, boolean checkGreyLevels) {
         int i, currentPixel, x, y, offset, objects;
@@ -440,15 +438,6 @@ public class Batch_Analyser implements PlugIn {
      * represented by <i>image</i>, is analysed, subject to the thresholds
      * specified in <i>initialise(String, double, double, double, double,
      * double)</i>.
-     *
-     * @param xPoints the x-coordinates of the object boundary
-     * @param yPoints the y-coordinates of the object boundary
-     * @param points the total number of points representing the object boundary
-     * @param count index used to differentiate between objects in the same
-     * image
-     * @param image represents the image in which the object is located
-     * @param refProc reference image, into which objects are copied after
-     * detection, to ensure no object is analysed more than once
      */
     public boolean analyseObject(int[] xPoints, int[] yPoints, int points,
             ImageProcessor binaryProc, boolean excludeEdges, Roi imageRoi) {
@@ -715,20 +704,6 @@ public class Batch_Analyser implements PlugIn {
 
     /**
      * Initialise parameters for analysis.
-     *
-     * @param format the format of images to be analysed in the working
-     * directory
-     * @param length the minimum branch length (in microns) to be considered for
-     * analysis
-     * @param minArea the minimum area (in microns squared) needed for an object
-     * to be included in the results
-     * @param maxCirc the maximum circularity permissable for an object to be
-     * included in the results
-     * @param lacTol the total length and number of tips of an object will not
-     * be evaluated if |1.0 - lacunarity| > <i>lacTol</i>.
-     * @param resolution the image resolution (in microns per pixel).
-     * @param confidence the confidence interval used in statistical analysis of
-     * the results.
      */
     public void initialise(double maxArea, double minCirc, double resolution) {
         this.maxArea = maxArea;
