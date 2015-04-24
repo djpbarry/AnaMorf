@@ -1,3 +1,20 @@
+/* 
+ * Copyright (C) 2015 David Barry <david.barry at cancer.org.uk>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package AnaMorf;
 
 import UtilClasses.Utilities;
@@ -38,25 +55,23 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.PrintWriter;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 /**
  * BatchAnalyser is designed to automatically analyse a batch of images of
- * filamentous microbes and ouput data on parameters such as object area,
- * circulatity, lacunarity, fractal dimension, total hyphal length, total number
+ * filamentous microbes and output data on parameters such as object area,
+ * circularity, lacunarity, fractal dimension, total hyphal length, total number
  * of tips and hyphal growth unit. A detailed algorithmic description can be
  * found in the following publications:<br> <br> D. Barry, C. Chan, and G.
  * Williams, “Morphological quantification of filamentous fungal development
  * using membrane immobilization and automatic image analysis,” <i>J Ind
  * Microbiol Biot</i>, vol. 36, no. 6, pp. 787-800, 2009.<br> <br> D. J. Barry,
- * O. C. Ifeyinwa, S. R. McGee, R. Ryan, G. A. Williams, and J. M. Blackledge,
- * “Relating fractal dimension to branching behaviour in filamentous
- * microorganisms,” <i>ISAST T Elec Sig Proc</i>, vol. 1, no. 4, pp. 71–76,
- * 2009.
- *
- * @author David J Barry <davejpbarry@gmail.com>
- * @version 01SEP2010
+ * “Quantifying the branching frequency of virtual filamentous microbes using
+ * fractal analysis,” <i>Biotech Bioeng</i>, vol. 110, no. 2, pp. 437–447,
+ * 2013.
  */
+
 public class Batch_Analyser implements PlugIn {
 
     private static File currentDirectory = new File("C:\\Users\\barry05\\Desktop\\arp23"); // The current working directory from which images are opened
@@ -70,11 +85,12 @@ public class Batch_Analyser implements PlugIn {
     private ColorProcessor skelImage;
     private final ArrayList detections = new ArrayList();
     private String imageName;
-    public static final String title = "AnaMorf v1.0";
+    public String title = "AnaMorf";
     private int paramCount = 8;
     private double params[] = new double[paramCount];
     private String delimiter;
     UserInterface gui;
+    DecimalFormat numFormat = new DecimalFormat("000");
     /*
      * Column headings used for Results Table output
      */
@@ -121,6 +137,7 @@ public class Batch_Analyser implements PlugIn {
      * @param arg passed by ImageJ.
      */
     public void run(String arg) {
+        title = title + "_v1." + numFormat.format(Revision.Revision.revisionNumber);
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {

@@ -1,3 +1,20 @@
+/* 
+ * Copyright (C) 2015 David Barry <david.barry at cancer.org.uk>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package AnaMorf;
 
 import ij.IJ;
@@ -5,12 +22,6 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.text.DecimalFormat;
 
-/**
- * An extension of a JFrame used to obtain input parameters from the user.
- *
- * @author David J Barry <davejpbarry@gmail.com>
- * @version 01SEP2010
- */
 public class UserInterface extends javax.swing.JDialog {
 
     /**
@@ -195,6 +206,7 @@ public class UserInterface extends javax.swing.JDialog {
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
         jPanel12.add(fourierFracCheck, gridBagConstraints);
 
+        boxFracCheck.setSelected(boxfrac);
         boxFracCheck.setText("Box-Counting Fractal Dimension");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -317,6 +329,7 @@ public class UserInterface extends javax.swing.JDialog {
         maskImageCheck.setText("Create Mask Images?");
         jPanel15.add(maskImageCheck);
 
+        wholeImageCheckBox.setSelected(wholeImage);
         wholeImageCheckBox.setText("Analyse Whole Image?");
         jPanel15.add(wholeImageCheckBox);
 
@@ -669,12 +682,12 @@ public class UserInterface extends javax.swing.JDialog {
     }
     private static int formatIndex = 4, manualThreshold = 100;
     private static double minLength = 0.0, maxCirc = 1.0, minArea = 10.0,
-            imageRes = 1.0, backgroundRadius = 5.0;
+            imageRes = 1.0, backgroundRadius = 10.0;
     private static boolean createMasks = true, subBackground = true, area = true,
             circ = true, thl = true, tips = true, hgu = true, fourfrac = true,
-            boxfrac = false, lac = true, exit, autoThreshold = true, lightBackground = false,
+            boxfrac = true, lac = true, exit, autoThreshold = true, lightBackground = false,
             branches = true, doMorphFiltering = false, doWatershed = false,
-            wholeImage = false, excludeEdges = true;
+            wholeImage = true, excludeEdges = false;
     private DecimalFormat threePlaces = new DecimalFormat("0.000");
     private DecimalFormat onePlace = new DecimalFormat("0.0");
     // Variables declaration - do not modify//GEN-BEGIN:variables
