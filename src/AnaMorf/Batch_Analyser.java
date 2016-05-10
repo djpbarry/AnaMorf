@@ -14,7 +14,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package AnaMorf;
 
 import UtilClasses.Utilities;
@@ -68,10 +67,8 @@ import java.util.ArrayList;
  * using membrane immobilization and automatic image analysis,” <i>J Ind
  * Microbiol Biot</i>, vol. 36, no. 6, pp. 787-800, 2009.<br> <br> D. J. Barry,
  * “Quantifying the branching frequency of virtual filamentous microbes using
- * fractal analysis,” <i>Biotech Bioeng</i>, vol. 110, no. 2, pp. 437–447,
- * 2013.
+ * fractal analysis,” <i>Biotech Bioeng</i>, vol. 110, no. 2, pp. 437–447, 2013.
  */
-
 public class Batch_Analyser implements PlugIn {
 
     private static File currentDirectory = new File("C:\\Users\\barry05\\Desktop\\arp23"); // The current working directory from which images are opened
@@ -118,11 +115,11 @@ public class Batch_Analyser implements PlugIn {
             BOX_FRACTAL_DIMENSION = 128,
             LACUNARITY = 256;
 
-//    public static void main(String args[]) {
-//        Batch_Analyser ba = new Batch_Analyser();
-//        ba.run(null);
-//        System.exit(0);
-//    }
+    public static void main(String args[]) {
+        Batch_Analyser ba = new Batch_Analyser();
+        ba.run(null);
+        System.exit(0);
+    }
 
 //    public Batch_Analyser(boolean wholeImage) {
 //        this.wholeImage = wholeImage;
@@ -138,22 +135,22 @@ public class Batch_Analyser implements PlugIn {
      */
     public void run(String arg) {
         title = title + "_v1." + numFormat.format(Revision.Revision.revisionNumber);
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException ex) {
+//            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (InstantiationException ex) {
+//            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (IllegalAccessException ex) {
+//            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
         if (IJ.isMacintosh()) {
             delimiter = "//";
         } else {
@@ -250,7 +247,7 @@ public class Batch_Analyser implements PlugIn {
                     + currentDirectory.getPath());
             return null;
         }
-        double filterRadius = 1.0 / gui.getRes();
+        double filterRadius = 1.0;
         if (!gui.isLightBackground()) {
             currentProcessor.invert();
         }
@@ -466,7 +463,7 @@ public class Batch_Analyser implements PlugIn {
         } else {
             objBox = new Rectangle(0, 0, objMask.getWidth(), objMask.getHeight());
         }
-        if (gui.isWholeImage() && outputResults) {
+        if (gui.isWholeImage() && (outputData & BOX_FRACTAL_DIMENSION) != 0) {
             boxFracDims = (new FractalEstimator()).do2DEstimate(binProc);
         }
         IJ.showStatus("Calculating Area");
@@ -484,7 +481,8 @@ public class Batch_Analyser implements PlugIn {
                         if (refProc != null) {
                             refProc.drawPixel(x, y);
                         }
-                    } /*
+                    }
+                    /*
                      * else { objMask.putPixel(x - objBox.x, y - objBox.y,
                      * FOREGROUND); }
                      */
@@ -655,9 +653,11 @@ public class Batch_Analyser implements PlugIn {
             if ((outputData & NUMBER_OF_BRANCHES) != 0) {
                 resultsTable.addValue(BRANCH_HEAD, numBranches);
             }
-            if (boxFracDims != null) {
+            if ((outputData & BOX_FRACTAL_DIMENSION) != 0 && boxFracDims != null) {
                 resultsTable.addValue(BOX_FRAC_HEAD, boxFracDims[0]);
-                resultsTable.addValue(TOT_AREA_HEAD, binProc.getStatistics().histogram[FOREGROUND]);
+            }
+            if (gui.isWholeImage()) {
+                resultsTable.addValue(TOT_AREA_HEAD, binProc.getStatistics().histogram[FOREGROUND] * imageResolution2);
             }
             resultsTable.addLabel("Image", imageName);
             analyserObject.displayResults();

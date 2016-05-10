@@ -683,10 +683,10 @@ public class UserInterface extends javax.swing.JDialog {
     private static int formatIndex = 4, manualThreshold = 100;
     private static double minLength = 0.0, maxCirc = 1.0, minArea = 10.0,
             imageRes = 1.0, backgroundRadius = 10.0;
-    private static boolean createMasks = true, subBackground = true, area = true,
-            circ = true, thl = true, tips = true, hgu = true, fourfrac = true,
-            boxfrac = true, lac = true, exit, autoThreshold = true, lightBackground = false,
-            branches = true, doMorphFiltering = false, doWatershed = false,
+    private static boolean createMasks = true, subBackground = false, area = false,
+            circ = false, thl = true, tips = true, hgu = false, fourfrac = false,
+            boxfrac = true, lac = false, exit, autoThreshold = true, lightBackground = false,
+            branches = false, doMorphFiltering = false, doWatershed = false,
             wholeImage = true, excludeEdges = false;
     private DecimalFormat threePlaces = new DecimalFormat("0.000");
     private DecimalFormat onePlace = new DecimalFormat("0.0");
