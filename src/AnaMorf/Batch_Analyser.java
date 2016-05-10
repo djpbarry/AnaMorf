@@ -247,7 +247,7 @@ public class Batch_Analyser implements PlugIn {
                     + currentDirectory.getPath());
             return null;
         }
-        double filterRadius = 1.0;
+        double filterRadius = gui.getFilterRadius() / gui.getRes();
         if (!gui.isLightBackground()) {
             currentProcessor.invert();
         }
