@@ -818,12 +818,12 @@ public class UserInterface extends javax.swing.JDialog {
         return exit;
     }
     private static int formatIndex = 4, manualThreshold = 100;
-    private static double minLength = 0.0, maxCirc = 1.0, minArea = 10.0,
-            imageRes = 1.0, backgroundRadius = 10.0, filterRadius = 1.0;
+    private static double minLength = 2.5, maxCirc = 1.0, minArea = 20.0,
+            imageRes = 0.267, backgroundRadius = 10.0, filterRadius = 0.267;
     private static boolean createMasks = true, subBackground = false, area = false,
             circ = false, thl = true, tips = true, hgu = false, fourfrac = false,
             boxfrac = true, lac = false, exit, autoThreshold = true, lightBackground = false,
-            branches = false, doMorphFiltering = false, doWatershed = false,
+            branches = false, doMorphFiltering = true, doWatershed = false,
             wholeImage = true, excludeEdges = false;
     private DecimalFormat threePlaces = new DecimalFormat("0.000");
     private DecimalFormat onePlace = new DecimalFormat("0.0");

@@ -71,7 +71,7 @@ import java.util.ArrayList;
  */
 public class Batch_Analyser implements PlugIn {
 
-    private static File currentDirectory = new File("C:\\Users\\barry05\\Desktop\\arp23"); // The current working directory from which images are opened
+    private static File currentDirectory = new File("C:\\Users\\barry05\\Desktop\\Arp23 TIRF Assays\\Blanchoin Arp23\\2016.05.16_2"); // The current working directory from which images are opened
     private File resultsDirectory = null; // The directory in which generated mask images are stored
     private double minCirc = 0.0, maxArea = Double.MAX_VALUE; // Morphological thresholds used during analysis
     private double imageResolution2; // Side length of one pixel in microns
@@ -88,6 +88,8 @@ public class Batch_Analyser implements PlugIn {
     private String delimiter;
     UserInterface gui;
     DecimalFormat numFormat = new DecimalFormat("000");
+    Rectangle cropRectangle;
+    ResultsTable resultsTable;
     /*
      * Column headings used for Results Table output
      */
@@ -135,22 +137,6 @@ public class Batch_Analyser implements PlugIn {
      */
     public void run(String arg) {
         title = title + "_v1." + numFormat.format(Revision.Revision.revisionNumber);
-//        try {
-//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-//        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(UserInterface.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        }
         if (IJ.isMacintosh()) {
             delimiter = "//";
         } else {
@@ -163,9 +149,18 @@ public class Batch_Analyser implements PlugIn {
         if (currentDirectory == null) {
             return;
         }
+        resultsTable = Analyzer.getResultsTable();
+        resultsTable.incrementCounter();
+        resultsTable.addLabel(currentDirectory.getAbsolutePath());
         long startTime = System.currentTimeMillis();
         if (analyseFiles(currentDirectory)) {
 //            (new ResultSummariser(confInterval)).summarise();
+        }
+//        (new Analyzer()).displayResults();
+        try {
+            resultsTable.saveAs(resultsDirectory + delimiter + "results.csv");
+        } catch (Exception e) {
+            GenUtils.error("Could not save results file.");
         }
         generateParamsFile(resultsDirectory);
         IJ.showStatus(title + " done: " + ((double) (System.currentTimeMillis() - startTime)) / 1000.0 + " s");
@@ -279,7 +274,7 @@ public class Batch_Analyser implements PlugIn {
         if (gui.getManualThreshold() < 0) {
             binaryProcessor.threshold(
                     new AutoThresholder().getThreshold(
-                            AutoThresholder.Method.Default, binaryProcessor.getStatistics().histogram
+                            AutoThresholder.Method.Triangle, binaryProcessor.getStatistics().histogram
                     ));
         } else {
             binaryProcessor.threshold(gui.getManualThreshold());
@@ -295,8 +290,9 @@ public class Batch_Analyser implements PlugIn {
             /*
              * Specify new ROI to compensate for erosion operation above
              */
-            binaryProcessor.setRoi(new Rectangle(iterations, iterations,
-                    (width - 2 * iterations), (height - 2 * iterations)));
+            cropRectangle = new Rectangle(iterations, iterations,
+                    (width - 2 * iterations), (height - 2 * iterations));
+            binaryProcessor.setRoi(cropRectangle);
             binaryProcessor = (ByteProcessor) binaryProcessor.crop();
         }
         if (gui.isDoWatershed()) {
@@ -580,7 +576,12 @@ public class Batch_Analyser implements PlugIn {
                 numEnds = analyser.getTips();
                 numBranches = analyser.getBranchpoints();
                 ColorBlitter skelBlit = new ColorBlitter(skelImage);
-                skelBlit.copyBits(analyser.getOutput(), 0, 0, Blitter.ADD);
+                int bx = 0, by = 0;
+                if (cropRectangle != null) {
+                    bx = cropRectangle.x;
+                    by = cropRectangle.y;
+                }
+                skelBlit.copyBits(analyser.getOutput(), bx, by, Blitter.ADD);
             }
         }
 
@@ -626,8 +627,6 @@ public class Batch_Analyser implements PlugIn {
             /*
              * Output results to ImageJ's results table.
              */
-            Analyzer analyserObject = new Analyzer();
-            ResultsTable resultsTable = Analyzer.getResultsTable();
             resultsTable.incrementCounter();
             if ((outputData & CIRC) != 0) {
                 resultsTable.addValue(CIRC_HEAD, objCirc);
@@ -660,14 +659,7 @@ public class Batch_Analyser implements PlugIn {
                 resultsTable.addValue(TOT_AREA_HEAD, binProc.getStatistics().histogram[FOREGROUND] * imageResolution2);
             }
             resultsTable.addLabel("Image", imageName);
-            analyserObject.displayResults();
-            try {
-                resultsTable.saveAs(resultsDirectory + delimiter + "results.csv");
-            } catch (Exception e) {
-                GenUtils.error("Could not save results file.");
-            }
         }
-
         return true;
     }
 
