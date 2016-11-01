@@ -24,6 +24,7 @@ import IAClasses.Pixel;
 import UtilClasses.GenUtils;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.Prefs;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.gui.Wand;
@@ -136,6 +137,7 @@ public class Batch_Analyser implements PlugIn {
      * @param arg passed by ImageJ.
      */
     public void run(String arg) {
+        Prefs.blackBackground = false;
         title = title + "_v1." + numFormat.format(Revision.Revision.revisionNumber);
         if (IJ.isMacintosh()) {
             delimiter = "//";
@@ -274,7 +276,7 @@ public class Batch_Analyser implements PlugIn {
         if (gui.getManualThreshold() < 0) {
             binaryProcessor.threshold(
                     new AutoThresholder().getThreshold(
-                            AutoThresholder.Method.Triangle, binaryProcessor.getStatistics().histogram
+                            AutoThresholder.Method.Default, binaryProcessor.getStatistics().histogram
                     ));
         } else {
             binaryProcessor.threshold(gui.getManualThreshold());
@@ -359,9 +361,9 @@ public class Batch_Analyser implements PlugIn {
         /*
          * Ensure image is not inverted
          */
-        if (checkGreyLevels) {
-            binaryProcessor = ensureGreyValues(binaryProcessor, false);
-        }
+//        if (checkGreyLevels) {
+//            binaryProcessor = ensureGreyValues(binaryProcessor, false);
+//        }
         byte pixels[] = (byte[]) binaryProcessor.getPixels();
         ImageProcessor filledBP = binaryProcessor.duplicate();
         fill(filledBP, 0, 255);

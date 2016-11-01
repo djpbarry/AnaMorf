@@ -471,6 +471,7 @@ public class UserInterface extends javax.swing.JDialog {
         jPanel13.add(watershedCheckBox, gridBagConstraints);
 
         edgeCheckBox.setText("Exclude Edge Objects?");
+        edgeCheckBox.setSelected(excludeEdges);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 10;
@@ -818,13 +819,13 @@ public class UserInterface extends javax.swing.JDialog {
         return exit;
     }
     private static int formatIndex = 4, manualThreshold = 100;
-    private static double minLength = 2.5, maxCirc = 1.0, minArea = 20.0,
+    private static double minLength = 1.5, maxCirc = 1.0, minArea = 5.0,
             imageRes = 0.267, backgroundRadius = 10.0, filterRadius = 0.267;
-    private static boolean createMasks = true, subBackground = false, area = false,
-            circ = false, thl = true, tips = true, hgu = false, fourfrac = false,
-            boxfrac = true, lac = false, exit, autoThreshold = true, lightBackground = false,
-            branches = false, doMorphFiltering = true, doWatershed = false,
-            wholeImage = true, excludeEdges = false;
+    private static boolean createMasks = false, subBackground = false, area = false,
+            circ = false, thl = true, tips = true, hgu = true, fourfrac = false,
+            boxfrac = false, lac = false, exit, autoThreshold = true, lightBackground = false,
+            branches = false, doMorphFiltering = false, doWatershed = false,
+            wholeImage = false, excludeEdges = true;
     private DecimalFormat threePlaces = new DecimalFormat("0.000");
     private DecimalFormat onePlace = new DecimalFormat("0.0");
     // Variables declaration - do not modify//GEN-BEGIN:variables
