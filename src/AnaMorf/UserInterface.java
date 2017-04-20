@@ -88,7 +88,6 @@ public class UserInterface extends javax.swing.JDialog {
         watershedCheckBox = new javax.swing.JCheckBox();
         edgeCheckBox = new javax.swing.JCheckBox();
         wholeImageCheckBox = new javax.swing.JCheckBox();
-        doMorphFilterCheck = new javax.swing.JCheckBox();
         jPanel7 = new javax.swing.JPanel();
         jPanel9 = new javax.swing.JPanel();
         okButton = new javax.swing.JButton();
@@ -492,17 +491,6 @@ public class UserInterface extends javax.swing.JDialog {
         gridBagConstraints.weighty = 1.0;
         jPanel13.add(wholeImageCheckBox, gridBagConstraints);
 
-        doMorphFilterCheck.setSelected(doMorphFiltering);
-        doMorphFilterCheck.setText("Attempt to Fix Breaks?");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 11;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 0.5;
-        gridBagConstraints.weighty = 1.0;
-        jPanel13.add(doMorphFilterCheck, gridBagConstraints);
-
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -565,7 +553,6 @@ public class UserInterface extends javax.swing.JDialog {
         boxfrac = boxFracCheck.isSelected();
         lightBackground = lightBGRadio.isSelected();
         branches = branchCheck.isSelected();
-        doMorphFiltering = doMorphFilterCheck.isSelected();
         doWatershed = watershedCheckBox.isSelected();
         wholeImage = wholeImageCheckBox.isSelected();
         excludeEdges = edgeCheckBox.isSelected();
@@ -763,10 +750,6 @@ public class UserInterface extends javax.swing.JDialog {
         }
     }
 
-    public boolean isDoMorphFiltering() {
-        return doMorphFiltering;
-    }
-
     public boolean isDoWatershed() {
         return doWatershed;
     }
@@ -808,7 +791,6 @@ public class UserInterface extends javax.swing.JDialog {
                 + ", Subtract Background: " + subBackgroundCheck.isSelected()
                 + ", Background Radius: " + backgroundRadius
                 + ", Create Mask Images: " + maskImageCheck.isSelected()
-                + ", Do Morphogical Filtering: " + doMorphFilterCheck.isSelected()
                 + ", Do Watershed Filtering: " + watershedCheckBox.isSelected()
                 + ", Auto-Threshold: " + autoThresholdRadio.isSelected()
                 + ", Use Manual Threshold: " + manualThresholdRadio.isSelected()
@@ -830,7 +812,7 @@ public class UserInterface extends javax.swing.JDialog {
     private static boolean createMasks = false, subBackground = false, area = false,
             circ = false, thl = true, tips = true, hgu = true, fourfrac = false,
             boxfrac = false, lac = false, exit, autoThreshold = true, lightBackground = false,
-            branches = false, doMorphFiltering = false, doWatershed = false,
+            branches = false, doWatershed = false,
             wholeImage = false, excludeEdges = true;
     private DecimalFormat threePlaces = new DecimalFormat("0.000");
     private DecimalFormat onePlace = new DecimalFormat("0.0");
@@ -842,7 +824,6 @@ public class UserInterface extends javax.swing.JDialog {
     private javax.swing.JCheckBox branchCheck;
     private javax.swing.JCheckBox circCheck;
     private javax.swing.JRadioButton darkBGRadio;
-    private javax.swing.JCheckBox doMorphFilterCheck;
     private javax.swing.JCheckBox edgeCheckBox;
     private javax.swing.JButton exitButton;
     private javax.swing.JCheckBox fourierFracCheck;

@@ -85,7 +85,6 @@ public class Batch_Analyser implements PlugIn {
     private String imageName;
     public String title = "AnaMorf";
     UserInterface gui;
-    Rectangle cropRectangle;
     ResultsTable resultsTable;
     /*
      * Column headings used for Results Table output
@@ -272,14 +271,6 @@ public class Batch_Analyser implements PlugIn {
         int width = currentProcessor.getWidth();
         int height = currentProcessor.getHeight();
 
-        if (gui.isDoMorphFiltering()) {
-            /*
-             * High-frequency noise removal
-             */
-            RankFilters rankFilterObject = new RankFilters();
-            rankFilterObject.rank(binaryProcessor, filterRadius, RankFilters.MIN);
-            rankFilterObject.rank(binaryProcessor, filterRadius, RankFilters.MEDIAN);
-        }
         /*
          * Generate binary image
          */
@@ -290,22 +281,6 @@ public class Batch_Analyser implements PlugIn {
                     ));
         } else {
             binaryProcessor.threshold(gui.getManualThreshold());
-        }
-        if (gui.isDoMorphFiltering()) {
-            /*
-             * Perfom morphological 'close'
-             */
-            if (iterations > 0) {
-                binaryProcessor.dilate(iterations, 255);
-                binaryProcessor.erode(iterations, 255);
-            }
-            /*
-             * Specify new ROI to compensate for erosion operation above
-             */
-            cropRectangle = new Rectangle(iterations, iterations,
-                    (width - 2 * iterations), (height - 2 * iterations));
-            binaryProcessor.setRoi(cropRectangle);
-            binaryProcessor = (ByteProcessor) binaryProcessor.crop();
         }
         if (gui.isDoWatershed()) {
             binaryProcessor.invert();
@@ -586,12 +561,7 @@ public class Batch_Analyser implements PlugIn {
                 numEnds = analyser.getTips();
                 numBranches = analyser.getBranchpoints();
                 ColorBlitter skelBlit = new ColorBlitter(skelImage);
-                int bx = 0, by = 0;
-                if (cropRectangle != null) {
-                    bx = cropRectangle.x;
-                    by = cropRectangle.y;
-                }
-                skelBlit.copyBits(analyser.getOutput(), bx, by, Blitter.ADD);
+                skelBlit.copyBits(analyser.getOutput(), 0, 0, Blitter.ADD);
             }
         }
 
