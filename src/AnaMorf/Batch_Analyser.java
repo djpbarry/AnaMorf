@@ -72,7 +72,6 @@ import java.util.ArrayList;
  */
 public class Batch_Analyser implements PlugIn {
 
-    private File resultsDirectory = null; // The directory in which generated mask images are stored
     private double minCirc = 0.0, maxArea = Double.MAX_VALUE; // Morphological thresholds used during analysis
     private double imageResolution2; // Side length of one pixel in microns
     private boolean outputResults, useMorphFilters;
@@ -154,7 +153,8 @@ public class Batch_Analyser implements PlugIn {
         resultsTable.incrementCounter();
         resultsTable.addLabel(currentDirectory.getAbsolutePath());
         long startTime = System.currentTimeMillis();
-        if (analyseFiles(currentDirectory)) {
+        File resultsDirectory = new File(GenUtils.openResultsDirectory(currentDirectory.getAbsolutePath() + delimiter + title, delimiter));
+        if (analyseFiles(currentDirectory, resultsDirectory)) {
 //            (new ResultSummariser(confInterval)).summarise();
         }
 //        (new Analyzer()).displayResults();
@@ -177,7 +177,7 @@ public class Batch_Analyser implements PlugIn {
      * @return true if images in <i>directory</i> were successfully processed,
      * false otherwise.
      */
-    public boolean analyseFiles(File directory) {
+    public boolean analyseFiles(File directory, File resultsDirectory) {
         int width, height;
         FilenameFilter directoryFilter = new OnlyExt(gui.getImageFormat());
         String imageFilenames[] = directory.list(directoryFilter); // Generates a list of image filenames of the format specified by the user
@@ -188,7 +188,6 @@ public class Batch_Analyser implements PlugIn {
         /*
          * A folder for storing mask images is created if required
          */
-        resultsDirectory = new File(GenUtils.openResultsDirectory(directory.getAbsolutePath() + delimiter + title, delimiter));
         for (int i = 0; i < imageFilenames.length; i++) {
             useMorphFilters = true;
             outputResults = !gui.isWholeImage();
