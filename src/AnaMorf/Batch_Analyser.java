@@ -197,42 +197,46 @@ public class Batch_Analyser implements PlugIn {
             imageName = imageFilenames[i];
             IJ.showStatus("Scanning " + imageName);
             ImagePlus currImage = new ImagePlus(currentDirectory + delimiter + imageName);
-            width = currImage.getWidth();
-            height = currImage.getHeight();
-            maskImage = new ByteProcessor(width, height);
-            maskImage.setColor(BACKGROUND);
-            maskImage.fill();
-            skelImage = new ColorProcessor(width, height);
-            /*
+            if (!(currImage.getProcessor() instanceof ColorProcessor)) {
+                width = currImage.getWidth();
+                height = currImage.getHeight();
+                maskImage = new ByteProcessor(width, height);
+                maskImage.setColor(BACKGROUND);
+                maskImage.fill();
+                skelImage = new ColorProcessor(width, height);
+                /*
              * Reference used to ensure that each object is only analysed once
-             */
-            refProc = new ByteProcessor(width, height);
-            if (refProc.isInvertedLut()) {
-                refProc.invertLut();
-            }
-            refProc.setValue(BACKGROUND);
-            refProc.fill();
-            searchImage(preProcessImage(currImage), gui.isExcludeEdges(), null, true);
-//            if (searchImage(preProcessImage(currImage), noEdge, null, true) > 0) {
-            ImagePlus maskOutput = new ImagePlus(imageName + " - Mask", maskImage.duplicate());
-            maskImage.invert();
-            if (gui.isCreateMasks()) {
-                IJ.saveAs(maskOutput, "png", resultsDirectory + "//" + maskOutput.getTitle());
-            }
-            if (gui.isWholeImage() && maskOutput != null) {
-                outputResults = true;
-                useMorphFilters = false;
-                analyseImage(maskImage, maskOutput.getProcessor(), null, gui.isExcludeEdges(), null);
-            }
-            if (((outputData & HYPHAL_GROWTH_UNIT) != 0) || ((outputData & NUMBER_OF_ENDPOINTS) != 0)
-                    || ((outputData & TOTAL_HYPHAL_LENGTH) != 0)) {
-                ImagePlus skelOutput = new ImagePlus(imageName + " - Skeleton", skelImage);
-                if (gui.isCreateMasks()) {
-                    IJ.saveAs(skelOutput, "png", resultsDirectory + "//" + skelOutput.getTitle());
+                 */
+                refProc = new ByteProcessor(width, height);
+                if (refProc.isInvertedLut()) {
+                    refProc.invertLut();
                 }
-            }
+                refProc.setValue(BACKGROUND);
+                refProc.fill();
+                searchImage(preProcessImage(currImage), gui.isExcludeEdges(), null, true);
+//            if (searchImage(preProcessImage(currImage), noEdge, null, true) > 0) {
+                ImagePlus maskOutput = new ImagePlus(imageName + " - Mask", maskImage.duplicate());
+                maskImage.invert();
+                if (gui.isCreateMasks()) {
+                    IJ.saveAs(maskOutput, "png", resultsDirectory + "//" + maskOutput.getTitle());
+                }
+                if (gui.isWholeImage() && maskOutput != null) {
+                    outputResults = true;
+                    useMorphFilters = false;
+                    analyseImage(maskImage, maskOutput.getProcessor(), null, gui.isExcludeEdges(), null);
+                }
+                if (((outputData & HYPHAL_GROWTH_UNIT) != 0) || ((outputData & NUMBER_OF_ENDPOINTS) != 0)
+                        || ((outputData & TOTAL_HYPHAL_LENGTH) != 0)) {
+                    ImagePlus skelOutput = new ImagePlus(imageName + " - Skeleton", skelImage);
+                    if (gui.isCreateMasks()) {
+                        IJ.saveAs(skelOutput, "png", resultsDirectory + "//" + skelOutput.getTitle());
+                    }
+                }
 //            }
-            IJ.showProgress(i, imageFilenames.length);
+                IJ.showProgress(i, imageFilenames.length);
+            } else {
+                IJ.log("Greyscale images required - " + imageName + " will not be analysed.");
+            }
         }
         return true;
     }
