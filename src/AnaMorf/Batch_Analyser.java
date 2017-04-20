@@ -56,7 +56,6 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 
 /**
  * BatchAnalyser is designed to automatically analyse a batch of images of
@@ -78,12 +77,8 @@ public class Batch_Analyser implements PlugIn {
     private static final int FOREGROUND = 0, BACKGROUND = 255; // Values for foreground & background pixels
     private ByteProcessor maskImage, refProc;
     private ColorProcessor skelImage;
-    private final ArrayList detections = new ArrayList();
     private String imageName;
     public String title = "AnaMorf";
-    private int paramCount = 8;
-    private double params[] = new double[paramCount];
-    private String delimiter;
     UserInterface gui;
     DecimalFormat numFormat = new DecimalFormat("000");
     Rectangle cropRectangle;
@@ -136,11 +131,6 @@ public class Batch_Analyser implements PlugIn {
     public void run(String arg) {
         Prefs.blackBackground = false;
         title = title + "_v1." + numFormat.format(Revision.Revision.revisionNumber);
-        if (IJ.isMacintosh()) {
-            delimiter = "//";
-        } else {
-            delimiter = "\\";
-        }
         if (!showGUI()) {
             return;
         }
@@ -152,13 +142,13 @@ public class Batch_Analyser implements PlugIn {
         resultsTable.incrementCounter();
         resultsTable.addLabel(currentDirectory.getAbsolutePath());
         long startTime = System.currentTimeMillis();
-        File resultsDirectory = new File(GenUtils.openResultsDirectory(currentDirectory.getAbsolutePath() + delimiter + title, delimiter));
+        File resultsDirectory = new File(GenUtils.openResultsDirectory(currentDirectory.getAbsolutePath() + File.separator + title));
         if (analyseFiles(currentDirectory, resultsDirectory)) {
 //            (new ResultSummariser(confInterval)).summarise();
         }
 //        (new Analyzer()).displayResults();
         try {
-            resultsTable.saveAs(resultsDirectory + delimiter + "results.csv");
+            resultsTable.saveAs(resultsDirectory + File.separator + "results.csv");
         } catch (Exception e) {
             GenUtils.error("Could not save results file.");
         }
@@ -192,7 +182,7 @@ public class Batch_Analyser implements PlugIn {
             outputResults = !gui.isWholeImage();
             imageName = imageFilenames[i];
             IJ.showStatus("Scanning " + imageName);
-            ImagePlus currImage = new ImagePlus(directory + delimiter + imageName);
+            ImagePlus currImage = new ImagePlus(directory + File.separator + imageName);
             if (!(currImage.getProcessor() instanceof ColorProcessor)) {
                 width = currImage.getWidth();
                 height = currImage.getHeight();
@@ -530,7 +520,6 @@ public class Batch_Analyser implements PlugIn {
             ByteBlitter maskBlit = new ByteBlitter(maskImage);
             maskBlit.copyBits(binProc, objBox.x, objBox.y, Blitter.MIN);
             objMask.invert();
-            detections.add(objMask.duplicate());
         }
 
         if (((outputData & HYPHAL_GROWTH_UNIT) != 0) || ((outputData & NUMBER_OF_ENDPOINTS) != 0)
@@ -615,13 +604,7 @@ public class Batch_Analyser implements PlugIn {
             } else {
                 distfracDim = Double.NaN;
             }
-            params[4] = dist.length;
         }
-
-        params[0] = objCirc;
-        params[1] = objArea;
-        params[2] = distfracDim;
-        params[3] = lac;
 
         if (outputResults && (outputData != 0)) {
             /*
@@ -702,14 +685,6 @@ public class Batch_Analyser implements PlugIn {
         return maskImage;
     }
 
-    public ArrayList getDetections() {
-        return detections;
-    }
-
-    public double[] getParams() {
-        return params;
-    }
-
     void fill(ImageProcessor ip, int foreground, int background) {
         int width = ip.getWidth();
         int height = ip.getHeight();
@@ -746,7 +721,7 @@ public class Batch_Analyser implements PlugIn {
         File params;
         PrintWriter outputStream;
         try {
-            params = new File(dir + delimiter + "parameters.txt");
+            params = new File(dir + File.separator + "parameters.txt");
         } catch (Exception e) {
             IJ.error(e.toString());
             return;
