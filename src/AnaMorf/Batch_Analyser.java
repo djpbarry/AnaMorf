@@ -72,7 +72,6 @@ import java.util.ArrayList;
  */
 public class Batch_Analyser implements PlugIn {
 
-    private static File currentDirectory = new File("C:\\Users\\barry05\\Desktop\\Arp23 TIRF Assays\\Blanchoin Arp23\\2016.05.16_2"); // The current working directory from which images are opened
     private File resultsDirectory = null; // The directory in which generated mask images are stored
     private double minCirc = 0.0, maxArea = Double.MAX_VALUE; // Morphological thresholds used during analysis
     private double imageResolution2; // Side length of one pixel in microns
@@ -147,7 +146,7 @@ public class Batch_Analyser implements PlugIn {
         if (!showGUI()) {
             return;
         }
-        currentDirectory = Utilities.getFolder(currentDirectory, null, true);
+        File currentDirectory = Utilities.getFolder(new File(System.getProperty("user.dir")), null, true);
         if (currentDirectory == null) {
             return;
         }
@@ -180,23 +179,22 @@ public class Batch_Analyser implements PlugIn {
      */
     public boolean analyseFiles(File directory) {
         int width, height;
-        currentDirectory = directory;
         FilenameFilter directoryFilter = new OnlyExt(gui.getImageFormat());
-        String imageFilenames[] = currentDirectory.list(directoryFilter); // Generates a list of image filenames of the format specified by the user
+        String imageFilenames[] = directory.list(directoryFilter); // Generates a list of image filenames of the format specified by the user
         if (imageFilenames.length < 1) {
-            IJ.showMessage("'" + currentDirectory + "' contains no images of type ." + gui.getImageFormat());
+            IJ.showMessage("'" + directory + "' contains no images of type ." + gui.getImageFormat());
             return false;
         }
         /*
          * A folder for storing mask images is created if required
          */
-        resultsDirectory = new File(GenUtils.openResultsDirectory(currentDirectory.getAbsolutePath() + delimiter + title, delimiter));
+        resultsDirectory = new File(GenUtils.openResultsDirectory(directory.getAbsolutePath() + delimiter + title, delimiter));
         for (int i = 0; i < imageFilenames.length; i++) {
             useMorphFilters = true;
             outputResults = !gui.isWholeImage();
             imageName = imageFilenames[i];
             IJ.showStatus("Scanning " + imageName);
-            ImagePlus currImage = new ImagePlus(currentDirectory + delimiter + imageName);
+            ImagePlus currImage = new ImagePlus(directory + delimiter + imageName);
             if (!(currImage.getProcessor() instanceof ColorProcessor)) {
                 width = currImage.getWidth();
                 height = currImage.getHeight();
@@ -244,8 +242,7 @@ public class Batch_Analyser implements PlugIn {
     private ImageProcessor preProcessImage(ImagePlus currentImage) {
         ImageProcessor currentProcessor = currentImage.getProcessor();
         if (currentProcessor == null) {
-            IJ.log("There was a problem reading " + currentImage.getTitle() + " in "
-                    + currentDirectory.getPath());
+            IJ.log("There was a problem reading " + currentImage.getTitle());
             return null;
         }
         double filterRadius = gui.getFilterRadius() / gui.getRes();
