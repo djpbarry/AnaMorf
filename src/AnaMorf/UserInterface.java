@@ -18,9 +18,11 @@
 package AnaMorf;
 
 import ij.IJ;
+import ij.process.AutoThresholder;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.text.DecimalFormat;
+import javax.swing.DefaultComboBoxModel;
 
 public class UserInterface extends javax.swing.JDialog {
 
@@ -43,22 +45,17 @@ public class UserInterface extends javax.swing.JDialog {
         java.awt.GridBagConstraints gridBagConstraints;
 
         jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel2 = new javax.swing.JPanel();
-        jPanel4 = new javax.swing.JPanel();
-        jPanel10 = new javax.swing.JPanel();
+        basicPanel = new javax.swing.JPanel();
         imageFormatLabel = new javax.swing.JLabel();
         resLabel = new javax.swing.JLabel();
         minBranchLabel = new javax.swing.JLabel();
         maxCircLabel = new javax.swing.JLabel();
         minAreaLabel = new javax.swing.JLabel();
-        jPanel11 = new javax.swing.JPanel();
         imageFormatCombo = new javax.swing.JComboBox();
         imageResField = new javax.swing.JTextField();
         minBranchField = new javax.swing.JTextField();
         maxCircField = new javax.swing.JTextField();
         minAreaField = new javax.swing.JTextField();
-        jPanel8 = new javax.swing.JPanel();
-        jPanel12 = new javax.swing.JPanel();
         areaCheck = new javax.swing.JCheckBox();
         thlCheck = new javax.swing.JCheckBox();
         hguCheck = new javax.swing.JCheckBox();
@@ -68,8 +65,7 @@ public class UserInterface extends javax.swing.JDialog {
         lacCheck = new javax.swing.JCheckBox();
         tipsCheck = new javax.swing.JCheckBox();
         branchCheck = new javax.swing.JCheckBox();
-        jPanel6 = new javax.swing.JPanel();
-        jPanel13 = new javax.swing.JPanel();
+        advancedPanel = new javax.swing.JPanel();
         thresholdLabel1 = new javax.swing.JLabel();
         manualThresholdField1 = new javax.swing.JTextField();
         lightBGRadio = new javax.swing.JRadioButton();
@@ -81,52 +77,82 @@ public class UserInterface extends javax.swing.JDialog {
         subBackgroundCheck = new javax.swing.JCheckBox();
         jLabel1 = new javax.swing.JLabel();
         backgroundTextField = new javax.swing.JTextField();
-        jSeparator1 = new javax.swing.JSeparator();
-        jSeparator2 = new javax.swing.JSeparator();
-        jSeparator3 = new javax.swing.JSeparator();
         maskImageCheck = new javax.swing.JCheckBox();
         watershedCheckBox = new javax.swing.JCheckBox();
         edgeCheckBox = new javax.swing.JCheckBox();
         wholeImageCheckBox = new javax.swing.JCheckBox();
+        threshComboBox = new javax.swing.JComboBox();
+        autoThresholdLabel = new javax.swing.JLabel();
         jPanel7 = new javax.swing.JPanel();
-        jPanel9 = new javax.swing.JPanel();
         okButton = new javax.swing.JButton();
         exitButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("AnaMorf");
         setPreferredSize(new java.awt.Dimension(640, 480));
-        getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.PAGE_AXIS));
+        getContentPane().setLayout(new java.awt.GridBagLayout());
 
         jTabbedPane1.setPreferredSize(new java.awt.Dimension(400, 300));
 
-        jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.PAGE_AXIS));
-
-        jPanel4.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jPanel4.setMinimumSize(new java.awt.Dimension(260, 160));
-        jPanel4.setPreferredSize(new java.awt.Dimension(216, 180));
-        jPanel4.setLayout(new java.awt.GridLayout(1, 0));
-
-        jPanel10.setLayout(new java.awt.GridLayout(5, 0));
+        basicPanel.setLayout(new java.awt.GridBagLayout());
 
         imageFormatLabel.setText("Image Format:");
-        jPanel10.add(imageFormatLabel);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        basicPanel.add(imageFormatLabel, gridBagConstraints);
 
         resLabel.setText("Image Resolution ("+IJ.micronSymbol+"m/pixel):");
-        jPanel10.add(resLabel);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        basicPanel.add(resLabel, gridBagConstraints);
 
         minBranchLabel.setText("Minimum Branch Length ("+IJ.micronSymbol+"m):");
-        jPanel10.add(minBranchLabel);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        basicPanel.add(minBranchLabel, gridBagConstraints);
 
         maxCircLabel.setText("Maximum Circularity:");
-        jPanel10.add(maxCircLabel);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        basicPanel.add(maxCircLabel, gridBagConstraints);
 
         minAreaLabel.setText("Minimum Area ("+IJ.micronSymbol+"m^2):");
-        jPanel10.add(minAreaLabel);
-
-        jPanel4.add(jPanel10);
-
-        jPanel11.setLayout(new java.awt.GridLayout(5, 0));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        basicPanel.add(minAreaLabel, gridBagConstraints);
 
         imageFormatCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "BMP", "GIF", "JPG", "PNG", "TIF" }));
         imageFormatCombo.setSelectedIndex(formatIndex);
@@ -135,166 +161,171 @@ public class UserInterface extends javax.swing.JDialog {
                 imageFormatComboActionPerformed(evt);
             }
         });
-        jPanel11.add(imageFormatCombo);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        basicPanel.add(imageFormatCombo, gridBagConstraints);
 
         imageResField.setText(threePlaces.format(imageRes));
-        jPanel11.add(imageResField);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        basicPanel.add(imageResField, gridBagConstraints);
 
         minBranchField.setText(onePlace.format(minLength));
-        jPanel11.add(minBranchField);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        basicPanel.add(minBranchField, gridBagConstraints);
 
         maxCircField.setText(threePlaces.format(maxCirc));
-        jPanel11.add(maxCircField);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        basicPanel.add(maxCircField, gridBagConstraints);
 
         minAreaField.setText(onePlace.format(minArea));
-        jPanel11.add(minAreaField);
-
-        jPanel4.add(jPanel11);
-
-        jPanel2.add(jPanel4);
-
-        jPanel8.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jPanel8.setLayout(new java.awt.GridLayout(1, 0));
-
-        jPanel12.setLayout(new java.awt.GridBagLayout());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        basicPanel.add(minAreaField, gridBagConstraints);
 
         areaCheck.setSelected(area);
         areaCheck.setText("Projected Area");
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 0.3;
-        gridBagConstraints.weighty = 0.3;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
-        jPanel12.add(areaCheck, gridBagConstraints);
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        basicPanel.add(areaCheck, gridBagConstraints);
 
         thlCheck.setSelected(thl);
         thlCheck.setText("Total Length");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 0.3;
-        gridBagConstraints.weighty = 0.3;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
-        jPanel12.add(thlCheck, gridBagConstraints);
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        basicPanel.add(thlCheck, gridBagConstraints);
 
         hguCheck.setSelected(hgu);
         hguCheck.setText("Hyphal Growth Unit");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 0.3;
-        gridBagConstraints.weighty = 0.3;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
-        jPanel12.add(hguCheck, gridBagConstraints);
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        basicPanel.add(hguCheck, gridBagConstraints);
 
         fourierFracCheck.setSelected(fourfrac);
         fourierFracCheck.setText("Fourier Fractal Dimension");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 0.3;
-        gridBagConstraints.weighty = 0.3;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
-        jPanel12.add(fourierFracCheck, gridBagConstraints);
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        basicPanel.add(fourierFracCheck, gridBagConstraints);
 
         boxFracCheck.setSelected(boxfrac);
         boxFracCheck.setText("Box-Counting Fractal Dimension");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 0.3;
-        gridBagConstraints.weighty = 0.3;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
-        jPanel12.add(boxFracCheck, gridBagConstraints);
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        basicPanel.add(boxFracCheck, gridBagConstraints);
 
         circCheck.setSelected(circ);
         circCheck.setText("Circularity");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 0.3;
-        gridBagConstraints.weighty = 0.3;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
-        jPanel12.add(circCheck, gridBagConstraints);
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        basicPanel.add(circCheck, gridBagConstraints);
 
         lacCheck.setSelected(lac);
         lacCheck.setText("Lacunarity");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 0.3;
-        gridBagConstraints.weighty = 0.3;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
-        jPanel12.add(lacCheck, gridBagConstraints);
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        basicPanel.add(lacCheck, gridBagConstraints);
 
         tipsCheck.setSelected(tips);
         tipsCheck.setText("Number of Endpoints");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 0.3;
-        gridBagConstraints.weighty = 0.3;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
-        jPanel12.add(tipsCheck, gridBagConstraints);
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        basicPanel.add(tipsCheck, gridBagConstraints);
 
         branchCheck.setSelected(branches);
         branchCheck.setText("Number of Branchpoints");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 0.3;
-        gridBagConstraints.weighty = 0.3;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 5, 0);
-        jPanel12.add(branchCheck, gridBagConstraints);
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        basicPanel.add(branchCheck, gridBagConstraints);
 
-        jPanel8.add(jPanel12);
+        jTabbedPane1.addTab("Basic", basicPanel);
 
-        jPanel2.add(jPanel8);
+        advancedPanel.setLayout(new java.awt.GridBagLayout());
 
-        jTabbedPane1.addTab("Basic", jPanel2);
-
-        jPanel6.setLayout(new java.awt.GridBagLayout());
-
-        jPanel13.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        jPanel13.setLayout(new java.awt.GridBagLayout());
-
-        thresholdLabel1.setText("Filter Radius:");
+        thresholdLabel1.setText("Noise Reduction Filter Radius ("+IJ.micronSymbol+"m):");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
-        jPanel13.add(thresholdLabel1, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(15, 5, 15, 5);
+        advancedPanel.add(thresholdLabel1, gridBagConstraints);
 
         manualThresholdField1.setText(String.valueOf(filterRadius));
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        jPanel13.add(manualThresholdField1, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(15, 5, 15, 5);
+        advancedPanel.add(manualThresholdField1, gridBagConstraints);
 
         lightBGRadio.setSelected(lightBackground);
         lightBGRadio.setText("Light Background");
@@ -305,12 +336,13 @@ public class UserInterface extends javax.swing.JDialog {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        jPanel13.add(lightBGRadio, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(15, 5, 15, 5);
+        advancedPanel.add(lightBGRadio, gridBagConstraints);
 
         darkBGRadio.setSelected(!lightBackground);
         darkBGRadio.setText("Dark Background");
@@ -321,12 +353,13 @@ public class UserInterface extends javax.swing.JDialog {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        jPanel13.add(darkBGRadio, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(15, 5, 15, 5);
+        advancedPanel.add(darkBGRadio, gridBagConstraints);
 
         autoThresholdRadio.setSelected(autoThreshold);
         autoThresholdRadio.setText("Auto Threshold");
@@ -337,12 +370,13 @@ public class UserInterface extends javax.swing.JDialog {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        jPanel13.add(autoThresholdRadio, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(15, 5, 0, 5);
+        advancedPanel.add(autoThresholdRadio, gridBagConstraints);
 
         manualThresholdRadio.setSelected(!autoThreshold);
         manualThresholdRadio.setText("Manual Threshold");
@@ -352,35 +386,38 @@ public class UserInterface extends javax.swing.JDialog {
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 15, 5);
+        advancedPanel.add(manualThresholdRadio, gridBagConstraints);
+
+        thresholdLabel.setText("Threshold Level:");
+        thresholdLabel.setEnabled(manualThresholdRadio.isSelected());
+        gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        jPanel13.add(manualThresholdRadio, gridBagConstraints);
-
-        thresholdLabel.setText("Manual Grey Level Threshold:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 0.5;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
-        jPanel13.add(thresholdLabel, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 15, 5);
+        advancedPanel.add(thresholdLabel, gridBagConstraints);
 
         manualThresholdField.setText(""+manualThreshold);
         manualThresholdField.setEnabled(manualThresholdRadio.isSelected());
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 4;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        jPanel13.add(manualThresholdField, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 15, 5);
+        advancedPanel.add(manualThresholdField, gridBagConstraints);
 
         subBackgroundCheck.setSelected(subBackground);
         subBackgroundCheck.setText("Remove Uneven Background?");
@@ -391,119 +428,121 @@ public class UserInterface extends javax.swing.JDialog {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        jPanel13.add(subBackgroundCheck, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(15, 5, 15, 5);
+        advancedPanel.add(subBackgroundCheck, gridBagConstraints);
 
-        jLabel1.setText("Maximum Object Size ("+IJ.micronSymbol+"m^2):");
+        jLabel1.setText("Background Filter Radius ("+IJ.micronSymbol+"m^2):");
+        jLabel1.setEnabled(subBackgroundCheck.isSelected());
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
-        jPanel13.add(jLabel1, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(15, 5, 15, 5);
+        advancedPanel.add(jLabel1, gridBagConstraints);
 
         backgroundTextField.setText(""+backgroundRadius);
         backgroundTextField.setEnabled(subBackgroundCheck.isSelected());
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 7;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 0.5;
-        gridBagConstraints.weighty = 1.0;
-        jPanel13.add(backgroundTextField, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        jPanel13.add(jSeparator1, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        jPanel13.add(jSeparator2, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        jPanel13.add(jSeparator3, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(15, 5, 15, 5);
+        advancedPanel.add(backgroundTextField, gridBagConstraints);
 
         maskImageCheck.setSelected(createMasks);
         maskImageCheck.setText("Create Mask Images?");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 9;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        jPanel13.add(maskImageCheck, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(15, 5, 0, 5);
+        advancedPanel.add(maskImageCheck, gridBagConstraints);
 
         watershedCheckBox.setSelected(doWatershed);
         watershedCheckBox.setText("Separate Touching Objects?");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 9;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        jPanel13.add(watershedCheckBox, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(15, 5, 0, 5);
+        advancedPanel.add(watershedCheckBox, gridBagConstraints);
 
         edgeCheckBox.setText("Exclude Edge Objects?");
         edgeCheckBox.setSelected(excludeEdges);
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 10;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        jPanel13.add(edgeCheckBox, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(15, 5, 0, 5);
+        advancedPanel.add(edgeCheckBox, gridBagConstraints);
 
         wholeImageCheckBox.setSelected(wholeImage);
-        wholeImageCheckBox.setText("Analyse Whole Image?");
+        wholeImageCheckBox.setText("Treat Whole Image as One Object?");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 10;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        jPanel13.add(wholeImageCheckBox, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 15, 5);
+        advancedPanel.add(wholeImageCheckBox, gridBagConstraints);
+
+        threshComboBox.setModel(new DefaultComboBoxModel(AutoThresholder.Method.values()));
+        threshComboBox.setSelectedItem(AutoThresholder.Method.valueOf(thresholdMethod));
+        threshComboBox.setEnabled(autoThreshold);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(15, 5, 0, 5);
+        advancedPanel.add(threshComboBox, gridBagConstraints);
+
+        autoThresholdLabel.setText("Threshold Method:");
+        autoThresholdLabel.setEnabled(autoThresholdRadio.isSelected());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(15, 5, 0, 5);
+        advancedPanel.add(autoThresholdLabel, gridBagConstraints);
+
+        jTabbedPane1.addTab("Advanced", advancedPanel);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        jPanel6.add(jPanel13, gridBagConstraints);
-
-        jTabbedPane1.addTab("Advanced", jPanel6);
-
-        getContentPane().add(jTabbedPane1);
+        getContentPane().add(jTabbedPane1, gridBagConstraints);
 
         jPanel7.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        jPanel7.setLayout(new java.awt.GridBagLayout());
 
         okButton.setText("OK");
         okButton.addActionListener(new java.awt.event.ActionListener() {
@@ -511,7 +550,7 @@ public class UserInterface extends javax.swing.JDialog {
                 okButtonActionPerformed(evt);
             }
         });
-        jPanel9.add(okButton);
+        jPanel7.add(okButton, new java.awt.GridBagConstraints());
 
         exitButton.setText("EXIT");
         exitButton.addActionListener(new java.awt.event.ActionListener() {
@@ -519,11 +558,15 @@ public class UserInterface extends javax.swing.JDialog {
                 exitButtonActionPerformed(evt);
             }
         });
-        jPanel9.add(exitButton);
+        jPanel7.add(exitButton, new java.awt.GridBagConstraints());
 
-        jPanel7.add(jPanel9);
-
-        getContentPane().add(jPanel7);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        getContentPane().add(jPanel7, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -556,6 +599,7 @@ public class UserInterface extends javax.swing.JDialog {
         doWatershed = watershedCheckBox.isSelected();
         wholeImage = wholeImageCheckBox.isSelected();
         excludeEdges = edgeCheckBox.isSelected();
+        thresholdMethod = String.valueOf(threshComboBox.getSelectedItem());
 
         int k = imageFormatCombo.getSelectedIndex();
         if (k >= 0) {
@@ -586,15 +630,22 @@ public class UserInterface extends javax.swing.JDialog {
     }//GEN-LAST:event_okButtonActionPerformed
 
     private void autoThresholdRadioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_autoThresholdRadioActionPerformed
-        manualThresholdRadio.setSelected(!autoThresholdRadio.isSelected());
-        manualThresholdField.setEnabled(manualThresholdRadio.isSelected());
+        manualThresholdRadio.setSelected(false);
+        updateThreshControls();
     }//GEN-LAST:event_autoThresholdRadioActionPerformed
 
     private void manualThresholdRadioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_manualThresholdRadioActionPerformed
-        autoThresholdRadio.setSelected(!manualThresholdRadio.isSelected());
-        manualThresholdField.setEnabled(manualThresholdRadio.isSelected());
+        autoThresholdRadio.setSelected(false);
+        updateThreshControls();
     }//GEN-LAST:event_manualThresholdRadioActionPerformed
 
+    void updateThreshControls(){
+        manualThresholdField.setEnabled(manualThresholdRadio.isSelected());
+        thresholdLabel.setEnabled(manualThresholdRadio.isSelected());
+        autoThresholdLabel.setEnabled(!manualThresholdRadio.isSelected());
+        threshComboBox.setEnabled(!manualThresholdRadio.isSelected());
+    }
+    
     private void lightBGRadioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lightBGRadioActionPerformed
         darkBGRadio.setSelected(!lightBGRadio.isSelected());
     }//GEN-LAST:event_lightBGRadioActionPerformed
@@ -608,6 +659,7 @@ public class UserInterface extends javax.swing.JDialog {
 
     private void subBackgroundCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subBackgroundCheckActionPerformed
         backgroundTextField.setEnabled(subBackgroundCheck.isSelected());
+        jLabel1.setEnabled(subBackgroundCheck.isSelected());
     }//GEN-LAST:event_subBackgroundCheckActionPerformed
 
     public boolean[] getOptions() {
@@ -770,6 +822,10 @@ public class UserInterface extends javax.swing.JDialog {
         return filterRadius;
     }
 
+    public String getThresholdMethod() {
+        return thresholdMethod;
+    }
+
     @Override
     public String toString() {
         return "Image Format: " + (String) imageFormatCombo.getSelectedItem()
@@ -793,6 +849,7 @@ public class UserInterface extends javax.swing.JDialog {
                 + ", Create Mask Images: " + maskImageCheck.isSelected()
                 + ", Do Watershed Filtering: " + watershedCheckBox.isSelected()
                 + ", Auto-Threshold: " + autoThresholdRadio.isSelected()
+                + ", Auto-Threshold Method: " + thresholdMethod
                 + ", Use Manual Threshold: " + manualThresholdRadio.isSelected()
                 + ", Manual Threshold Value: " + manualThresholdField.getText()
                 + ", Analyse Whole Image: " + wholeImageCheckBox.isSelected()
@@ -814,12 +871,16 @@ public class UserInterface extends javax.swing.JDialog {
             boxfrac = false, lac = false, exit, autoThreshold = true, lightBackground = false,
             branches = false, doWatershed = false,
             wholeImage = false, excludeEdges = true;
+    private static String thresholdMethod = "Default";
     private DecimalFormat threePlaces = new DecimalFormat("0.000");
     private DecimalFormat onePlace = new DecimalFormat("0.0");
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel advancedPanel;
     private javax.swing.JCheckBox areaCheck;
+    private javax.swing.JLabel autoThresholdLabel;
     private javax.swing.JRadioButton autoThresholdRadio;
     private javax.swing.JTextField backgroundTextField;
+    private javax.swing.JPanel basicPanel;
     private javax.swing.JCheckBox boxFracCheck;
     private javax.swing.JCheckBox branchCheck;
     private javax.swing.JCheckBox circCheck;
@@ -832,19 +893,7 @@ public class UserInterface extends javax.swing.JDialog {
     private javax.swing.JLabel imageFormatLabel;
     private javax.swing.JTextField imageResField;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JPanel jPanel10;
-    private javax.swing.JPanel jPanel11;
-    private javax.swing.JPanel jPanel12;
-    private javax.swing.JPanel jPanel13;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
-    private javax.swing.JPanel jPanel8;
-    private javax.swing.JPanel jPanel9;
-    private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JSeparator jSeparator2;
-    private javax.swing.JSeparator jSeparator3;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JCheckBox lacCheck;
     private javax.swing.JRadioButton lightBGRadio;
@@ -862,6 +911,7 @@ public class UserInterface extends javax.swing.JDialog {
     private javax.swing.JLabel resLabel;
     private javax.swing.JCheckBox subBackgroundCheck;
     private javax.swing.JCheckBox thlCheck;
+    private javax.swing.JComboBox threshComboBox;
     private javax.swing.JLabel thresholdLabel;
     private javax.swing.JLabel thresholdLabel1;
     private javax.swing.JCheckBox tipsCheck;

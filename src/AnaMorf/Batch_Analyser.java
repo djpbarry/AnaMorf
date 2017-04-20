@@ -37,7 +37,6 @@ import ij.plugin.filter.Analyzer;
 import ij.plugin.filter.BackgroundSubtracter;
 import ij.plugin.filter.EDM;
 import ij.plugin.filter.GaussianBlur;
-import ij.plugin.filter.RankFilters;
 import ij.process.AutoThresholder;
 import ij.process.Blitter;
 import ij.process.ByteBlitter;
@@ -267,9 +266,6 @@ public class Batch_Analyser implements PlugIn {
                     true, false);
         }
         (new GaussianBlur()).blurGaussian(binaryProcessor, filterRadius, filterRadius, 0.01);
-        int iterations = (int) Math.round(filterRadius);
-        int width = currentProcessor.getWidth();
-        int height = currentProcessor.getHeight();
 
         /*
          * Generate binary image
@@ -277,7 +273,7 @@ public class Batch_Analyser implements PlugIn {
         if (gui.getManualThreshold() < 0) {
             binaryProcessor.threshold(
                     new AutoThresholder().getThreshold(
-                            AutoThresholder.Method.Default, binaryProcessor.getStatistics().histogram
+                            gui.getThresholdMethod(), binaryProcessor.getStatistics().histogram
                     ));
         } else {
             binaryProcessor.threshold(gui.getManualThreshold());
