@@ -221,14 +221,16 @@ public class Batch_Analyser implements PlugIn {
                 searchImage(preProcessImage(currImage), gui.isExcludeEdges(), null, true);
 //            if (searchImage(preProcessImage(currImage), noEdge, null, true) > 0) {
                 ImagePlus maskOutput = new ImagePlus(imageName + " - Mask", maskImage.duplicate());
-                maskImage.invert();
                 if (gui.isCreateMasks()) {
                     IJ.saveAs(maskOutput, "png", resultsDirectory + "//" + maskOutput.getTitle());
                 }
                 if (gui.isWholeImage() && maskOutput != null) {
                     outputResults = true;
                     useMorphFilters = false;
-                    analyseImage(maskImage, maskOutput.getProcessor(), null, gui.isExcludeEdges(), null);
+                    ByteProcessor wholeImageMask = (ByteProcessor)maskImage.duplicate();
+                    wholeImageMask.setValue(BACKGROUND);
+                    wholeImageMask.fill();
+                    analyseImage(wholeImageMask, maskImage, null, gui.isExcludeEdges(), null);
                 }
                 if (((outputData & HYPHAL_GROWTH_UNIT) != 0) || ((outputData & NUMBER_OF_ENDPOINTS) != 0)
                         || ((outputData & TOTAL_HYPHAL_LENGTH) != 0)) {
@@ -634,7 +636,11 @@ public class Batch_Analyser implements PlugIn {
                 resultsTable.addValue(CIRC_HEAD, objCirc);
             }
             if ((outputData & AREAS) != 0) {
-                resultsTable.addValue(AREA_HEAD, objArea);
+                double area = objArea;
+                if (gui.isWholeImage()) {
+                    area = binProc.getStatistics().histogram[FOREGROUND] * gui.getImageRes2();
+                }
+                resultsTable.addValue(AREA_HEAD, area);
             }
             if ((outputData & FOURIER_FRACTAL_DIMENSION) != 0) {
                 resultsTable.addValue(FOUR_FRAC_HEAD, distfracDim);
@@ -656,9 +662,6 @@ public class Batch_Analyser implements PlugIn {
             }
             if ((outputData & BOX_FRACTAL_DIMENSION) != 0 && boxFracDims != null) {
                 resultsTable.addValue(BOX_FRAC_HEAD, boxFracDims[0]);
-            }
-            if (gui.isWholeImage()) {
-                resultsTable.addValue(TOT_AREA_HEAD, binProc.getStatistics().histogram[FOREGROUND] * gui.getImageRes2());
             }
             resultsTable.addLabel("Image", imageName);
         }
