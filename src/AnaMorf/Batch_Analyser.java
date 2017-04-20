@@ -72,8 +72,7 @@ import java.util.ArrayList;
  */
 public class Batch_Analyser implements PlugIn {
 
-    private double minCirc = 0.0, maxArea = Double.MAX_VALUE; // Morphological thresholds used during analysis
-    private double imageResolution2; // Side length of one pixel in microns
+    private final double MIN_CIRC = 0.0, MAX_AREA = Double.MAX_VALUE; // Morphological thresholds used during analysis
     private boolean outputResults, useMorphFilters;
     private int outputData = 0; // Determines what metrics will be output to Results Table
     private static final int FOREGROUND = 0, BACKGROUND = 255; // Values for foreground & background pixels
@@ -327,7 +326,6 @@ public class Batch_Analyser implements PlugIn {
                 return false;
             }
         }
-        imageResolution2 = Math.pow(gui.getRes(), 2.0);
         return true;
     }
 
@@ -493,7 +491,7 @@ public class Batch_Analyser implements PlugIn {
         if (excludeEdges && Utilities.checkBounds(objBox, imageRoiBounds)) {
             return false;
         }
-        objArea = pixArea * imageResolution2;
+        objArea = pixArea * gui.getImageRes2();
         try {
             if (objRoi != null) {
                 objectPerim = objRoi.getLength();
@@ -515,8 +513,8 @@ public class Batch_Analyser implements PlugIn {
              * Check area and circularity against user-specified threshold
              * values.
              */
-            if ((objArea < gui.getMinArea()) || (objArea > maxArea)
-                    || (objCirc < minCirc) || (objCirc > gui.getMaxCirc())) {
+            if ((objArea < gui.getMinArea()) || (objArea > MAX_AREA)
+                    || (objCirc < MIN_CIRC) || (objCirc > gui.getMaxCirc())) {
                 return false;
             }
             binProc.setRoi(objBox);
@@ -658,7 +656,7 @@ public class Batch_Analyser implements PlugIn {
                 resultsTable.addValue(BOX_FRAC_HEAD, boxFracDims[0]);
             }
             if (gui.isWholeImage()) {
-                resultsTable.addValue(TOT_AREA_HEAD, binProc.getStatistics().histogram[FOREGROUND] * imageResolution2);
+                resultsTable.addValue(TOT_AREA_HEAD, binProc.getStatistics().histogram[FOREGROUND] * gui.getImageRes2());
             }
             resultsTable.addLabel("Image", imageName);
         }
@@ -694,16 +692,6 @@ public class Batch_Analyser implements PlugIn {
          * A polygon representing the object border is constructed
          */
         return new PolygonRoi(xPolyPoints, yPolyPoints, nPoints, Roi.TRACED_ROI);
-    }
-
-    /**
-     * Initialise parameters for analysis.
-     */
-    public void initialise(double maxArea, double minCirc, double resolution) {
-        this.maxArea = maxArea;
-        this.minCirc = minCirc;
-        imageResolution2 = Math.pow(gui.getRes(), 2.0);
-        useMorphFilters = true;
     }
 
     public void setOutputData(int outputData) {

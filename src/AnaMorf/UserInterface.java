@@ -583,6 +583,7 @@ public class UserInterface extends javax.swing.JDialog {
         String backgroundText = backgroundTextField.getText();
         try {
             imageRes = (resText != null) ? Double.parseDouble(resText) : imageRes;
+            imageRes2 = imageRes*imageRes;
             minLength = (branchText != null) ? Double.parseDouble(branchText) : 0.0;
             maxCirc = (circText != null) ? Double.parseDouble(circText) : 0.0;
             minArea = (areaText != null) ? Double.parseDouble(areaText) : 0.0;
@@ -718,6 +719,10 @@ public class UserInterface extends javax.swing.JDialog {
         return imageRes;
     }
 
+    public double getImageRes2() {
+        return imageRes2;
+    }
+
     /**
      * Returns the image format (file extension) specified by the user.
      */
@@ -818,6 +823,7 @@ public class UserInterface extends javax.swing.JDialog {
     public boolean exitProgram() {
         return exit;
     }
+    private double imageRes2;
     private static int formatIndex = 4, manualThreshold = 100;
     private static double minLength = 1.5, maxCirc = 1.0, minArea = 5.0,
             imageRes = 0.267, backgroundRadius = 10.0, filterRadius = 0.267;
