@@ -22,6 +22,7 @@ import IAClasses.FractalEstimator;
 import IAClasses.OnlyExt;
 import IAClasses.Pixel;
 import UtilClasses.GenUtils;
+import UtilClasses.GenVariables;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.Prefs;
@@ -54,8 +55,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 
 /**
  * BatchAnalyser is designed to automatically analyse a batch of images of
@@ -80,7 +85,6 @@ public class Batch_Analyser implements PlugIn {
     private String imageName;
     public String title = "AnaMorf";
     UserInterface gui;
-    DecimalFormat numFormat = new DecimalFormat("000");
     Rectangle cropRectangle;
     ResultsTable resultsTable;
     /*
@@ -130,7 +134,7 @@ public class Batch_Analyser implements PlugIn {
      */
     public void run(String arg) {
         Prefs.blackBackground = false;
-        title = title + "_v1." + numFormat.format(Revision.Revision.revisionNumber);
+        title = title + "_v1." + new DecimalFormat("000").format(Revision.Revision.revisionNumber);
         if (!showGUI()) {
             return;
         }
@@ -148,12 +152,27 @@ public class Batch_Analyser implements PlugIn {
         }
 //        (new Analyzer()).displayResults();
         try {
-            resultsTable.saveAs(resultsDirectory + File.separator + "results.csv");
+            saveResults(resultsDirectory);
         } catch (Exception e) {
             GenUtils.error("Could not save results file.");
         }
         generateParamsFile(resultsDirectory);
         IJ.showStatus(title + " done: " + ((double) (System.currentTimeMillis() - startTime)) / 1000.0 + " s");
+    }
+
+    void saveResults(File resultsDirectory) throws IOException {
+        CSVPrinter printer = new CSVPrinter(new OutputStreamWriter(new FileOutputStream(new File(resultsDirectory + File.separator + "results.csv")), GenVariables.ISO), CSVFormat.EXCEL);
+        printer.printRecord((Object[]) resultsTable.getHeadings());
+        int n = resultsTable.size();
+        int m = resultsTable.getLastColumn();
+        for (int i = 0; i < n; i++) {
+            printer.print(resultsTable.getLabel(i));
+            for (int j = 0; j <= m; j++) {
+                printer.print(resultsTable.getStringValue(j, i));
+            }
+            printer.println();
+        }
+        printer.close();
     }
 
     /**
