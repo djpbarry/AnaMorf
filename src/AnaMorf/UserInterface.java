@@ -19,6 +19,7 @@ package AnaMorf;
 
 import ij.IJ;
 import ij.process.AutoThresholder;
+import ij.process.AutoThresholder.Method;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.text.DecimalFormat;
@@ -509,7 +510,7 @@ public class UserInterface extends javax.swing.JDialog {
         advancedPanel.add(wholeImageCheckBox, gridBagConstraints);
 
         threshComboBox.setModel(new DefaultComboBoxModel(AutoThresholder.Method.values()));
-        threshComboBox.setSelectedItem(AutoThresholder.Method.valueOf(thresholdMethod));
+        threshComboBox.setSelectedItem(String.valueOf(thresholdMethod));
         threshComboBox.setEnabled(autoThreshold);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
@@ -599,7 +600,7 @@ public class UserInterface extends javax.swing.JDialog {
         doWatershed = watershedCheckBox.isSelected();
         wholeImage = wholeImageCheckBox.isSelected();
         excludeEdges = edgeCheckBox.isSelected();
-        thresholdMethod = String.valueOf(threshComboBox.getSelectedItem());
+        thresholdMethod = Method.valueOf(String.valueOf(threshComboBox.getSelectedItem()));
 
         int k = imageFormatCombo.getSelectedIndex();
         if (k >= 0) {
@@ -612,8 +613,10 @@ public class UserInterface extends javax.swing.JDialog {
         String areaText = minAreaField.getText();
         String thresholdText = manualThresholdField.getText();
         String backgroundText = backgroundTextField.getText();
+        String filterText = manualThresholdField1.getText();
         try {
             imageRes = (resText != null) ? Double.parseDouble(resText) : imageRes;
+            filterRadius = (filterText != null) ? Double.parseDouble(filterText) : filterRadius;
             imageRes2 = imageRes*imageRes;
             minLength = (branchText != null) ? Double.parseDouble(branchText) : 0.0;
             maxCirc = (circText != null) ? Double.parseDouble(circText) : 0.0;
@@ -822,7 +825,7 @@ public class UserInterface extends javax.swing.JDialog {
         return filterRadius;
     }
 
-    public String getThresholdMethod() {
+    public Method getThresholdMethod() {
         return thresholdMethod;
     }
 
@@ -864,14 +867,14 @@ public class UserInterface extends javax.swing.JDialog {
     }
     private double imageRes2;
     private static int formatIndex = 4, manualThreshold = 100;
-    private static double minLength = 1.5, maxCirc = 1.0, minArea = 5.0,
-            imageRes = 0.267, backgroundRadius = 10.0, filterRadius = 0.267;
-    private static boolean createMasks = false, subBackground = false, area = false,
-            circ = false, thl = true, tips = true, hgu = true, fourfrac = false,
+    private static double minLength = 20.0, maxCirc = 0.2, minArea = 100.0,
+            imageRes = 1.0, backgroundRadius = 50.0, filterRadius = 1.0;
+    private static boolean createMasks = true, subBackground = true, area = false,
+            circ = false, thl = true, tips = true, hgu = false, fourfrac = false,
             boxfrac = false, lac = false, exit, autoThreshold = true, lightBackground = false,
             branches = false, doWatershed = false,
             wholeImage = false, excludeEdges = true;
-    private static String thresholdMethod = "Default";
+    private static Method thresholdMethod = Method.Otsu;
     private DecimalFormat threePlaces = new DecimalFormat("0.000");
     private DecimalFormat onePlace = new DecimalFormat("0.0");
     // Variables declaration - do not modify//GEN-BEGIN:variables

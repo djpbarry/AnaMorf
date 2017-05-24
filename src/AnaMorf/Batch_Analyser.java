@@ -21,6 +21,7 @@ import IAClasses.DSPProcessor;
 import IAClasses.FractalEstimator;
 import IAClasses.OnlyExt;
 import IAClasses.Pixel;
+import Thresholding.FuzzyThresholder;
 import UtilClasses.GenUtils;
 import UtilClasses.GenVariables;
 import ij.IJ;
@@ -37,12 +38,12 @@ import ij.plugin.filter.Analyzer;
 import ij.plugin.filter.BackgroundSubtracter;
 import ij.plugin.filter.EDM;
 import ij.plugin.filter.GaussianBlur;
-import ij.process.AutoThresholder;
 import ij.process.Blitter;
 import ij.process.ByteBlitter;
 import ij.process.ByteProcessor;
 import ij.process.ColorBlitter;
 import ij.process.ColorProcessor;
+import ij.process.FloatProcessor;
 import ij.process.FloodFiller;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
@@ -136,7 +137,13 @@ public class Batch_Analyser implements PlugIn {
         if (!showGUI()) {
             return;
         }
-        File currentDirectory = Utilities.getFolder(new File(System.getProperty("user.dir")), null, true);
+        File currentDirectory;
+        try {
+            currentDirectory = Utilities.getFolder(new File(System.getProperty("user.dir")), null, true);
+        } catch (Exception e) {
+            GenUtils.error("Could not open directory.");
+            return;
+        }
         if (currentDirectory == null) {
             return;
         }
@@ -225,7 +232,7 @@ public class Batch_Analyser implements PlugIn {
                 if (gui.isWholeImage() && maskOutput != null) {
                     outputResults = true;
                     useMorphFilters = false;
-                    ByteProcessor wholeImageMask = (ByteProcessor)maskImage.duplicate();
+                    ByteProcessor wholeImageMask = (ByteProcessor) maskImage.duplicate();
                     wholeImageMask.setValue(BACKGROUND);
                     wholeImageMask.fill();
                     analyseImage(wholeImageMask, maskImage, null, gui.isExcludeEdges(), null);
@@ -246,7 +253,7 @@ public class Batch_Analyser implements PlugIn {
         return true;
     }
 
-    private ImageProcessor preProcessImage(ImagePlus currentImage) {
+    private ByteProcessor preProcessImage(ImagePlus currentImage) {
         ImageProcessor currentProcessor = currentImage.getProcessor();
         if (currentProcessor == null) {
             IJ.log("There was a problem reading " + currentImage.getTitle());
@@ -256,34 +263,36 @@ public class Batch_Analyser implements PlugIn {
         if (!gui.isLightBackground()) {
             currentProcessor.invert();
         }
-        ByteProcessor binaryProcessor = (ByteProcessor) (new TypeConverter(currentProcessor, true)).convertToByte();
+        if (currentProcessor instanceof FloatProcessor) {
+            currentProcessor = (new TypeConverter(currentProcessor, true)).convertToShort();
+        }
         /*
          * Low-frequency noise removal
          */
         if (gui.isSubBackground()) {
-            (new BackgroundSubtracter()).rollingBallBackground(binaryProcessor,
+            (new BackgroundSubtracter()).rollingBallBackground(currentProcessor,
                     gui.getBackgroundRadius() / gui.getRes(), false, true, false,
                     true, false);
         }
-        (new GaussianBlur()).blurGaussian(binaryProcessor, filterRadius, filterRadius, 0.01);
+        (new GaussianBlur()).blurGaussian(currentProcessor, filterRadius, filterRadius, 0.01);
 
         /*
          * Generate binary image
          */
         if (gui.getManualThreshold() < 0) {
-            binaryProcessor.threshold(
-                    new AutoThresholder().getThreshold(
-                            gui.getThresholdMethod(), binaryProcessor.getStatistics().histogram
-                    ));
+            FuzzyThresholder ft = new FuzzyThresholder(currentProcessor.duplicate(), gui.getThresholdMethod(), 0.05);
+            currentProcessor = ft.threshold();
+            currentProcessor.erode();
+            currentProcessor.dilate();
         } else {
-            binaryProcessor.threshold(gui.getManualThreshold());
+            currentProcessor.threshold(gui.getManualThreshold());
         }
         if (gui.isDoWatershed()) {
-            binaryProcessor.invert();
-            (new EDM()).toWatershed(binaryProcessor);
-            binaryProcessor.invert();
+            currentProcessor.invert();
+            (new EDM()).toWatershed(currentProcessor);
+            currentProcessor.invert();
         }
-        return binaryProcessor;
+        return (ByteProcessor) (new TypeConverter(currentProcessor, false)).convertToByte();
     }
 
     /**
@@ -346,7 +355,7 @@ public class Batch_Analyser implements PlugIn {
 //        }
         byte pixels[] = (byte[]) binaryProcessor.getPixels();
         ImageProcessor filledBP = binaryProcessor.duplicate();
-        fill(filledBP, 0, 255);
+        fill(filledBP, FOREGROUND, BACKGROUND);
         Wand wand = new Wand(filledBP);
         /*
          * Image is scanned in a raster fashion searching for FOREGROUND pixels
