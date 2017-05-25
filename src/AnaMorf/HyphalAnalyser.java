@@ -18,6 +18,7 @@
 package AnaMorf;
 
 import IAClasses.SkeletonProcessor;
+import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import java.awt.Color;
@@ -32,7 +33,7 @@ public class HyphalAnalyser {
     private ImageProcessor processor;
     private double hyphalGrowthUnit = 0;
     private int hyphalLength = 0, tips = 0, branchpoints = 0, radius;
-    private ImageProcessor output;
+    private ImageProcessor colorOutput, bwOutput;
     private Rectangle imageBounds, objBounds;
 
     public HyphalAnalyser(ImageProcessor image, double res, Rectangle imageBox,
@@ -42,10 +43,13 @@ public class HyphalAnalyser {
         objBounds = objBox;
 //        radius = (int) Math.round(4.0 * 1.12347 / res);
         radius = 2;
-        output = new ColorProcessor(imageBox.width, imageBox.height);
-        output.setLineWidth(radius / 2);
-        output.setColor(Color.black);
-        output.fill();
+        colorOutput = new ColorProcessor(imageBox.width, imageBox.height);
+        colorOutput.setLineWidth(radius / 2);
+        colorOutput.setColor(Color.black);
+        colorOutput.fill();
+        bwOutput = new ByteProcessor(imageBox.width, imageBox.height);
+        bwOutput.setColor(Color.black);
+        bwOutput.fill();
     }
 
     /**
@@ -55,8 +59,9 @@ public class HyphalAnalyser {
      */
     public void analyse() {
         int x, y, foreground = 0, background = 255, diam = 2 * radius + 1, imageX, imageY;
-        output.setColor(Color.white);
-
+        colorOutput.setColor(Color.white);
+        bwOutput.setColor(Color.white);
+        
         if (processor.isInvertedLut()) {
             foreground = 255;
             background = 0;
@@ -71,22 +76,23 @@ public class HyphalAnalyser {
                     hyphalLength++;
                     imageX = x + objBounds.x;
                     imageY = y + objBounds.y;
-                    output.drawPixel(imageX, imageY);
+                    colorOutput.drawPixel(imageX, imageY);
+                    bwOutput.drawPixel(imageX, imageY);
                     if (SkeletonProcessor.isEndPoint(x, y, processor, background)) {
                         if ((imageX > radius)
                                 && (imageX < imageBounds.width - radius)
                                 && (imageY > radius)
                                 && (imageY < imageBounds.height - radius)) {
-                            output.setColor(Color.red);
-                            output.drawOval(imageX - radius, imageY - radius, diam, diam);
-                            output.setColor(Color.white);
+                            colorOutput.setColor(Color.red);
+                            colorOutput.drawOval(imageX - radius, imageY - radius, diam, diam);
+                            colorOutput.setColor(Color.white);
                             tips++;
                         }
                     } else if (searchNeighbourhood(x, y, 1, foreground) > 2) {
                         if (SkeletonProcessor.isBranchPoint(x, y, processor, foreground) == 0) {
-                            output.setColor(Color.yellow);
-                            output.drawOval(imageX - radius, imageY - radius, diam, diam);
-                            output.setColor(Color.white);
+                            colorOutput.setColor(Color.yellow);
+                            colorOutput.drawOval(imageX - radius, imageY - radius, diam, diam);
+                            colorOutput.setColor(Color.white);
                             branchpoints++;
                         }
                     }
@@ -136,7 +142,11 @@ public class HyphalAnalyser {
         return branchpoints;
     }
 
-    public ImageProcessor getOutput() {
-        return output;
+    public ImageProcessor getColorOutput() {
+        return colorOutput;
+    }
+    
+        public ImageProcessor getBWOutput() {
+        return bwOutput;
     }
 }

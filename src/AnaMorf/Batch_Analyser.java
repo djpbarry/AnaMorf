@@ -21,6 +21,8 @@ import IAClasses.DSPProcessor;
 import IAClasses.FractalEstimator;
 import IAClasses.OnlyExt;
 import IAClasses.Pixel;
+import IAClasses.SkeletonProcessor;
+import IO.DataWriter;
 import Thresholding.FuzzyThresholder;
 import UtilClasses.GenUtils;
 import UtilClasses.GenVariables;
@@ -81,7 +83,8 @@ public class Batch_Analyser implements PlugIn {
     private int outputData = 0; // Determines what metrics will be output to Results Table
     private static final int FOREGROUND = 0, BACKGROUND = 255; // Values for foreground & background pixels
     private ByteProcessor maskImage, refProc;
-    private ColorProcessor skelImage;
+    private ColorProcessor colorSkelImage;
+    private ImageProcessor bwSkelImage;
     private String imageName;
     public String title = "AnaMorf";
     UserInterface gui;
@@ -152,11 +155,11 @@ public class Batch_Analyser implements PlugIn {
         resultsTable.addLabel(currentDirectory.getAbsolutePath());
         long startTime = System.currentTimeMillis();
         File resultsDirectory = new File(GenUtils.openResultsDirectory(currentDirectory.getAbsolutePath() + File.separator + title));
-        if (analyseFiles(currentDirectory, resultsDirectory)) {
-//            (new ResultSummariser(confInterval)).summarise();
-        }
-//        (new Analyzer()).displayResults();
         try {
+            if (analyseFiles(currentDirectory, resultsDirectory)) {
+//            (new ResultSummariser(confInterval)).summarise();
+            }
+//        (new Analyzer()).displayResults();
             saveResults(resultsDirectory);
         } catch (Exception e) {
             GenUtils.error("Could not save results file.");
@@ -190,7 +193,7 @@ public class Batch_Analyser implements PlugIn {
      * @return true if images in <i>directory</i> were successfully processed,
      * false otherwise.
      */
-    public boolean analyseFiles(File directory, File resultsDirectory) {
+    public boolean analyseFiles(File directory, File resultsDirectory) throws IOException {
         int width, height;
         FilenameFilter directoryFilter = new OnlyExt(gui.getImageFormat());
         String imageFilenames[] = directory.list(directoryFilter); // Generates a list of image filenames of the format specified by the user
@@ -213,7 +216,7 @@ public class Batch_Analyser implements PlugIn {
                 maskImage = new ByteProcessor(width, height);
                 maskImage.setColor(BACKGROUND);
                 maskImage.fill();
-                skelImage = new ColorProcessor(width, height);
+                colorSkelImage = new ColorProcessor(width, height);
                 /*
              * Reference used to ensure that each object is only analysed once
                  */
@@ -223,7 +226,7 @@ public class Batch_Analyser implements PlugIn {
                 }
                 refProc.setValue(BACKGROUND);
                 refProc.fill();
-                searchImage(preProcessImage(currImage), gui.isExcludeEdges(), null, true);
+                searchImage(preProcessImage(currImage.duplicate()), gui.isExcludeEdges(), null, true);
 //            if (searchImage(preProcessImage(currImage), noEdge, null, true) > 0) {
                 ImagePlus maskOutput = new ImagePlus(imageName + " - Mask", maskImage.duplicate());
                 if (gui.isCreateMasks()) {
@@ -239,9 +242,11 @@ public class Batch_Analyser implements PlugIn {
                 }
                 if (((outputData & HYPHAL_GROWTH_UNIT) != 0) || ((outputData & NUMBER_OF_ENDPOINTS) != 0)
                         || ((outputData & TOTAL_HYPHAL_LENGTH) != 0)) {
-                    ImagePlus skelOutput = new ImagePlus(imageName + " - Skeleton", skelImage);
+                    ImagePlus skelOutput = new ImagePlus(imageName + " - Skeleton", colorSkelImage);
                     if (gui.isCreateMasks()) {
                         IJ.saveAs(skelOutput, "png", resultsDirectory + "//" + skelOutput.getTitle());
+                        double[][] skelVals = SkeletonProcessor.mapSkeleton(currImage.getProcessor(), bwSkelImage, FOREGROUND);
+                        DataWriter.saveValues(skelVals, new File(String.format("%s%s%s - SkeletonMap.csv", resultsDirectory,File.separator,imageName)), new String[]{"X", "Y", "Z"});
                     }
                 }
 //            }
@@ -565,8 +570,10 @@ public class Batch_Analyser implements PlugIn {
                 totalLength = analyser.getLength();
                 numEnds = analyser.getTips();
                 numBranches = analyser.getBranchpoints();
-                ColorBlitter skelBlit = new ColorBlitter(skelImage);
-                skelBlit.copyBits(analyser.getOutput(), 0, 0, Blitter.ADD);
+                ColorBlitter skelBlit = new ColorBlitter(colorSkelImage);
+                skelBlit.copyBits(analyser.getColorOutput(), 0, 0, Blitter.ADD);
+                bwSkelImage = analyser.getBWOutput();
+                bwSkelImage.invert();
             }
         }
 
