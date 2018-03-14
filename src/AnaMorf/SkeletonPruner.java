@@ -105,8 +105,8 @@ public class SkeletonPruner {
         boolean change = false;
 
         processor.setColor(BACKGROUND);
-        for (y = 0; y < height; y++) {
-            for (x = 0; x < width; x++) {
+        for (y = 1; y < height-1; y++) {
+            for (x = 1; x < width-1; x++) {
                 /*
                  * Image scanned until foreground pixel located
                  */
