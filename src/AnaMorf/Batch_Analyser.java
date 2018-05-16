@@ -230,8 +230,13 @@ public class Batch_Analyser implements PlugIn {
                 }
                 refProc.setValue(BACKGROUND);
                 refProc.fill();
-                searchImage(preProcessImage(currImage.duplicate()), gui.isExcludeEdges(), null, true);
-//            if (searchImage(preProcessImage(currImage), noEdge, null, true) > 0) {
+                ImageProcessor preProcessedImage;
+                if (gui.isPreProcess()) {
+                    preProcessedImage = preProcessImage(currImage.duplicate());
+                } else {
+                    preProcessedImage = currImage.getProcessor().duplicate();
+                }
+                searchImage(preProcessedImage, gui.isExcludeEdges(), null);
                 ImagePlus maskOutput = new ImagePlus(imageName + " - Mask", maskImage.duplicate());
                 if (gui.isCreateMasks()) {
                     IJ.saveAs(maskOutput, "png", resultsDirectory + "//" + maskOutput.getTitle());
@@ -337,7 +342,7 @@ public class Batch_Analyser implements PlugIn {
      * <code>.autoOutline()</code> and sends each detected boundary to
      * <code>analyseImage()</code> for morphological analysis.
      */
-    public int searchImage(ImageProcessor binaryProcessor, boolean excludeEdges, Roi roi, boolean checkGreyLevels) {
+    public int searchImage(ImageProcessor binaryProcessor, boolean excludeEdges, Roi roi) {
         int i, currentPixel, x, y, offset, objects;
         int width = binaryProcessor.getWidth();
         int height = binaryProcessor.getHeight();
