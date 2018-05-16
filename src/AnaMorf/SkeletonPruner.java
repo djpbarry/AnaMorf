@@ -89,7 +89,7 @@ public class SkeletonPruner {
             for (x = roi.x; x < roi.x + roi.width; x++) {
                 if (processor.getPixelValue(x, y) == FOREGROUND) {
                     if (SkeletonProcessor.removePixel(x, y, processor, FOREGROUND, BACKGROUND)) {
-                        processor.drawPixel(x, y);
+                        drawPixel(processor, x, y);
                     }
                 }
             }
@@ -135,7 +135,7 @@ public class SkeletonPruner {
                         do {
                             length++;
                         } while (SkeletonProcessor.getNextPixel(xPixels, yPixels, processor, length, FOREGROUND));
-                        if (length >= size) {
+                        if (!removeAll && length >= size) {
                             return change;
                         }
                         if (length < MIN_BRANCH_LENGTH) {
@@ -157,7 +157,7 @@ public class SkeletonPruner {
                                 length += xPixels[length];
                             }
                             for (i = length - 1; i >= 0; i--) {
-                                processor.drawPixel(xPixels[i], yPixels[i]);
+                                drawPixel(processor, xPixels[i], yPixels[i]);
                             }
                             /*
                              * Any residual points are now removed from the
@@ -168,7 +168,7 @@ public class SkeletonPruner {
                                         yPixels[length - 1] - 1, 3, 3);
                                 prunePoints(region, processor);
                             } else {
-                                processor.drawPixel(xPixels[length],
+                                drawPixel(processor, xPixels[length],
                                         yPixels[length]);
                             }
                             change = true;
@@ -180,7 +180,7 @@ public class SkeletonPruner {
                             branches.add(branchPix);
                             if (removeAll) {
                                 for (i = length - 1; i >= 0; i--) {
-                                    processor.drawPixel(xPixels[i], yPixels[i]);
+                                    drawPixel(processor, xPixels[i], yPixels[i]);
                                 }
                             }
                         }
@@ -202,4 +202,8 @@ public class SkeletonPruner {
         return branches;
     }
 
+    void drawPixel(ImageProcessor processor, int x, int y) {
+        processor.drawPixel(x, y);
+//        IJ.saveAs(new ImagePlus("", processor), "PNG", "C:\\Users\\barryd\\debugging\\anamorf_debug\\Skel_" + index++);
+    }
 }
