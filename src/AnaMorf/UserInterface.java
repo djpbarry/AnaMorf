@@ -66,6 +66,8 @@ public class UserInterface extends javax.swing.JDialog {
         tipsCheck = new javax.swing.JCheckBox();
         branchCheck = new javax.swing.JCheckBox();
         curveCheckBox = new javax.swing.JCheckBox();
+        curveWindowLabel = new javax.swing.JLabel();
+        curveWindowTextField = new javax.swing.JTextField();
         advancedPanel = new javax.swing.JPanel();
         blurRadiusLabel = new javax.swing.JLabel();
         blurRadiusField = new javax.swing.JTextField();
@@ -162,6 +164,7 @@ public class UserInterface extends javax.swing.JDialog {
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
@@ -172,6 +175,7 @@ public class UserInterface extends javax.swing.JDialog {
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
@@ -182,6 +186,7 @@ public class UserInterface extends javax.swing.JDialog {
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
@@ -192,6 +197,7 @@ public class UserInterface extends javax.swing.JDialog {
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
@@ -202,6 +208,7 @@ public class UserInterface extends javax.swing.JDialog {
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
@@ -211,7 +218,7 @@ public class UserInterface extends javax.swing.JDialog {
         areaCheck.setText("Projected Area");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 9;
+        gridBagConstraints.gridy = 10;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
@@ -221,7 +228,7 @@ public class UserInterface extends javax.swing.JDialog {
         thlCheck.setText("Total Length");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 9;
+        gridBagConstraints.gridy = 10;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
@@ -231,7 +238,7 @@ public class UserInterface extends javax.swing.JDialog {
         hguCheck.setText("Mean Branch Length");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridy = 8;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
@@ -241,7 +248,7 @@ public class UserInterface extends javax.swing.JDialog {
         fourierFracCheck.setText("Fourier Fractal Dimension");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
@@ -251,7 +258,7 @@ public class UserInterface extends javax.swing.JDialog {
         boxFracCheck.setText("Box-Counting Fractal Dimension");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
@@ -261,7 +268,7 @@ public class UserInterface extends javax.swing.JDialog {
         circCheck.setText("Circularity");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridy = 6;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
@@ -271,7 +278,7 @@ public class UserInterface extends javax.swing.JDialog {
         lacCheck.setText("Lacunarity");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 7;
+        gridBagConstraints.gridy = 8;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
@@ -281,7 +288,7 @@ public class UserInterface extends javax.swing.JDialog {
         tipsCheck.setText("Number of Endpoints");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 8;
+        gridBagConstraints.gridy = 9;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
@@ -291,7 +298,7 @@ public class UserInterface extends javax.swing.JDialog {
         branchCheck.setText("Number of Branchpoints");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
+        gridBagConstraints.gridy = 9;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
@@ -301,11 +308,29 @@ public class UserInterface extends javax.swing.JDialog {
         curveCheckBox.setSelected(curvature);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 6;
+        gridBagConstraints.gridy = 7;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         basicPanel.add(curveCheckBox, gridBagConstraints);
+
+        curveWindowLabel.setText("Curvature Window:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        basicPanel.add(curveWindowLabel, gridBagConstraints);
+
+        curveWindowTextField.setText(String.valueOf(curvatureWindow));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        basicPanel.add(curveWindowTextField, gridBagConstraints);
 
         jTabbedPane1.addTab("Basic", basicPanel);
 
@@ -649,6 +674,7 @@ public class UserInterface extends javax.swing.JDialog {
         String thresholdText = manualThresholdField.getText();
         String backgroundText = backgroundTextField.getText();
         String filterText = blurRadiusField.getText();
+        String curveWindowText = curveWindowTextField.getText();
         try {
             imageRes = (resText != null) ? Double.parseDouble(resText) : imageRes;
             filterRadius = (filterText != null) ? Double.parseDouble(filterText) : filterRadius;
@@ -656,6 +682,7 @@ public class UserInterface extends javax.swing.JDialog {
             minLength = (branchText != null) ? Double.parseDouble(branchText) : 0.0;
             maxCirc = (circText != null) ? Double.parseDouble(circText) : 0.0;
             minArea = (areaText != null) ? Double.parseDouble(areaText) : 0.0;
+            curvatureWindow = Integer.parseInt(curveWindowText);
             backgroundRadius = (backgroundText != null) ? Double.parseDouble(backgroundText) : 0.0;
             if (!autoThreshold) {
                 manualThreshold = (thresholdText != null) ? Integer.parseInt(thresholdText) : 0;
@@ -884,6 +911,10 @@ public class UserInterface extends javax.swing.JDialog {
         return preProcess;
     }
 
+    public int getCurvatureWindow() {
+        return curvatureWindow;
+    }
+
     @Override
     public String toString() {
         return "Image Format: " + (String) imageFormatCombo.getSelectedItem()
@@ -921,7 +952,7 @@ public class UserInterface extends javax.swing.JDialog {
         return exit;
     }
     private double imageRes2;
-    private static int formatIndex = 3, manualThreshold = 100;
+    private static int formatIndex = 3, manualThreshold = 100, curvatureWindow = 20;
     private static double minLength = 20.0, maxCirc = 0.2, minArea = 10.0,
             imageRes = 1.0, backgroundRadius = 50.0, filterRadius = 1.0;
     private static boolean createMasks = true, subBackground = true, area = true,
@@ -945,6 +976,8 @@ public class UserInterface extends javax.swing.JDialog {
     private javax.swing.JCheckBox branchCheck;
     private javax.swing.JCheckBox circCheck;
     private javax.swing.JCheckBox curveCheckBox;
+    private javax.swing.JLabel curveWindowLabel;
+    private javax.swing.JTextField curveWindowTextField;
     private javax.swing.JRadioButton darkBGRadio;
     private javax.swing.JCheckBox edgeCheckBox;
     private javax.swing.JButton exitButton;

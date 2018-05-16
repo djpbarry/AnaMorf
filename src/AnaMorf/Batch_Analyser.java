@@ -576,7 +576,7 @@ public class Batch_Analyser implements PlugIn {
                 SkeletonPruner pruner1 = new SkeletonPruner(minPixLength, objProc, objBox, false, false);
                 objProc = pruner1.getPrunedImage();
                 SkeletonPruner pruner2 = new SkeletonPruner(0, (ByteProcessor) objProc.duplicate(), objBox, true, true);
-                curvature = generateCurveMap(pruner2.getBranches(), imageRoiBounds.width, imageRoiBounds.height, curveMap);
+                curvature = generateCurveMap(pruner2.getBranches(), imageRoiBounds.width, imageRoiBounds.height, curveMap, gui.getCurvatureWindow());
                 HyphalAnalyser analyser = new HyphalAnalyser(objProc, gui.getRes(), imageBox, objBox);
                 analyser.analyse(); // Analyse pruned skeleton
                 growthUnit = analyser.getHGU();
@@ -758,13 +758,13 @@ public class Batch_Analyser implements PlugIn {
         outputStream.close();
     }
 
-    double generateCurveMap(ArrayList<int[][]> branches, int width, int height, FloatProcessor curveMap) {
+    double generateCurveMap(ArrayList<int[][]> branches, int width, int height, FloatProcessor curveMap, int window) {
         if (branches == null) {
             return Double.NaN;
         }
         SummaryStatistics stats = new SummaryStatistics();
         for (int[][] branch : branches) {
-            double[] curvature = CurveAnalyser.calcCurvature(branch, 20, false);
+            double[] curvature = CurveAnalyser.calcCurvature(branch, window, false);
             for (int i = 0; i < branch.length; i++) {
                 double c = Math.abs(curvature[i]);
                 curveMap.putPixelValue(branch[i][0], branch[i][1], c);
