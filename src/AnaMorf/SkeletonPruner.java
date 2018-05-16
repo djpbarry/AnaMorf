@@ -21,6 +21,7 @@ import ij.process.ByteProcessor;
 import ij.process.ByteStatistics;
 import ij.process.ImageProcessor;
 import java.awt.Rectangle;
+import java.util.ArrayList;
 
 /**
  * SkeletonPruner takes as argument a <i>ByteProcessor</i>, containing a binary
@@ -32,8 +33,14 @@ public class SkeletonPruner {
 
     private ByteProcessor outputProcessor = null;
     private final int FOREGROUND, BACKGROUND, MIN_BRANCH_LENGTH;
+    private ArrayList<int[][]> branches = new ArrayList();
+    private Rectangle roi;
+    private final boolean removeAll;
+    private int index = 0;
 
-    public SkeletonPruner(int minimumLength, ByteProcessor inputProcessor) {
+    public SkeletonPruner(int minimumLength, ByteProcessor inputProcessor, Rectangle roi, boolean loops, boolean removeAll) {
+        this.roi = roi;
+        this.removeAll = removeAll;
         MIN_BRANCH_LENGTH = minimumLength;
         int histogram[];
         int width = inputProcessor.getWidth();
@@ -59,7 +66,10 @@ public class SkeletonPruner {
              * The image is repeatedly processed until no further changes are
              * necessary.
              */
-            while (pruneBranches(referenceProcessor)) ;
+            while (pruneBranches(referenceProcessor, false)) ;
+            if (loops) {
+                while (pruneBranches(referenceProcessor, true)) ;
+            }
             outputProcessor.setPixels(referenceProcessor.getPixels());
         }
     }
@@ -94,7 +104,7 @@ public class SkeletonPruner {
      * @param processor image containing the skeleton structure
      * @return true if at least one branch has been removed, false otherwise
      */
-    public boolean pruneBranches(ImageProcessor processor) {
+    public boolean pruneBranches(ImageProcessor processor, boolean loops) {
         int x, y, i, length;
         int width = processor.getWidth(), height = processor.getHeight();
         Rectangle region;
@@ -105,8 +115,8 @@ public class SkeletonPruner {
         boolean change = false;
 
         processor.setColor(BACKGROUND);
-        for (y = 1; y < height-1; y++) {
-            for (x = 1; x < width-1; x++) {
+        for (y = 1; y < height - 1; y++) {
+            for (x = 1; x < width - 1; x++) {
                 /*
                  * Image scanned until foreground pixel located
                  */
@@ -114,7 +124,7 @@ public class SkeletonPruner {
                     /*
                      * Tracing of branches commences from end-points only
                      */
-                    if (SkeletonProcessor.isEndPoint(x, y, processor, BACKGROUND)) {
+                    if (loops || SkeletonProcessor.isEndPoint(x, y, processor, BACKGROUND)) {
                         length = 0;
                         xPixels[length] = x;
                         yPixels[length] = y;
@@ -162,6 +172,17 @@ public class SkeletonPruner {
                                         yPixels[length]);
                             }
                             change = true;
+                        } else {
+                            int[][] branchPix = new int[length][];
+                            for (int j = 0; j < length; j++) {
+                                branchPix[j] = new int[]{xPixels[j] + roi.x, yPixels[j] + roi.y};
+                            }
+                            branches.add(branchPix);
+                            if (removeAll) {
+                                for (i = length - 1; i >= 0; i--) {
+                                    processor.drawPixel(xPixels[i], yPixels[i]);
+                                }
+                            }
                         }
                     }
                 }
@@ -176,4 +197,9 @@ public class SkeletonPruner {
     public ByteProcessor getPrunedImage() {
         return outputProcessor;
     }
+
+    public ArrayList<int[][]> getBranches() {
+        return branches;
+    }
+
 }

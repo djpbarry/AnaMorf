@@ -584,7 +584,7 @@ public class UserInterface extends javax.swing.JDialog {
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
         exit = false;
-
+        
         lac = lacCheck.isSelected();
         thl = thlCheck.isSelected();
         createMasks = maskImageCheck.isSelected();
@@ -666,7 +666,7 @@ public class UserInterface extends javax.swing.JDialog {
     }//GEN-LAST:event_subBackgroundCheckActionPerformed
 
     public boolean[] getOptions() {
-        boolean options[] = {area, circ, hgu, thl, tips, branches, fourfrac, boxfrac, lac};
+        boolean options[] = {area, circ, hgu, thl, tips, branches, fourfrac, boxfrac, lac, curvature};
         return options;
     }
 
@@ -866,14 +866,14 @@ public class UserInterface extends javax.swing.JDialog {
         return exit;
     }
     private double imageRes2;
-    private static int formatIndex = 4, manualThreshold = 100;
-    private static double minLength = 20.0, maxCirc = 0.2, minArea = 100.0,
+    private static int formatIndex = 3, manualThreshold = 100;
+    private static double minLength = 20.0, maxCirc = 0.2, minArea = 10.0,
             imageRes = 1.0, backgroundRadius = 50.0, filterRadius = 1.0;
-    private static boolean createMasks = true, subBackground = true, area = false,
-            circ = false, thl = true, tips = true, hgu = false, fourfrac = false,
-            boxfrac = false, lac = false, exit, autoThreshold = true, lightBackground = false,
-            branches = false, doWatershed = false,
-            wholeImage = false, excludeEdges = true;
+    private static boolean createMasks = true, subBackground = true, area = true,
+            circ = true, thl = true, tips = true, hgu = true, fourfrac = true,
+            boxfrac = true, lac = true, exit, autoThreshold = true, lightBackground = true,
+            branches = true, doWatershed = false,
+            wholeImage = false, excludeEdges = true, curvature=true;
     private static Method thresholdMethod = Method.Otsu;
     private DecimalFormat threePlaces = new DecimalFormat("0.000");
     private DecimalFormat onePlace = new DecimalFormat("0.0");

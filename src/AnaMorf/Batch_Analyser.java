@@ -16,6 +16,7 @@
  */
 package AnaMorf;
 
+import Curvature.CurveAnalyser;
 import UtilClasses.Utilities;
 import IAClasses.DSPProcessor;
 import IAClasses.FractalEstimator;
@@ -61,8 +62,10 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 /**
  * BatchAnalyser is designed to automatically analyse a batch of images of
@@ -85,6 +88,7 @@ public class Batch_Analyser implements PlugIn {
     private ByteProcessor maskImage, refProc;
     private ColorProcessor colorSkelImage;
     private ImageProcessor bwSkelImage;
+    private FloatProcessor curveMap;
     private String imageName;
     public String title = "AnaMorf";
     UserInterface gui;
@@ -101,7 +105,8 @@ public class Batch_Analyser implements PlugIn {
             LENGTH_HEAD = "Total Length (" + IJ.micronSymbol + "m)",
             TIP_HEAD = "Endpoints",
             HGU_HEAD = "HGU (" + IJ.micronSymbol + "m)",
-            BRANCH_HEAD = "Branchpoints";
+            BRANCH_HEAD = "Branchpoints",
+            CURVE_HEAD = "Curvature";
 
     /*
      * Flags for results output
@@ -114,7 +119,8 @@ public class Batch_Analyser implements PlugIn {
             NUMBER_OF_BRANCHES = 32,
             FOURIER_FRACTAL_DIMENSION = 64,
             BOX_FRACTAL_DIMENSION = 128,
-            LACUNARITY = 256;
+            LACUNARITY = 256,
+            CURVATURE = 512;
 
 //    public Batch_Analyser(boolean wholeImage) {
 //        this.wholeImage = wholeImage;
@@ -136,7 +142,7 @@ public class Batch_Analyser implements PlugIn {
         }
         File currentDirectory;
         try {
-            currentDirectory = Utilities.getFolder(new File(System.getProperty("user.dir")), null, true);
+            currentDirectory = Utilities.getFolder(new File("D:\\OneDrive - The Francis Crick Institute\\AnaMorf Test\\"), null, true);
         } catch (Exception e) {
             GenUtils.error("Could not open directory.");
             return;
@@ -156,7 +162,8 @@ public class Batch_Analyser implements PlugIn {
 //        (new Analyzer()).displayResults();
             saveResults(resultsDirectory);
         } catch (Exception e) {
-            GenUtils.error("Could not save results file.");
+            GenUtils.error("Could not save results file.\n" + e.toString() + "\n" + e.getMessage() + "\n");
+            e.printStackTrace();
         }
         generateParamsFile(resultsDirectory);
         IJ.showStatus(title + " done: " + ((double) (System.currentTimeMillis() - startTime)) / 1000.0 + " s");
@@ -208,6 +215,9 @@ public class Batch_Analyser implements PlugIn {
                 width = currImage.getWidth();
                 height = currImage.getHeight();
                 maskImage = new ByteProcessor(width, height);
+                curveMap = new FloatProcessor(width, height);
+                curveMap.setValue(0.0);
+                curveMap.fill();
                 maskImage.setColor(BACKGROUND);
                 maskImage.fill();
                 colorSkelImage = new ColorProcessor(width, height);
@@ -237,10 +247,12 @@ public class Batch_Analyser implements PlugIn {
                 if (((outputData & HYPHAL_GROWTH_UNIT) != 0) || ((outputData & NUMBER_OF_ENDPOINTS) != 0)
                         || ((outputData & TOTAL_HYPHAL_LENGTH) != 0)) {
                     ImagePlus skelOutput = new ImagePlus(imageName + " - Skeleton", colorSkelImage);
+                    ImagePlus curveOutput = new ImagePlus(imageName + " - Curve Map", curveMap);
                     if (gui.isCreateMasks()) {
                         IJ.saveAs(skelOutput, "png", resultsDirectory + "//" + skelOutput.getTitle());
+                        IJ.saveAs(curveOutput, "tif", resultsDirectory + "//" + curveOutput.getTitle());
                         double[][] skelVals = SkeletonProcessor.mapSkeleton(currImage.getProcessor(), bwSkelImage, FOREGROUND);
-                        DataWriter.saveValues(skelVals, new File(String.format("%s%s%s - SkeletonMap.csv", resultsDirectory,File.separator,imageName)), new String[]{"X", "Y", "Z"}, null, false);
+                        DataWriter.saveValues(skelVals, new File(String.format("%s%s%s - SkeletonMap.csv", resultsDirectory, File.separator, imageName)), new String[]{"X", "Y", "Z"}, null, false);
                     }
                 }
 //            }
@@ -438,7 +450,7 @@ public class Batch_Analyser implements PlugIn {
             ImageProcessor binProc, PolygonRoi objRoi, boolean excludeEdges, Roi imageRoi) {
         int x, y, pixArea = 0, numEnds = 0, numBranches = 0;
         int minPixLength = (int) Math.round(gui.getMinLength() / gui.getRes());
-        double var, meanSq, objArea, objCirc, xCent, yCent;
+        double var, meanSq, objArea, objCirc, xCent, yCent, curvature = Double.NaN;
         double objectPerim = 1.0, lac = 1.0, distfracDim = Double.NaN;
         double xSum = 0.0, ySum = 0.0, growthUnit = 0.0, totalLength = 0.0;
         Rectangle objBox, imageBox = new Rectangle(0, 0, binProc.getWidth(), binProc.getHeight());
@@ -556,8 +568,10 @@ public class Batch_Analyser implements PlugIn {
                 /*
                  * Prune image to remove artefacts of skeletonisation
                  */
-                SkeletonPruner pruner = new SkeletonPruner(minPixLength, objProc);
-                objProc = pruner.getPrunedImage();
+                SkeletonPruner pruner1 = new SkeletonPruner(minPixLength, objProc, objBox, false, false);
+                objProc = pruner1.getPrunedImage();
+                SkeletonPruner pruner2 = new SkeletonPruner(0, (ByteProcessor) objProc.duplicate(), objBox, true, true);
+                curvature = generateCurveMap(pruner2.getBranches(), imageRoiBounds.width, imageRoiBounds.height, curveMap);
                 HyphalAnalyser analyser = new HyphalAnalyser(objProc, gui.getRes(), imageBox, objBox);
                 analyser.analyse(); // Analyse pruned skeleton
                 growthUnit = analyser.getHGU();
@@ -638,6 +652,9 @@ public class Batch_Analyser implements PlugIn {
             }
             if ((outputData & BOX_FRACTAL_DIMENSION) != 0 && boxFracDims != null) {
                 resultsTable.addValue(BOX_FRAC_HEAD, boxFracDims[0]);
+            }
+            if ((outputData & CURVATURE) != 0) {
+                resultsTable.addValue(CURVE_HEAD, curvature);
             }
             resultsTable.addLabel("Image", imageName);
         }
@@ -734,5 +751,21 @@ public class Batch_Analyser implements PlugIn {
         outputStream.println();
         outputStream.println(gui.toString());
         outputStream.close();
+    }
+
+    double generateCurveMap(ArrayList<int[][]> branches, int width, int height, FloatProcessor curveMap) {
+        if (branches == null) {
+            return Double.NaN;
+        }
+        SummaryStatistics stats = new SummaryStatistics();
+        for (int[][] branch : branches) {
+            double[] curvature = CurveAnalyser.calcCurvature(branch, 20, false);
+            for (int i = 0; i < branch.length; i++) {
+                double c = Math.abs(curvature[i]);
+                curveMap.putPixelValue(branch[i][0], branch[i][1], c);
+                stats.addValue(c);
+            }
+        }
+        return stats.getMean();
     }
 }
