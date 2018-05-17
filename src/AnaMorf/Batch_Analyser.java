@@ -150,6 +150,8 @@ public class Batch_Analyser implements PlugIn {
         if (currentDirectory == null) {
             return;
         }
+        IJ.log(title);
+        IJ.log(currentDirectory.getAbsolutePath());
         resultsTable = Analyzer.getResultsTable();
         resultsTable.incrementCounter();
         resultsTable.addLabel(currentDirectory.getAbsolutePath());
