@@ -166,6 +166,7 @@ public class Batch_Analyser implements PlugIn {
             e.printStackTrace();
         }
         generateParamsFile(resultsDirectory);
+        IJ.log("Done");
         IJ.showStatus(title + " done: " + ((double) (System.currentTimeMillis() - startTime)) / 1000.0 + " s");
     }
 
@@ -211,6 +212,7 @@ public class Batch_Analyser implements PlugIn {
             imageName = imageFilenames[i];
             IJ.showStatus("Scanning " + imageName);
             ImagePlus currImage = new ImagePlus(directory + File.separator + imageName);
+            IJ.log(String.format("Analysing image %d of %d - %s", i + 1, imageFilenames.length, currImage.getShortTitle()));
             if (!(currImage.getProcessor() instanceof ColorProcessor)) {
                 width = currImage.getWidth();
                 height = currImage.getHeight();
