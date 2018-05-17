@@ -93,6 +93,7 @@ public class Batch_Analyser implements PlugIn {
     public String title = "AnaMorf";
     UserInterface gui;
     ResultsTable resultsTable;
+    private static File currentDirectory;
     /*
      * Column headings used for Results Table output
      */
@@ -140,9 +141,8 @@ public class Batch_Analyser implements PlugIn {
         if (!showGUI()) {
             return;
         }
-        File currentDirectory;
         try {
-            currentDirectory = Utilities.getFolder(new File("D:\\OneDrive - The Francis Crick Institute\\AnaMorf Test\\"), null, true);
+            currentDirectory = Utilities.getFolder(new File(System.getProperty("user.dir")), null, true);
         } catch (Exception e) {
             GenUtils.error("Could not open directory.");
             return;
