@@ -153,6 +153,7 @@ public class Batch_Analyser implements PlugIn {
         IJ.log(title);
         IJ.log(currentDirectory.getAbsolutePath());
         resultsTable = Analyzer.getResultsTable();
+        resultsTable.reset();
         resultsTable.incrementCounter();
         resultsTable.addLabel(currentDirectory.getAbsolutePath());
         long startTime = System.currentTimeMillis();
