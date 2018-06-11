@@ -261,8 +261,10 @@ public class Batch_Analyser implements PlugIn {
                     if (gui.isCreateMasks()) {
                         IJ.saveAs(skelOutput, "png", resultsDirectory + "//" + skelOutput.getTitle());
                         IJ.saveAs(curveOutput, "tif", resultsDirectory + "//" + curveOutput.getTitle());
-                        double[][] skelVals = SkeletonProcessor.mapSkeleton(currImage.getProcessor(), bwSkelImage, FOREGROUND);
-                        DataWriter.saveValues(skelVals, new File(String.format("%s%s%s - SkeletonMap.csv", resultsDirectory, File.separator, imageName)), new String[]{"X", "Y", "Z"}, null, false);
+                        if (bwSkelImage != null) {
+                            double[][] skelVals = SkeletonProcessor.mapSkeleton(currImage.getProcessor(), bwSkelImage, FOREGROUND);
+                            DataWriter.saveValues(skelVals, new File(String.format("%s%s%s - SkeletonMap.csv", resultsDirectory, File.separator, imageName)), new String[]{"X", "Y", "Z"}, null, false);
+                        }
                     }
                 }
 //            }
