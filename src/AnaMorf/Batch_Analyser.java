@@ -771,11 +771,13 @@ public class Batch_Analyser implements PlugIn {
         }
         SummaryStatistics stats = new SummaryStatistics();
         for (int[][] branch : branches) {
-            double[] curvature = CurveAnalyser.calcCurvature(branch, window, false);
-            for (int i = 0; i < curvature.length; i++) {
-                double c = Math.abs(curvature[i]);
-                curveMap.putPixelValue(branch[i][0], branch[i][1], c);
-                stats.addValue(c);
+            if (branch.length > 2 * window) {
+                double[] curvature = CurveAnalyser.calcCurvature(branch, window, false);
+                for (int i = 0; i < curvature.length; i++) {
+                    double c = Math.abs(curvature[i]);
+                    curveMap.putPixelValue(branch[i + window][0], branch[i + window][1], c);
+                    stats.addValue(c);
+                }
             }
         }
         return stats.getMean();
