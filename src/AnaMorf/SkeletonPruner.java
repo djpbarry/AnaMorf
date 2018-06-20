@@ -38,6 +38,14 @@ public class SkeletonPruner {
     private final boolean removeAll;
     private int index = 0;
 
+    public SkeletonPruner(Rectangle roi) {
+        this.roi = roi;
+        FOREGROUND = 0;
+        BACKGROUND = 255;
+        MIN_BRANCH_LENGTH = 0;
+        removeAll = false;
+    }
+
     public SkeletonPruner(int minimumLength, ByteProcessor inputProcessor, Rectangle roi, boolean loops, boolean removeAll) {
         this.roi = roi;
         this.removeAll = removeAll;
@@ -189,6 +197,45 @@ public class SkeletonPruner {
             }
         }
         return change;
+    }
+
+    public int[][] traceBranch(ImageProcessor processor, int x0, int y0) {
+        int length = 0;
+        ByteStatistics stats = new ByteStatistics(processor);
+        int size = stats.histogram[FOREGROUND];
+        int xPixels[] = new int[size];
+        int yPixels[] = new int[size];
+
+        processor.setColor(BACKGROUND);
+        /*
+                 * Image scanned until foreground pixel located
+         */
+        if (processor.getPixelValue(x0, y0) == FOREGROUND) {
+            /*
+                     * Tracing of branches commences from end-points only
+             */
+            if (SkeletonProcessor.isEndPoint(x0, y0, processor, BACKGROUND)) {
+                xPixels[length] = x0;
+                yPixels[length] = y0;
+                /*
+                         * Tracing of the skeleton proceeds until the end of the
+                         * current branch is reached
+                 */
+                do {
+                    length++;
+                } while (SkeletonProcessor.getNextPixel(xPixels, yPixels, processor, length, FOREGROUND));
+                for (int i = length - 1; i >= 0; i--) {
+                    drawPixel(processor, xPixels[i], yPixels[i]);
+                }
+            }
+        }
+        int[] truncXP = new int[length];
+        int[] truncYP = new int[length];
+        for (int i = 0; i < length; i++) {
+            truncXP[i] = xPixels[i] + roi.x;
+            truncYP[i] = yPixels[i] + roi.y;
+        }
+        return new int[][]{truncXP, truncYP};
     }
 
     /**

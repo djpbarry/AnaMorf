@@ -585,6 +585,7 @@ public class Batch_Analyser implements PlugIn {
                 SkeletonPruner pruner2 = new SkeletonPruner(0, (ByteProcessor) objProc.duplicate(), objBox, true, true);
                 curvature = generateCurveMap(pruner2.getBranches(), imageRoiBounds.width, imageRoiBounds.height, curveMap, gui.getCurvatureWindow());
                 HyphalAnalyser analyser = new HyphalAnalyser(objProc, gui.getRes(), imageBox, objBox);
+                analyser.buildGraph();
                 analyser.analyse(); // Analyse pruned skeleton
                 growthUnit = analyser.getHGU();
                 totalLength = analyser.getLength();
