@@ -34,6 +34,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * Determines the total length (<i>L<sub>t</sub></i>) of a hyphal structure (a
@@ -343,18 +344,33 @@ public class HyphalAnalyser {
     ArrayList<int[][]> getPathAsBranch(LinkedList<Node> path) {
         ArrayList<int[]> output = new ArrayList();
         for (int i = 0; i < path.size() - 1; i++) {
+//            output.add(new int[]{path.get(i).getX() + objBounds.x, path.get(i).getY() + objBounds.y});
             int[][] pixels = path.get(i).getAdjacentNodes().get(path.get(i + 1));
+            int d1 = path.get(i).getSimpleDist(pixels[0][0], pixels[0][1]);
+            int d2 = path.get(i + 1).getSimpleDist(pixels[0][0], pixels[0][1]);
+            if (d1 > d2) {
+                pixels = reversePath(pixels);
+            }
             for (int j = 0; j < pixels[0].length; j++) {
                 output.add(new int[]{pixels[0][j] + objBounds.x, pixels[1][j] + objBounds.y});
             }
-            output.add(new int[]{path.get(i).getX() + objBounds.x, path.get(i).getY() + objBounds.y});
-            output.add(new int[]{path.get(i + 1).getX() + objBounds.x, path.get(i + 1).getY() + objBounds.y});
+//            output.add(new int[]{path.get(i + 1).getX() + objBounds.x, path.get(i + 1).getY() + objBounds.y});
         }
         int[][] branch = new int[output.size()][];
         int[][] branch1 = output.toArray(branch);
         ArrayList<int[][]> output2 = new ArrayList();
         output2.add(branch1);
         return output2;
+    }
+
+    int[][] reversePath(int[][] path) {
+        int l = path[0].length;
+        int[][] output = new int[2][l];
+        for (int i = l - 1; i >= 0; i--) {
+            output[0][l - 1 - i] = path[0][i];
+            output[1][l - 1 - i] = path[1][i];
+        }
+        return output;
     }
 
 }
