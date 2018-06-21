@@ -34,7 +34,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * Determines the total length (<i>L<sub>t</sub></i>) of a hyphal structure (a
@@ -346,8 +345,8 @@ public class HyphalAnalyser {
         for (int i = 0; i < path.size() - 1; i++) {
 //            output.add(new int[]{path.get(i).getX() + objBounds.x, path.get(i).getY() + objBounds.y});
             int[][] pixels = path.get(i).getAdjacentNodes().get(path.get(i + 1));
-            int d1 = path.get(i).getSimpleDist(pixels[0][0], pixels[0][1]);
-            int d2 = path.get(i + 1).getSimpleDist(pixels[0][0], pixels[0][1]);
+            int d1 = path.get(i).getSimpleDist(pixels[0][0], pixels[1][0]);
+            int d2 = path.get(i + 1).getSimpleDist(pixels[0][0], pixels[1][0]);
             if (d1 > d2) {
                 pixels = reversePath(pixels);
             }
