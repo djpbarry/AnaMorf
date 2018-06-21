@@ -163,7 +163,7 @@ public class HyphalAnalyser {
         return bwOutput;
     }
 
-    public void buildGraph() {
+    public ArrayList<int[][]> findLongestPath() {
         int foreground = 0, background = 255;
         ImageProcessor ip = null;
         if (processor != null) {
@@ -174,29 +174,31 @@ public class HyphalAnalyser {
         int height = ip.getHeight();
 
         ArrayList<Node> nodes = new ArrayList();
-
+        radius = 1;
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 if (ip.getPixel(x, y) == foreground) {
-                    int imageX = x + objBounds.x;
-                    int imageY = y + objBounds.y;
+                    int imageX = x;
+                    int imageY = y;
                     if (SkeletonProcessor.isEndPoint(x, y, ip, background)) {
                         if ((imageX > radius)
                                 && (imageX < imageBounds.width - radius)
                                 && (imageY > radius)
                                 && (imageY < imageBounds.height - radius)) {
                             nodes.add(new Node(Node.END, imageX, imageY));
+//                            System.out.println(String.format("%d %d", imageX, imageY));
                         }
                     } else if (searchNeighbourhood(x, y, 1, foreground) > 2) {
                         if (SkeletonProcessor.isBranchPoint(x, y, ip, foreground) == 0) {
                             nodes.add(new Node(Node.BRANCH, imageX, imageY));
+//                            System.out.println(String.format("%d %d", imageX, imageY));
                         }
                     }
                 }
             }
         }
         if (nodes.isEmpty()) {
-            return;
+            return null;
         }
 
         boolean change = true;
@@ -208,8 +210,8 @@ public class HyphalAnalyser {
                 for (int x = 0; x < width; x++) {
                     if (ip.getPixel(x, y) == foreground && SkeletonProcessor.isEndPoint(x, y, ip, background)) {
                         change = true;
-                        int imageX = x + objBounds.x;
-                        int imageY = y + objBounds.y;
+                        int imageX = x;
+                        int imageY = y;
                         int n1 = findNodeIndex(nodes, imageX, imageY);
                         if (n1 < 0) {
                             continue;
@@ -233,7 +235,7 @@ public class HyphalAnalyser {
         Graph graph = new Graph();
         for (Node n : nodes) {
             graph.addNode(n);
-//            ByteProcessor bp = new ByteProcessor(640, 480);
+//            ByteProcessor bp = new ByteProcessor(objBounds.width, objBounds.height);
 //            bp.setColor(255);
 //            bp.fill();
 //            bp.setColor(0);
@@ -251,10 +253,10 @@ public class HyphalAnalyser {
                 graph.resetNodes();
             }
         }
-        drawLongestPath(distanceMaps, width, height);
+        return drawLongestPath(distanceMaps, width, height);
     }
 
-    void drawLongestPath(Map<Node, Graph> distanceMaps, int width, int height) {
+    ArrayList<int[][]> drawLongestPath(Map<Node, Graph> distanceMaps, int width, int height) {
         int maxDist = -1;
         LinkedList<Node> longestShortestPath = null;
         for (Map.Entry< Node, Graph> nodeGraphPair : distanceMaps.entrySet()) {
@@ -272,14 +274,16 @@ public class HyphalAnalyser {
             }
         }
 
-//        ByteProcessor bp = new ByteProcessor(imageBounds.width, imageBounds.height);
+//        ByteProcessor bp = new ByteProcessor(objBounds.width, objBounds.height);
 //        bp.setValue(255);
 //        bp.fill();
 //        bp.setValue(0);
-//        if (longestShortestPath != null && !longestShortestPath.isEmpty()) {
+        if (longestShortestPath != null && !longestShortestPath.isEmpty()) {
 //            drawPath(bp, longestShortestPath);
 //            IJ.saveAs(new ImagePlus("", bp), "PNG", "C:\\Users\\barryd\\debugging\\anamorf_debug\\path_" + index++);
-//        }
+            return getPathAsBranch(longestShortestPath);
+        }
+        return null;
     }
 
     Node findNode(Map<Node, int[][]> adjacentNodes, Node n1) {
@@ -294,10 +298,11 @@ public class HyphalAnalyser {
 
     int findNodeIndex(ArrayList<Node> nodes, int x, int y) {
 //        System.out.println(String.format("%d %d", x, y));
-        int minD = Integer.MAX_VALUE;
+        double minD = Integer.MAX_VALUE;
         int minIndex = -1;
         for (int i = 0; i < nodes.size(); i++) {
-            int d = nodes.get(i).getSimpleDist(x, y);
+//            double d = nodes.get(i).getSimpleDist(x, y);
+            double d = nodes.get(i).getDist(x, y);
             if (d < minD) {
                 minD = d;
                 minIndex = i;
@@ -333,6 +338,23 @@ public class HyphalAnalyser {
         for (int i = 0; i < path[0].length; i++) {
             bp.drawPixel(path[0][i], path[1][i]);
         }
+    }
+
+    ArrayList<int[][]> getPathAsBranch(LinkedList<Node> path) {
+        ArrayList<int[]> output = new ArrayList();
+        for (int i = 0; i < path.size() - 1; i++) {
+            int[][] pixels = path.get(i).getAdjacentNodes().get(path.get(i + 1));
+            for (int j = 0; j < pixels[0].length; j++) {
+                output.add(new int[]{pixels[0][j] + objBounds.x, pixels[1][j] + objBounds.y});
+            }
+            output.add(new int[]{path.get(i).getX() + objBounds.x, path.get(i).getY() + objBounds.y});
+            output.add(new int[]{path.get(i + 1).getX() + objBounds.x, path.get(i + 1).getY() + objBounds.y});
+        }
+        int[][] branch = new int[output.size()][];
+        int[][] branch1 = output.toArray(branch);
+        ArrayList<int[][]> output2 = new ArrayList();
+        output2.add(branch1);
+        return output2;
     }
 
 }

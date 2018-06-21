@@ -17,6 +17,8 @@
 package AnaMorf;
 
 import IAClasses.SkeletonProcessor;
+import ij.IJ;
+import ij.ImagePlus;
 import ij.process.ByteProcessor;
 import ij.process.ByteStatistics;
 import ij.process.ImageProcessor;
@@ -232,8 +234,8 @@ public class SkeletonPruner {
         int[] truncXP = new int[length];
         int[] truncYP = new int[length];
         for (int i = 0; i < length; i++) {
-            truncXP[i] = xPixels[i] + roi.x;
-            truncYP[i] = yPixels[i] + roi.y;
+            truncXP[i] = xPixels[i];
+            truncYP[i] = yPixels[i];
         }
         return new int[][]{truncXP, truncYP};
     }
