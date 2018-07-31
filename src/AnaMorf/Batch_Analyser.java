@@ -570,8 +570,10 @@ public class Batch_Analyser implements PlugIn {
                  * Draw a white border around object to ensure no 'contact'
                  * between object and image boundary
                  */
+                IJ.setBackgroundColor(255, 255, 255);
                 ByteProcessor objProc = (ByteProcessor) resizer.expandImage(binProc,
-                        (objBox.width + 2), (objBox.height + 2), 1, 1);
+                        (objBox.width + 4), (objBox.height + 4), 2, 2);
+                objBox = new Rectangle(objBox.x - 2, objBox.y - 2, objBox.width + 4, objBox.height + 4);
                 /*
                  * Skeletonise image for determinations of hyphal length and tip
                  * number
