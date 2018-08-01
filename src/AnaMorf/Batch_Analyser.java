@@ -571,32 +571,37 @@ public class Batch_Analyser implements PlugIn {
                  * between object and image boundary
                  */
                 IJ.setBackgroundColor(255, 255, 255);
-                ByteProcessor objProc = (ByteProcessor) resizer.expandImage(binProc,
-                        (objBox.width + 4), (objBox.height + 4), 2, 2);
-                objBox = new Rectangle(objBox.x - 2, objBox.y - 2, objBox.width + 4, objBox.height + 4);
-                /*
+                try {
+                    ByteProcessor objProc = (ByteProcessor) resizer.expandImage(binProc,
+                            (objBox.width + 4), (objBox.height + 4), 2, 2);
+                    objBox = new Rectangle(objBox.x - 2, objBox.y - 2, objBox.width + 4, objBox.height + 4);
+                    /*
                  * Skeletonise image for determinations of hyphal length and tip
                  * number
-                 */
-                objProc.skeletonize();
-                /*
+                     */
+                    objProc.skeletonize();
+                    /*
                  * Prune image to remove artefacts of skeletonisation
-                 */
-                SkeletonPruner pruner1 = new SkeletonPruner(minPixLength, objProc, objBox, false, false);
-                objProc = pruner1.getPrunedImage();
+                     */
+                    SkeletonPruner pruner1 = new SkeletonPruner(minPixLength, objProc, objBox, false, false);
+                    objProc = pruner1.getPrunedImage();
 //                SkeletonPruner pruner2 = new SkeletonPruner(0, (ByteProcessor) objProc.duplicate(), objBox, true, true);
-                curvature = generateCurveMap(new HyphalAnalyser(objProc.duplicate(), gui.getRes(), imageBox, objBox).findLongestPath(), imageRoiBounds.width, imageRoiBounds.height, curveMap, gui.getCurvatureWindow());
-                HyphalAnalyser analyser = new HyphalAnalyser(objProc, gui.getRes(), imageBox, objBox);
+                    curvature = generateCurveMap(new HyphalAnalyser(objProc.duplicate(), gui.getRes(), imageBox, objBox).findLongestPath(), imageRoiBounds.width, imageRoiBounds.height, curveMap, gui.getCurvatureWindow());
+                    HyphalAnalyser analyser = new HyphalAnalyser(objProc, gui.getRes(), imageBox, objBox);
 //                analyser.findLongestPath();
-                analyser.analyse(); // Analyse pruned skeleton
-                growthUnit = analyser.getHGU();
-                totalLength = analyser.getLength();
-                numEnds = analyser.getTips();
-                numBranches = analyser.getBranchpoints();
-                ColorBlitter skelBlit = new ColorBlitter(colorSkelImage);
-                skelBlit.copyBits(analyser.getColorOutput(), 0, 0, Blitter.ADD);
-                bwSkelImage = analyser.getBWOutput();
-                bwSkelImage.invert();
+                    analyser.analyse(); // Analyse pruned skeleton
+                    growthUnit = analyser.getHGU();
+                    totalLength = analyser.getLength();
+                    numEnds = analyser.getTips();
+                    numBranches = analyser.getBranchpoints();
+                    ColorBlitter skelBlit = new ColorBlitter(colorSkelImage);
+                    skelBlit.copyBits(analyser.getColorOutput(), 0, 0, Blitter.ADD);
+                    bwSkelImage = analyser.getBWOutput();
+                    bwSkelImage.invert();
+                } catch (Exception e) {
+                    IJ.log("Problem analysing object in this image - skipping current object");
+                    return false;
+                }
             }
         }
 

@@ -227,6 +227,7 @@ public class HyphalAnalyser {
                         Node end = nodes.get(n2);
                         start.addDestination(end, path);
                         end.addDestination(start, path);
+                        sp.prunePoints(ip.getRoi(), ip);
                     }
                 }
             }

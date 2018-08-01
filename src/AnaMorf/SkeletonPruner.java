@@ -223,9 +223,9 @@ public class SkeletonPruner {
                          * Tracing of the skeleton proceeds until the end of the
                          * current branch is reached
                  */
-                do {
-                    length++;
-                } while (SkeletonProcessor.getNextPixel(xPixels, yPixels, processor, length, FOREGROUND));
+                    do {
+                        length++;
+                    } while (SkeletonProcessor.getNextPixel(xPixels, yPixels, processor, length, FOREGROUND));
                 for (int i = length - 1; i >= 0; i--) {
                     drawPixel(processor, xPixels[i], yPixels[i]);
                 }
@@ -253,6 +253,5 @@ public class SkeletonPruner {
 
     void drawPixel(ImageProcessor processor, int x, int y) {
         processor.drawPixel(x, y);
-//        IJ.saveAs(new ImagePlus("", processor), "PNG", "C:\\Users\\barryd\\debugging\\anamorf_debug\\Skel_" + index++);
     }
 }
