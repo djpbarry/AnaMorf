@@ -474,8 +474,13 @@ public class Batch_Analyser implements PlugIn {
         } else {
             objBox = new Rectangle(0, 0, objMask.getWidth(), objMask.getHeight());
         }
-        if (gui.isWholeImage() && (outputData & BOX_FRACTAL_DIMENSION) != 0) {
-            boxFracDims = (new FractalEstimator()).do2DEstimate(binProc);
+        if ((outputData & BOX_FRACTAL_DIMENSION) != 0) {
+            if (gui.isWholeImage()) {
+                boxFracDims = (new FractalEstimator()).do2DEstimate(binProc);
+            } else {
+                binProc.setRoi(objBox);
+                boxFracDims = (new FractalEstimator()).do2DEstimate(binProc.crop());
+            }
         }
         IJ.showStatus("Calculating Area");
         if (refProc != null) {
@@ -548,7 +553,8 @@ public class Batch_Analyser implements PlugIn {
         }
 
         if (((outputData & HYPHAL_GROWTH_UNIT) != 0) || ((outputData & NUMBER_OF_ENDPOINTS) != 0)
-                || ((outputData & TOTAL_HYPHAL_LENGTH) != 0) || ((outputData & LACUNARITY) != 0)) {
+                || ((outputData & TOTAL_HYPHAL_LENGTH) != 0) || ((outputData & LACUNARITY) != 0)
+                || ((outputData & CURVATURE) != 0)) {
             /*
              * An estimate of the object's lacunarity is used to determine
              * whether an accurate evaluation of hyphal length and number of
@@ -563,7 +569,7 @@ public class Batch_Analyser implements PlugIn {
             meanSq = Math.pow(objStats.mean, 2);
             lac = Math.abs((var / meanSq) - 1.0);
             if (((outputData & HYPHAL_GROWTH_UNIT) != 0) || ((outputData & NUMBER_OF_ENDPOINTS) != 0)
-                    || ((outputData & TOTAL_HYPHAL_LENGTH) != 0)) {
+                    || ((outputData & TOTAL_HYPHAL_LENGTH) != 0) || ((outputData & CURVATURE) != 0)) {
                 IJ.showStatus("Calculating HGU");
                 binProc.invert(); // Reverse inversion above
                 CanvasResizer resizer = new CanvasResizer();
