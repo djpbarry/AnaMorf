@@ -652,6 +652,7 @@ public class UserInterface extends javax.swing.JDialog {
         subBackground = subBackgroundCheck.isSelected();
         circ = circCheck.isSelected();
         area = areaCheck.isSelected();
+        curvature = curveCheckBox.isSelected();
         fourfrac = fourierFracCheck.isSelected();
         boxfrac = boxFracCheck.isSelected();
         lightBackground = lightBGRadio.isSelected();
@@ -871,6 +872,12 @@ public class UserInterface extends javax.swing.JDialog {
         return minLength;
     }
 
+    public static boolean isCurvature() {
+        return curvature;
+    }
+
+    
+    
     /**
      * Returns the manual grey-level threshold specified by the user if the
      * 'Manual' radio button was selected or -1 otherwise.
