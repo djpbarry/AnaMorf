@@ -94,6 +94,7 @@ public class Batch_Analyser implements PlugIn {
     UserInterface gui;
     ResultsTable resultsTable;
     private static File currentDirectory;
+    private SummaryStatistics wholeImageCurvature = new SummaryStatistics();
     /*
      * Column headings used for Results Table output
      */
@@ -587,6 +588,9 @@ public class Batch_Analyser implements PlugIn {
                     objProc = pruner1.getPrunedImage();
 //                SkeletonPruner pruner2 = new SkeletonPruner(0, (ByteProcessor) objProc.duplicate(), objBox, true, true);
                     curvature = generateCurveMap(new HyphalAnalyser(objProc.duplicate(), gui.getRes(), imageBox, objBox).findLongestPath(), imageRoiBounds.width, imageRoiBounds.height, curveMap, gui.getCurvatureWindow());
+                    if (!Double.isNaN(curvature)) {
+                        wholeImageCurvature.addValue(curvature);
+                    }
                     HyphalAnalyser analyser = new HyphalAnalyser(objProc, gui.getRes(), imageBox, objBox);
 //                analyser.findLongestPath();
                     analyser.analyse(); // Analyse pruned skeleton
@@ -674,6 +678,9 @@ public class Batch_Analyser implements PlugIn {
                 resultsTable.addValue(BOX_FRAC_HEAD, boxFracDims[0]);
             }
             if ((outputData & CURVATURE) != 0) {
+                if (gui.isWholeImage()) {
+                    curvature = wholeImageCurvature.getMean();
+                }
                 resultsTable.addValue(CURVE_HEAD, curvature);
             }
             resultsTable.addLabel("Image", imageName);
