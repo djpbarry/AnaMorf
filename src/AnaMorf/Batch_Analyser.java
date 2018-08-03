@@ -65,6 +65,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 /**
@@ -94,7 +95,7 @@ public class Batch_Analyser implements PlugIn {
     UserInterface gui;
     ResultsTable resultsTable;
     private static File currentDirectory;
-    private SummaryStatistics wholeImageCurvature = new SummaryStatistics();
+    private DescriptiveStatistics wholeImageCurvature;
     /*
      * Column headings used for Results Table output
      */
@@ -227,6 +228,7 @@ public class Batch_Analyser implements PlugIn {
                 maskImage.setColor(BACKGROUND);
                 maskImage.fill();
                 colorSkelImage = new ColorProcessor(width, height);
+                wholeImageCurvature = new DescriptiveStatistics();
                 /*
              * Reference used to ensure that each object is only analysed once
                  */
@@ -686,6 +688,8 @@ public class Batch_Analyser implements PlugIn {
             if ((outputData & CURVATURE) != 0) {
                 if (gui.isWholeImage()) {
                     curvature = wholeImageCurvature.getMean();
+                    double[] vals = wholeImageCurvature.getSortedValues();
+                    vals = wholeImageCurvature.getValues();
                 }
                 resultsTable.addValue(CURVE_HEAD, curvature);
             }
