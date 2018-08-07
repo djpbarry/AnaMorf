@@ -682,8 +682,12 @@ public class Batch_Analyser implements PlugIn {
             if ((outputData & NUMBER_OF_BRANCHES) != 0) {
                 resultsTable.addValue(BRANCH_HEAD, numBranches);
             }
-            if ((outputData & BOX_FRACTAL_DIMENSION) != 0 && boxFracDims != null) {
-                resultsTable.addValue(BOX_FRAC_HEAD, boxFracDims[0]);
+            if ((outputData & BOX_FRACTAL_DIMENSION) != 0) {
+                if (boxFracDims != null) {
+                    resultsTable.addValue(BOX_FRAC_HEAD, boxFracDims[0]);
+                } else {
+                    resultsTable.addValue(BOX_FRAC_HEAD, Double.NaN);
+                }
             }
             if ((outputData & CURVATURE) != 0) {
                 if (gui.isWholeImage()) {
