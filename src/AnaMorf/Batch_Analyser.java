@@ -219,6 +219,9 @@ public class Batch_Analyser implements PlugIn {
             ImagePlus currImage = new ImagePlus(directory + File.separator + imageName);
             IJ.log(String.format("Analysing image %d of %d - %s", i + 1, imageFilenames.length, currImage.getShortTitle()));
             if (!(currImage.getProcessor() instanceof ColorProcessor)) {
+                if (currImage.isInvertedLut()) {
+                    IJ.log("It looks like this image has an inverted LUT - the analysis may not work properly.");
+                }
                 width = currImage.getWidth();
                 height = currImage.getHeight();
                 maskImage = new ByteProcessor(width, height);
