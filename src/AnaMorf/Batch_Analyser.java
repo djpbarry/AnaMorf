@@ -22,8 +22,6 @@ import IAClasses.DSPProcessor;
 import IAClasses.FractalEstimator;
 import IAClasses.OnlyExt;
 import IAClasses.Pixel;
-import IAClasses.SkeletonProcessor;
-import IO.DataWriter;
 import Thresholding.FuzzyThresholder;
 import UtilClasses.GenUtils;
 import UtilClasses.GenVariables;
@@ -147,6 +145,7 @@ public class Batch_Analyser implements PlugIn {
             currentDirectory = Utilities.getFolder(new File(System.getProperty("user.dir")), null, true);
         } catch (Exception e) {
             GenUtils.error("Could not open directory.");
+            GenUtils.logError(e);
             return;
         }
         if (currentDirectory == null) {
@@ -160,15 +159,13 @@ public class Batch_Analyser implements PlugIn {
         resultsTable.addLabel(currentDirectory.getAbsolutePath());
         long startTime = System.currentTimeMillis();
         File resultsDirectory = new File(GenUtils.openResultsDirectory(currentDirectory.getAbsolutePath() + File.separator + title));
-        try {
-            if (analyseFiles(currentDirectory, resultsDirectory)) {
-//            (new ResultSummariser(confInterval)).summarise();
+        if (analyseFiles(currentDirectory, resultsDirectory)) {
+            try {
+                saveResults(resultsDirectory);
+            } catch (IOException e) {
+                GenUtils.error("Could not save results file.");
+                GenUtils.logError(e);
             }
-//        (new Analyzer()).displayResults();
-            saveResults(resultsDirectory);
-        } catch (Exception e) {
-            GenUtils.error("Could not save results file.\n" + e.toString() + "\n" + e.getMessage() + "\n");
-            e.printStackTrace();
         }
         generateParamsFile(resultsDirectory);
         IJ.log("Done");
@@ -200,8 +197,7 @@ public class Batch_Analyser implements PlugIn {
      * @return true if images in <i>directory</i> were successfully processed,
      * false otherwise.
      */
-    public boolean analyseFiles(File directory, File resultsDirectory) throws IOException {
-        int width, height;
+    public boolean analyseFiles(File directory, File resultsDirectory) {
         FilenameFilter directoryFilter = new OnlyExt(gui.getImageFormat());
         String imageFilenames[] = directory.list(directoryFilter); // Generates a list of image filenames of the format specified by the user
         if (imageFilenames.length < 1) {
@@ -212,74 +208,78 @@ public class Batch_Analyser implements PlugIn {
          * A folder for storing mask images is created if required
          */
         for (int i = 0; i < imageFilenames.length; i++) {
+            IJ.showProgress(i, imageFilenames.length);
             useMorphFilters = true;
             outputResults = !gui.isWholeImage();
             imageName = imageFilenames[i];
             IJ.showStatus("Scanning " + imageName);
             ImagePlus currImage = new ImagePlus(directory + File.separator + imageName);
             IJ.log(String.format("Analysing image %d of %d - %s", i + 1, imageFilenames.length, currImage.getShortTitle()));
-            if (!(currImage.getProcessor() instanceof ColorProcessor)) {
-                if (currImage.isInvertedLut()) {
-                    IJ.log("It looks like this image has an inverted LUT - the analysis may not work properly.");
-                }
-                width = currImage.getWidth();
-                height = currImage.getHeight();
-                maskImage = new ByteProcessor(width, height);
-                curveMap = new FloatProcessor(width, height);
-                curveMap.setValue(0.0);
-                curveMap.fill();
-                maskImage.setColor(BACKGROUND);
-                maskImage.fill();
-                colorSkelImage = new ColorProcessor(width, height);
-                wholeImageCurvature = new DescriptiveStatistics();
-                /*
-             * Reference used to ensure that each object is only analysed once
-                 */
-                refProc = new ByteProcessor(width, height);
-                if (refProc.isInvertedLut()) {
-                    refProc.invertLut();
-                }
-                refProc.setValue(BACKGROUND);
-                refProc.fill();
-                ImageProcessor preProcessedImage;
-                if (gui.isPreProcess()) {
-                    preProcessedImage = preProcessImage(currImage.duplicate());
-                } else {
-                    preProcessedImage = currImage.getProcessor().duplicate();
-                }
-                searchImage(preProcessedImage, gui.isExcludeEdges(), null);
-                ImagePlus maskOutput = new ImagePlus(imageName + " - Mask", maskImage.duplicate());
-                if (gui.isCreateMasks()) {
-                    IJ.saveAs(maskOutput, "png", resultsDirectory + "//" + maskOutput.getTitle());
-                }
-                if (gui.isWholeImage() && maskOutput != null) {
-                    outputResults = true;
-                    useMorphFilters = false;
-                    ByteProcessor wholeImageMask = (ByteProcessor) maskImage.duplicate();
-                    wholeImageMask.setValue(BACKGROUND);
-                    wholeImageMask.fill();
-                    analyseImage(wholeImageMask, maskImage, null, gui.isExcludeEdges(), null);
-                }
-                if (((outputData & HYPHAL_GROWTH_UNIT) != 0) || ((outputData & NUMBER_OF_ENDPOINTS) != 0)
-                        || ((outputData & TOTAL_HYPHAL_LENGTH) != 0)) {
-                    ImagePlus skelOutput = new ImagePlus(imageName + " - Skeleton", colorSkelImage);
-                    ImagePlus curveOutput = new ImagePlus(imageName + " - Curve Map", curveMap);
-                    if (gui.isCreateMasks()) {
-                        IJ.saveAs(skelOutput, "png", resultsDirectory + "//" + skelOutput.getTitle());
-                        IJ.saveAs(curveOutput, "tif", resultsDirectory + "//" + curveOutput.getTitle());
-                        if (bwSkelImage != null) {
-                            double[][] skelVals = SkeletonProcessor.mapSkeleton(currImage.getProcessor(), bwSkelImage, FOREGROUND);
-                            DataWriter.saveValues(skelVals, new File(String.format("%s%s%s - SkeletonMap.csv", resultsDirectory, File.separator, imageName)), new String[]{"X", "Y", "Z"}, null, false);
-                        }
-                    }
-                }
-//            }
-                IJ.showProgress(i, imageFilenames.length);
-            } else {
-                IJ.log("Greyscale images required - " + imageName + " will not be analysed.");
+            try {
+                analyseFile(currImage, resultsDirectory);
+            } catch (Exception e) {
+                IJ.log(String.format("Problem analysing %s.", imageName));
+                GenUtils.logError(e);
             }
         }
         return true;
+    }
+
+    void analyseFile(ImagePlus currImage, File resultsDirectory) throws Exception {
+        if (!(currImage.getProcessor() instanceof ColorProcessor)) {
+            if (currImage.isInvertedLut()) {
+                IJ.log("It looks like this image has an inverted LUT - the analysis may not work properly.");
+            }
+            int width = currImage.getWidth();
+            int height = currImage.getHeight();
+            maskImage = new ByteProcessor(width, height);
+            curveMap = new FloatProcessor(width, height);
+            curveMap.setValue(0.0);
+            curveMap.fill();
+            maskImage.setColor(BACKGROUND);
+            maskImage.fill();
+            colorSkelImage = new ColorProcessor(width, height);
+            wholeImageCurvature = new DescriptiveStatistics();
+            /*
+             * Reference used to ensure that each object is only analysed once
+             */
+            refProc = new ByteProcessor(width, height);
+            if (refProc.isInvertedLut()) {
+                refProc.invertLut();
+            }
+            refProc.setValue(BACKGROUND);
+            refProc.fill();
+            ImageProcessor preProcessedImage;
+            if (gui.isPreProcess()) {
+                preProcessedImage = preProcessImage(currImage.duplicate());
+            } else {
+                preProcessedImage = currImage.getProcessor().duplicate();
+            }
+            searchImage(preProcessedImage, gui.isExcludeEdges(), null);
+            ImagePlus maskOutput = new ImagePlus(imageName + " - Mask", maskImage.duplicate());
+            if (gui.isCreateMasks()) {
+                IJ.saveAs(maskOutput, "png", resultsDirectory + "//" + maskOutput.getTitle());
+            }
+            if (gui.isWholeImage() && maskOutput != null) {
+                outputResults = true;
+                useMorphFilters = false;
+                ByteProcessor wholeImageMask = (ByteProcessor) maskImage.duplicate();
+                wholeImageMask.setValue(BACKGROUND);
+                wholeImageMask.fill();
+                analyseImage(wholeImageMask, maskImage, null, gui.isExcludeEdges(), null);
+            }
+            if (((outputData & HYPHAL_GROWTH_UNIT) != 0) || ((outputData & NUMBER_OF_ENDPOINTS) != 0)
+                    || ((outputData & TOTAL_HYPHAL_LENGTH) != 0)) {
+                ImagePlus skelOutput = new ImagePlus(imageName + " - Skeleton", colorSkelImage);
+                ImagePlus curveOutput = new ImagePlus(imageName + " - Curve Map", curveMap);
+                if (gui.isCreateMasks()) {
+                    IJ.saveAs(skelOutput, "png", resultsDirectory + "//" + skelOutput.getTitle());
+                    IJ.saveAs(curveOutput, "tif", resultsDirectory + "//" + curveOutput.getTitle());
+                }
+            }
+        } else {
+            IJ.log("Greyscale images required - " + imageName + " will not be analysed.");
+        }
     }
 
     private ByteProcessor preProcessImage(ImagePlus currentImage) {
@@ -355,7 +355,7 @@ public class Batch_Analyser implements PlugIn {
      * <code>.autoOutline()</code> and sends each detected boundary to
      * <code>analyseImage()</code> for morphological analysis.
      */
-    public int searchImage(ImageProcessor binaryProcessor, boolean excludeEdges, Roi roi) {
+    public int searchImage(ImageProcessor binaryProcessor, boolean excludeEdges, Roi roi) throws Exception {
         int i, currentPixel, x, y, offset, objects;
         int width = binaryProcessor.getWidth();
         int height = binaryProcessor.getHeight();
