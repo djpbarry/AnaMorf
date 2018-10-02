@@ -144,8 +144,7 @@ public class Batch_Analyser implements PlugIn {
         try {
             currentDirectory = Utilities.getFolder(new File(System.getProperty("user.dir")), null, true);
         } catch (Exception e) {
-            GenUtils.error("Could not open directory.");
-            GenUtils.logError(e);
+            GenUtils.logError(e, "Could not open directory.");
             return;
         }
         if (currentDirectory == null) {
@@ -163,8 +162,7 @@ public class Batch_Analyser implements PlugIn {
             try {
                 saveResults(resultsDirectory);
             } catch (IOException e) {
-                GenUtils.error("Could not save results file.");
-                GenUtils.logError(e);
+                GenUtils.logError(e, "Could not save results file.");
             }
         }
         generateParamsFile(resultsDirectory);
@@ -218,8 +216,7 @@ public class Batch_Analyser implements PlugIn {
             try {
                 analyseFile(currImage, resultsDirectory);
             } catch (Exception e) {
-                IJ.log(String.format("Problem analysing %s.", imageName));
-                GenUtils.logError(e);
+                GenUtils.logError(e, String.format("Problem analysing %s.", imageName));
             }
         }
         return true;
