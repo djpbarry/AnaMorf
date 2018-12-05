@@ -47,7 +47,7 @@ public class HyphalAnalyser {
     private int hyphalLength = 0, tips = 0, branchpoints = 0, radius;
     private ImageProcessor colorOutput, bwOutput;
     private Rectangle imageBounds, objBounds;
-    static int index = 0;
+    static int longestPathIndex = 0;
 
     public HyphalAnalyser(ImageProcessor image, double res, Rectangle imageBox,
             Rectangle objBox) {
@@ -203,7 +203,7 @@ public class HyphalAnalyser {
 
         boolean change = true;
         SkeletonPruner sp = new SkeletonPruner(objBounds);
-//        int index = 0;
+        int index = 0;
         while (change) {
             change = false;
             for (int y = 0; y < height; y++) {
@@ -217,8 +217,8 @@ public class HyphalAnalyser {
                             continue;
                         }
                         Node start = nodes.get(n1);
-                        int[][] path = sp.traceBranch(ip, x, y);
-//                        drawPath(path, index++);
+                        int[][] path = sp.traceBranch(ip, x, y, nodes);
+                        drawPath(path, index++);
                         int length = path[0].length;
                         int n2 = findNodeIndex(nodes, path[0][length - 1], path[1][length - 1]);
                         if (n2 < 0) {
@@ -232,20 +232,20 @@ public class HyphalAnalyser {
                 }
             }
         }
-//        index = 0;
+        int nIndex = 0;
         Graph graph = new Graph();
         for (Node n : nodes) {
             graph.addNode(n);
-//            ByteProcessor bp = new ByteProcessor(objBounds.width, objBounds.height);
-//            bp.setColor(255);
-//            bp.fill();
-//            bp.setColor(0);
-//            bp.drawRect(n.getX() - 3, n.getY() - 3, 6, 6);
-//            for (Entry<Node, int[][]> nodePath : n.getAdjacentNodes().entrySet()) {
-//                drawPath(nodePath.getValue(), bp);
-//                bp.drawRect(nodePath.getKey().getX() - 2, nodePath.getKey().getY() - 2, 4, 4);
-//            }
-//            IJ.saveAs(new ImagePlus("", bp), "PNG", "C:\\Users\\barryd\\debugging\\anamorf_debug\\node_neighbour_paths_" + index++);
+            ByteProcessor bp = new ByteProcessor(objBounds.width, objBounds.height);
+            bp.setColor(255);
+            bp.fill();
+            bp.setColor(0);
+            bp.drawRect(n.getX() - 3, n.getY() - 3, 6, 6);
+            for (Entry<Node, int[][]> nodePath : n.getAdjacentNodes().entrySet()) {
+                drawPath(nodePath.getValue(), bp);
+                bp.drawRect(nodePath.getKey().getX() - 2, nodePath.getKey().getY() - 2, 4, 4);
+            }
+            IJ.saveAs(new ImagePlus("", bp), "PNG", "D:/debugging/anamorf_debug/node_neighbour_paths_" + longestPathIndex + "_" + nIndex++);
         }
         Map<Node, Graph> distanceMaps = new HashMap();
         for (Node n : nodes) {
@@ -275,13 +275,13 @@ public class HyphalAnalyser {
             }
         }
 
-//        ByteProcessor bp = new ByteProcessor(objBounds.width, objBounds.height);
-//        bp.setValue(255);
-//        bp.fill();
-//        bp.setValue(0);
+        ByteProcessor bp = new ByteProcessor(objBounds.width, objBounds.height);
+        bp.setValue(255);
+        bp.fill();
+        bp.setValue(0);
         if (longestShortestPath != null && !longestShortestPath.isEmpty()) {
-//            drawPath(bp, longestShortestPath);
-//            IJ.saveAs(new ImagePlus("", bp), "PNG", "C:\\Users\\barryd\\debugging\\anamorf_debug\\path_" + index++);
+            drawPath(bp, longestShortestPath);
+            IJ.saveAs(new ImagePlus("", bp), "PNG", "D:/debugging/anamorf_debug/longest_path_" + longestPathIndex++);
             return getPathAsBranch(longestShortestPath);
         }
         return null;
@@ -332,7 +332,7 @@ public class HyphalAnalyser {
         for (int i = 0; i < path[0].length; i++) {
             bp.drawPixel(path[0][i], path[1][i]);
         }
-        IJ.saveAs(new ImagePlus("", bp), "PNG", "C:\\Users\\barryd\\debugging\\anamorf_debug\\path_" + index);
+        IJ.saveAs(new ImagePlus("", bp), "PNG", "D:/debugging/anamorf_debug/draw_path_" + longestPathIndex + "_" + index);
     }
 
     void drawPath(int[][] path, ImageProcessor bp) {

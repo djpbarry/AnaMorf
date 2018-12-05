@@ -266,7 +266,7 @@ public class Batch_Analyser implements PlugIn {
                 analyseImage(wholeImageMask, maskImage, null, gui.isExcludeEdges(), null);
             }
             if (((outputData & HYPHAL_GROWTH_UNIT) != 0) || ((outputData & NUMBER_OF_ENDPOINTS) != 0)
-                    || ((outputData & TOTAL_HYPHAL_LENGTH) != 0)) {
+                    || ((outputData & TOTAL_HYPHAL_LENGTH) != 0) || ((outputData & CURVATURE) != 0)) {
                 ImagePlus skelOutput = new ImagePlus(imageName + " - Skeleton", colorSkelImage);
                 ImagePlus curveOutput = new ImagePlus(imageName + " - Curve Map", curveMap);
                 if (gui.isCreateMasks()) {
@@ -306,7 +306,7 @@ public class Batch_Analyser implements PlugIn {
          * Generate binary image
          */
         if (gui.getManualThreshold() < 0) {
-            FuzzyThresholder ft = new FuzzyThresholder(currentProcessor.duplicate(), gui.getThresholdMethod(), 0.05);
+            FuzzyThresholder ft = new FuzzyThresholder(currentProcessor.duplicate(), gui.getThresholdMethod(), 0.00);
             currentProcessor = ft.threshold();
             currentProcessor.erode();
             currentProcessor.dilate();

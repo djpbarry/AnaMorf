@@ -16,9 +16,8 @@
  */
 package AnaMorf;
 
+import Graph.Node;
 import IAClasses.SkeletonProcessor;
-import ij.IJ;
-import ij.ImagePlus;
 import ij.process.ByteProcessor;
 import ij.process.ByteStatistics;
 import ij.process.ImageProcessor;
@@ -201,7 +200,7 @@ public class SkeletonPruner {
         return change;
     }
 
-    public int[][] traceBranch(ImageProcessor processor, int x0, int y0) {
+    public int[][] traceBranch(ImageProcessor processor, int x0, int y0, ArrayList<Node> nodes) {
         int length = 0;
         ByteStatistics stats = new ByteStatistics(processor);
         int size = stats.histogram[FOREGROUND];
@@ -223,9 +222,10 @@ public class SkeletonPruner {
                          * Tracing of the skeleton proceeds until the end of the
                          * current branch is reached
                  */
-                    do {
-                        length++;
-                    } while (SkeletonProcessor.getNextPixel(xPixels, yPixels, processor, length, FOREGROUND));
+                do {
+                    length++;
+                } while (SkeletonProcessor.getNextPixel(xPixels, yPixels, processor, length, FOREGROUND)
+                        && !checkNodes(nodes, xPixels[length], yPixels[length]));
                 for (int i = length - 1; i >= 0; i--) {
                     drawPixel(processor, xPixels[i], yPixels[i]);
                 }
@@ -238,6 +238,15 @@ public class SkeletonPruner {
             truncYP[i] = yPixels[i];
         }
         return new int[][]{truncXP, truncYP};
+    }
+
+    boolean checkNodes(ArrayList<Node> nodes, int x, int y) {
+        for (Node n : nodes) {
+            if (n.getSimpleDist(x, y) < 1) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
