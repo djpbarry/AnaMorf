@@ -594,6 +594,7 @@ public class Batch_Analyser implements PlugIn {
                      */
                     SkeletonPruner pruner1 = new SkeletonPruner(minPixLength, objProc, objBox, false, false);
                     objProc = pruner1.getPrunedImage();
+//                    IJ.saveAs(new ImagePlus("", objProc), "PNG", "D:\\debugging\\anamorf_debug\\objProc");
 //                SkeletonPruner pruner2 = new SkeletonPruner(0, (ByteProcessor) objProc.duplicate(), objBox, true, true);
                     curvature = generateCurveMap(new HyphalAnalyser(objProc.duplicate(), gui.getRes(), imageBox, objBox).findLongestPath(), imageRoiBounds.width, imageRoiBounds.height, curveMap, gui.getCurvatureWindow());
                     if (!Double.isNaN(curvature)) {

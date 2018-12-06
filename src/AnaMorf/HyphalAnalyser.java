@@ -218,7 +218,7 @@ public class HyphalAnalyser {
                         }
                         Node start = nodes.get(n1);
                         int[][] path = sp.traceBranch(ip, x, y, nodes);
-                        drawPath(path, index++);
+//                        drawPath(path, index++);
                         int length = path[0].length;
                         int n2 = findNodeIndex(nodes, path[0][length - 1], path[1][length - 1]);
                         if (n2 < 0) {
@@ -240,10 +240,10 @@ public class HyphalAnalyser {
             bp.setColor(255);
             bp.fill();
             bp.setColor(0);
-            bp.drawRect(n.getX() - 3, n.getY() - 3, 6, 6);
+            bp.drawRect(n.getX() - 3, n.getY() - 3, 7, 7);
             for (Entry<Node, int[][]> nodePath : n.getAdjacentNodes().entrySet()) {
                 drawPath(nodePath.getValue(), bp);
-                bp.drawRect(nodePath.getKey().getX() - 2, nodePath.getKey().getY() - 2, 4, 4);
+                bp.drawRect(nodePath.getKey().getX() - 1, nodePath.getKey().getY() - 1, 3, 3);
             }
             IJ.saveAs(new ImagePlus("", bp), "PNG", "D:/debugging/anamorf_debug/node_neighbour_paths_" + longestPathIndex + "_" + nIndex++);
         }
@@ -325,14 +325,14 @@ public class HyphalAnalyser {
     }
 
     void drawPath(int[][] path, int index) {
-        ByteProcessor bp = new ByteProcessor(640, 480);
+        ByteProcessor bp = new ByteProcessor(objBounds.width, objBounds.height);
         bp.setColor(255);
         bp.fill();
         bp.setColor(0);
         for (int i = 0; i < path[0].length; i++) {
             bp.drawPixel(path[0][i], path[1][i]);
         }
-        IJ.saveAs(new ImagePlus("", bp), "PNG", "D:/debugging/anamorf_debug/draw_path_" + longestPathIndex + "_" + index);
+//        IJ.saveAs(new ImagePlus("", bp), "PNG", "D:/debugging/anamorf_debug/draw_path_" + longestPathIndex + "_" + index);
     }
 
     void drawPath(int[][] path, ImageProcessor bp) {

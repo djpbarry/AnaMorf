@@ -223,11 +223,15 @@ public class SkeletonPruner {
                          * current branch is reached
                  */
                 do {
+//                    System.out.println(String.format("x: %d y: %d", xPixels[length], yPixels[length]));
                     length++;
-                } while (SkeletonProcessor.getNextPixel(xPixels, yPixels, processor, length, FOREGROUND)
-                        && !checkNodes(nodes, xPixels[length], yPixels[length]));
+                } while (SkeletonProcessor.getNextPixel(xPixels, yPixels, processor, length, FOREGROUND));
                 for (int i = length - 1; i >= 0; i--) {
                     drawPixel(processor, xPixels[i], yPixels[i]);
+                }
+                int[] bp = SkeletonProcessor.getLatestBranchpoint();
+                if (bp != null) {
+                    drawPixel(processor, bp[0], bp[1]);
                 }
             }
         }
@@ -238,15 +242,6 @@ public class SkeletonPruner {
             truncYP[i] = yPixels[i];
         }
         return new int[][]{truncXP, truncYP};
-    }
-
-    boolean checkNodes(ArrayList<Node> nodes, int x, int y) {
-        for (Node n : nodes) {
-            if (n.getSimpleDist(x, y) < 1) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -262,5 +257,6 @@ public class SkeletonPruner {
 
     void drawPixel(ImageProcessor processor, int x, int y) {
         processor.drawPixel(x, y);
+//        IJ.saveAs(new ImagePlus("", processor), "PNG", "D:\\debugging\\anamorf_debug\\step_" + index++);
     }
 }
