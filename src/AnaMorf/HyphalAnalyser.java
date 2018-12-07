@@ -181,13 +181,8 @@ public class HyphalAnalyser {
                     int imageX = x;
                     int imageY = y;
                     if (SkeletonProcessor.isEndPoint(x, y, ip, background)) {
-                        if ((imageX > radius)
-                                && (imageX < imageBounds.width - radius)
-                                && (imageY > radius)
-                                && (imageY < imageBounds.height - radius)) {
-                            nodes.add(new Node(Node.END, imageX, imageY));
+                        nodes.add(new Node(Node.END, imageX, imageY));
 //                            System.out.println(String.format("%d %d", imageX, imageY));
-                        }
                     } else if (searchNeighbourhood(x, y, 1, foreground) > 2) {
                         if (SkeletonProcessor.isBranchPoint(x, y, ip, foreground) == 0) {
                             nodes.add(new Node(Node.BRANCH, imageX, imageY));
@@ -232,20 +227,23 @@ public class HyphalAnalyser {
                 }
             }
         }
-        int nIndex = 0;
+//        int nIndex = 0;
         Graph graph = new Graph();
         for (Node n : nodes) {
-            graph.addNode(n);
-            ByteProcessor bp = new ByteProcessor(objBounds.width, objBounds.height);
-            bp.setColor(255);
-            bp.fill();
-            bp.setColor(0);
-            bp.drawRect(n.getX() - 3, n.getY() - 3, 7, 7);
-            for (Entry<Node, int[][]> nodePath : n.getAdjacentNodes().entrySet()) {
-                drawPath(nodePath.getValue(), bp);
-                bp.drawRect(nodePath.getKey().getX() - 1, nodePath.getKey().getY() - 1, 3, 3);
+            if (n.getAdjacentNodes().isEmpty()) {
+                continue;
             }
-            IJ.saveAs(new ImagePlus("", bp), "PNG", "D:/debugging/anamorf_debug/node_neighbour_paths_" + longestPathIndex + "_" + nIndex++);
+            graph.addNode(n);
+//            ByteProcessor bp = new ByteProcessor(objBounds.width, objBounds.height);
+//            bp.setColor(255);
+//            bp.fill();
+//            bp.setColor(0);
+//            bp.drawRect(n.getX() - 3, n.getY() - 3, 7, 7);
+//            for (Entry<Node, int[][]> nodePath : n.getAdjacentNodes().entrySet()) {
+//                drawPath(nodePath.getValue(), bp);
+//                bp.drawRect(nodePath.getKey().getX() - 1, nodePath.getKey().getY() - 1, 3, 3);
+//            }
+//            IJ.saveAs(new ImagePlus("", bp), "PNG", "D:/debugging/anamorf_debug/node_neighbour_paths_" + longestPathIndex + "_" + nIndex++);
         }
         Map<Node, Graph> distanceMaps = new HashMap();
         for (Node n : nodes) {
@@ -264,7 +262,7 @@ public class HyphalAnalyser {
             Graph g = nodeGraphPair.getValue();
             Set<Node> nodes = g.getNodes();
             for (Node n : nodes) {
-                if (n.getType() == Node.END && n.getDistance() > maxDist) {
+                if (n.getType() == Node.END && n.getDistance() > maxDist && n.getDistance() < Integer.MAX_VALUE) {
 //                    System.out.println(String.format("%d %d %d %d"));
                     maxDist = n.getDistance();
                     longestShortestPath = new LinkedList(n.getShortestPath());
@@ -275,13 +273,13 @@ public class HyphalAnalyser {
             }
         }
 
-        ByteProcessor bp = new ByteProcessor(objBounds.width, objBounds.height);
-        bp.setValue(255);
-        bp.fill();
-        bp.setValue(0);
+//        ByteProcessor bp = new ByteProcessor(objBounds.width, objBounds.height);
+//        bp.setValue(255);
+//        bp.fill();
+//        bp.setValue(0);
         if (longestShortestPath != null && !longestShortestPath.isEmpty()) {
-            drawPath(bp, longestShortestPath);
-            IJ.saveAs(new ImagePlus("", bp), "PNG", "D:/debugging/anamorf_debug/longest_path_" + longestPathIndex++);
+//            drawPath(bp, longestShortestPath);
+//            IJ.saveAs(new ImagePlus("", bp), "PNG", "D:/debugging/anamorf_debug/longest_path_" + longestPathIndex++);
             return getPathAsBranch(longestShortestPath);
         }
         return null;
