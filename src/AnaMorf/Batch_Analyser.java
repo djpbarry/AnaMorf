@@ -22,6 +22,7 @@ import IAClasses.DSPProcessor;
 import IAClasses.FractalEstimator;
 import IAClasses.OnlyExt;
 import IAClasses.Pixel;
+import IO.DataWriter;
 import Thresholding.FuzzyThresholder;
 import UtilClasses.GenUtils;
 import UtilClasses.GenVariables;
@@ -94,6 +95,7 @@ public class Batch_Analyser implements PlugIn {
     ResultsTable resultsTable;
     private static File currentDirectory;
     private DescriptiveStatistics wholeImageCurvature;
+    ArrayList<ArrayList<Double>> cumulativeCurveStats;
     /*
      * Column headings used for Results Table output
      */
@@ -161,6 +163,9 @@ public class Batch_Analyser implements PlugIn {
         if (analyseFiles(currentDirectory, resultsDirectory)) {
             try {
                 saveResults(resultsDirectory);
+                DataWriter.saveValues(cumulativeCurveStats,
+                        new File(String.format("%s%s%s", resultsDirectory.getAbsolutePath(), File.separator, "CurvatureValues.csv")),
+                        new String[]{"X", "Y", "Theta 1", "Theta 2"}, null, false);
             } catch (IOException e) {
                 GenUtils.logError(e, "Could not save results file.");
             }
@@ -799,10 +804,16 @@ public class Batch_Analyser implements PlugIn {
         if (branches == null) {
             return Double.NaN;
         }
+        if (cumulativeCurveStats == null) {
+            cumulativeCurveStats = new ArrayList();
+            for(int c=0;c<4;c++){
+                cumulativeCurveStats.add(new ArrayList<Double>());
+            }
+        }
         SummaryStatistics stats = new SummaryStatistics();
         for (int[][] branch : branches) {
             if (branch.length > 2 * window) {
-                double[] curvature = CurveAnalyser.calcCurvature(branch, window, false);
+                double[] curvature = CurveAnalyser.calcCurvature(branch, window, false, cumulativeCurveStats);
                 for (int i = 0; i < curvature.length; i++) {
                     double c = Math.abs(curvature[i]);
                     curveMap.putPixelValue(branch[i + window][0], branch[i + window][1], c);
