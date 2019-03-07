@@ -96,6 +96,7 @@ public class Batch_Analyser implements PlugIn {
     private static File currentDirectory;
     private DescriptiveStatistics wholeImageCurvature;
     ArrayList<ArrayList<Double>> cumulativeCurveStats;
+    ArrayList<String> cumulativeCurveStatsLabels;
     /*
      * Column headings used for Results Table output
      */
@@ -165,7 +166,7 @@ public class Batch_Analyser implements PlugIn {
                 saveResults(resultsDirectory);
                 DataWriter.saveValues(cumulativeCurveStats,
                         new File(String.format("%s%s%s", resultsDirectory.getAbsolutePath(), File.separator, "CurvatureValues.csv")),
-                        new String[]{"X", "Y", "Theta 1", "Theta 2"}, null, false);
+                        new String[]{"Image", "X", "Y", "Theta 1", "Theta 2"}, cumulativeCurveStatsLabels.toArray(new String[]{}), false);
             } catch (IOException e) {
                 GenUtils.logError(e, "Could not save results file.");
             }
@@ -806,7 +807,8 @@ public class Batch_Analyser implements PlugIn {
         }
         if (cumulativeCurveStats == null) {
             cumulativeCurveStats = new ArrayList();
-            for(int c=0;c<4;c++){
+            cumulativeCurveStatsLabels = new ArrayList();
+            for (int c = 0; c < 4; c++) {
                 cumulativeCurveStats.add(new ArrayList<Double>());
             }
         }
@@ -815,6 +817,7 @@ public class Batch_Analyser implements PlugIn {
             if (branch.length > 2 * window) {
                 double[] curvature = CurveAnalyser.calcCurvature(branch, window, false, cumulativeCurveStats);
                 for (int i = 0; i < curvature.length; i++) {
+                    cumulativeCurveStatsLabels.add(imageName);
                     double c = Math.abs(curvature[i]);
                     curveMap.putPixelValue(branch[i + window][0], branch[i + window][1], c);
                     stats.addValue(c);
