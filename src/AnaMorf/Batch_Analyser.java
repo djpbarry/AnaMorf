@@ -23,6 +23,7 @@ import IAClasses.FractalEstimator;
 import IAClasses.OnlyExt;
 import IAClasses.Pixel;
 import IO.DataWriter;
+import Revision.Revision;
 import Thresholding.FuzzyThresholder;
 import UtilClasses.GenUtils;
 import UtilClasses.GenVariables;
@@ -140,7 +141,7 @@ public class Batch_Analyser implements PlugIn {
      */
     public void run(String arg) {
         Prefs.blackBackground = false;
-        title = title + "_v1." + new DecimalFormat("000").format(Revision.Revision.revisionNumber);
+        title = String.format("%s_v%d.%s", title, Revision.VERSION, new DecimalFormat("000").format(Revision.revisionNumber));
         if (!showGUI()) {
             return;
         }
@@ -336,7 +337,7 @@ public class Batch_Analyser implements PlugIn {
         boolean valid = false;
         while (!valid) {
             valid = true;
-            gui = new UserInterface(IJ.getInstance(), true);
+            gui = new UserInterface(IJ.getInstance(), true, title);
             gui.setVisible(true);
             if (!gui.exitProgram()) {
                 boolean options[] = gui.getOptions();

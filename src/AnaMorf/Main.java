@@ -5,10 +5,6 @@
  */
 package AnaMorf;
 
-import ij.IJ;
-import ij.ImagePlus;
-import ij.process.ByteProcessor;
-
 public class Main {
 
     public static void main(String args[]) {
@@ -17,6 +13,6 @@ public class Main {
 //        SkeletonPruner sp = new SkeletonPruner(100, (ByteProcessor) (IJ.openImage()).getProcessor().convertToByteProcessor());
 //
 //        IJ.saveAs(new ImagePlus("Pruned", sp.getPrunedImage()), "PNG", "D:\\OneDrive - The Francis Crick Institute\\Working Data\\Tapon\\Maxine\\Tiffs\\Pruned");
-System.exit(0);
+        System.exit(0);
     }
 }

@@ -29,9 +29,10 @@ public class UserInterface extends javax.swing.JDialog {
     /**
      * Creates new form UserInterface
      */
-    public UserInterface(java.awt.Frame parent, boolean modal) {
+    public UserInterface(java.awt.Frame parent, boolean modal, String title) {
         super(parent, modal);
         exit = true;
+        this.title = title;
         initComponents();
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width / 2 - this.getWidth() / 2, dim.height / 2 - this.getHeight() / 2);
@@ -92,7 +93,7 @@ public class UserInterface extends javax.swing.JDialog {
         exitButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("AnaMorf");
+        setTitle(title);
         setPreferredSize(new java.awt.Dimension(640, 640));
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
@@ -958,6 +959,8 @@ public class UserInterface extends javax.swing.JDialog {
     public boolean exitProgram() {
         return exit;
     }
+    
+    private final String title;
     private double imageRes2;
     private static int formatIndex = 3, manualThreshold = 100, curvatureWindow = 20;
     private static double minLength = 20.0, maxCirc = 0.2, minArea = 10.0,
