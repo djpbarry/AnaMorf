@@ -27,17 +27,20 @@ import java.awt.Toolkit;
 import java.text.DecimalFormat;
 import java.util.Properties;
 import javax.swing.DefaultComboBoxModel;
+import params.DefaultParams;
 
 public class UserInterface extends javax.swing.JDialog implements GUIMethods {
 
     /**
      * Creates new form UserInterface
      */
-    public UserInterface(java.awt.Frame parent, boolean modal, String title) {
+    public UserInterface(java.awt.Frame parent, boolean modal, String title, Properties props) {
         super(parent, modal);
         exit = true;
         this.title = title;
-        this.props = new Properties();
+        if (props != null) {
+            this.props = props;
+        }
         initComponents();
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width / 2 - this.getWidth() / 2, dim.height / 2 - this.getHeight() / 2);
@@ -107,7 +110,7 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
 
         basicPanel.setLayout(new java.awt.GridBagLayout());
 
-        imageFormatLabel.setText("Image Format:");
+        imageFormatLabel.setText(DefaultParams.IMAGE_FORMAT_LABEL);
         imageFormatLabel.setLabelFor(imageFormatCombo);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -117,7 +120,7 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         basicPanel.add(imageFormatLabel, gridBagConstraints);
 
-        resLabel.setText("Image Resolution ("+IJ.micronSymbol+"m/pixel):");
+        resLabel.setText(DefaultParams.IMAGE_RES_LABEL);
         resLabel.setLabelFor(imageResField);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -129,7 +132,7 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         basicPanel.add(resLabel, gridBagConstraints);
 
-        minBranchLabel.setText("Minimum Branch Length ("+IJ.micronSymbol+"m):");
+        minBranchLabel.setText(DefaultParams.MIN_BRANCH_LABEL);
         minBranchLabel.setLabelFor(minBranchField);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -141,7 +144,7 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         basicPanel.add(minBranchLabel, gridBagConstraints);
 
-        maxCircLabel.setText("Maximum Circularity:");
+        maxCircLabel.setText(DefaultParams.MAX_CIRC_LABEL);
         maxCircLabel.setLabelFor(maxCircField);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -166,12 +169,7 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         basicPanel.add(minAreaLabel, gridBagConstraints);
 
         imageFormatCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "BMP", "GIF", "JPG", "PNG", "TIF" }));
-        imageFormatCombo.setSelectedIndex(formatIndex);
-        imageFormatCombo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                imageFormatComboActionPerformed(evt);
-            }
-        });
+        imageFormatCombo.setSelectedItem(props.get(DefaultParams.IMAGE_FORMAT_LABEL));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -182,7 +180,7 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         basicPanel.add(imageFormatCombo, gridBagConstraints);
 
-        imageResField.setText(threePlaces.format(imageRes));
+        imageResField.setText(props.getProperty(DefaultParams.IMAGE_RES_LABEL));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
@@ -193,7 +191,7 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         basicPanel.add(imageResField, gridBagConstraints);
 
-        minBranchField.setText(onePlace.format(minLength));
+        minBranchField.setText(props.getProperty(DefaultParams.MIN_BRANCH_LABEL));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
@@ -204,7 +202,7 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         basicPanel.add(minBranchField, gridBagConstraints);
 
-        maxCircField.setText(threePlaces.format(maxCirc));
+        maxCircField.setText(props.getProperty(DefaultParams.MAX_CIRC_LABEL));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 3;
@@ -215,7 +213,7 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         basicPanel.add(maxCircField, gridBagConstraints);
 
-        minAreaField.setText(onePlace.format(minArea));
+        minAreaField.setText(props.getProperty(DefaultParams.MIN_AREA_LABEL));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;
@@ -226,8 +224,8 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         basicPanel.add(minAreaField, gridBagConstraints);
 
-        areaCheck.setSelected(area);
-        areaCheck.setText("Projected Area");
+        areaCheck.setSelected(Boolean.parseBoolean(props.getProperty(DefaultParams.PROJ_AREA_LABEL)));
+        areaCheck.setText(DefaultParams.PROJ_AREA_LABEL);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 10;
@@ -236,8 +234,8 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.weighty = 1.0;
         basicPanel.add(areaCheck, gridBagConstraints);
 
-        thlCheck.setSelected(thl);
-        thlCheck.setText("Total Length");
+        thlCheck.setSelected(Boolean.parseBoolean(props.getProperty(DefaultParams.TOT_LENGTH_LABEL)));
+        thlCheck.setText(DefaultParams.TOT_LENGTH_LABEL);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 10;
@@ -246,8 +244,8 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.weighty = 1.0;
         basicPanel.add(thlCheck, gridBagConstraints);
 
-        hguCheck.setSelected(hgu);
-        hguCheck.setText("Mean Branch Length");
+        hguCheck.setSelected(Boolean.parseBoolean(props.getProperty(DefaultParams.FOURIER_FRAC_LABEL)));
+        hguCheck.setText(DefaultParams.MEAN_BRANCH_LABEL);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 8;
@@ -256,8 +254,8 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.weighty = 1.0;
         basicPanel.add(hguCheck, gridBagConstraints);
 
-        fourierFracCheck.setSelected(fourfrac);
-        fourierFracCheck.setText("Fourier Fractal Dimension");
+        fourierFracCheck.setSelected(Boolean.parseBoolean(props.getProperty(DefaultParams.FOURIER_FRAC_LABEL)));
+        fourierFracCheck.setText(DefaultParams.FOURIER_FRAC_LABEL);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 7;
@@ -266,8 +264,8 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.weighty = 1.0;
         basicPanel.add(fourierFracCheck, gridBagConstraints);
 
-        boxFracCheck.setSelected(boxfrac);
-        boxFracCheck.setText("Box-Counting Fractal Dimension");
+        boxFracCheck.setSelected(Boolean.parseBoolean(props.getProperty(DefaultParams.BOX_COUNT_LABEL)));
+        boxFracCheck.setText(DefaultParams.BOX_COUNT_LABEL);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 6;
@@ -276,8 +274,8 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.weighty = 1.0;
         basicPanel.add(boxFracCheck, gridBagConstraints);
 
-        circCheck.setSelected(circ);
-        circCheck.setText("Circularity");
+        circCheck.setSelected(Boolean.parseBoolean(props.getProperty(DefaultParams.CIRC_LABEL)));
+        circCheck.setText(DefaultParams.CIRC_LABEL);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 6;
@@ -286,8 +284,8 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.weighty = 1.0;
         basicPanel.add(circCheck, gridBagConstraints);
 
-        lacCheck.setSelected(lac);
-        lacCheck.setText("Lacunarity");
+        lacCheck.setSelected(Boolean.parseBoolean(props.getProperty(DefaultParams.LAC_LABEL)));
+        lacCheck.setText(DefaultParams.LAC_LABEL);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 8;
@@ -296,8 +294,8 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.weighty = 1.0;
         basicPanel.add(lacCheck, gridBagConstraints);
 
-        tipsCheck.setSelected(tips);
-        tipsCheck.setText("Number of Endpoints");
+        tipsCheck.setSelected(Boolean.parseBoolean(props.getProperty(DefaultParams.NUM_END_LABEL)));
+        tipsCheck.setText(DefaultParams.NUM_END_LABEL);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 9;
@@ -306,8 +304,8 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.weighty = 1.0;
         basicPanel.add(tipsCheck, gridBagConstraints);
 
-        branchCheck.setSelected(branches);
-        branchCheck.setText("Number of Branchpoints");
+        branchCheck.setSelected(Boolean.parseBoolean(props.getProperty(DefaultParams.NUM_BRANCH_LABEL)));
+        branchCheck.setText(DefaultParams.NUM_BRANCH_LABEL);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 9;
@@ -316,8 +314,8 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.weighty = 1.0;
         basicPanel.add(branchCheck, gridBagConstraints);
 
-        curveCheckBox.setText("Curvature");
-        curveCheckBox.setSelected(curvature);
+        curveCheckBox.setText(DefaultParams.CURVE_LABEL);
+        curveCheckBox.setSelected(Boolean.parseBoolean(props.getProperty(DefaultParams.CURVE_LABEL)));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 7;
@@ -326,7 +324,7 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.weighty = 1.0;
         basicPanel.add(curveCheckBox, gridBagConstraints);
 
-        curveWindowLabel.setText("Curvature Window:");
+        curveWindowLabel.setText(DefaultParams.CURVE_WIN_LABEL);
         curveWindowLabel.setLabelFor(curveWindowTextField);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -336,7 +334,7 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         basicPanel.add(curveWindowLabel, gridBagConstraints);
 
-        curveWindowTextField.setText(String.valueOf(curvatureWindow));
+        curveWindowTextField.setText(props.getProperty(DefaultParams.CURVE_WIN_LABEL));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 5;
@@ -349,8 +347,8 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
 
         advancedPanel.setLayout(new java.awt.GridBagLayout());
 
-        blurRadiusLabel.setText("Noise Reduction Filter Radius ("+IJ.micronSymbol+"m):");
-        blurRadiusLabel.setEnabled(preProcess);
+        blurRadiusLabel.setText(DefaultParams.NOISE_RED_LABEL);
+        blurRadiusLabel.setEnabled(Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL)));
         blurRadiusLabel.setLabelFor(blurRadiusField);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -363,8 +361,8 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(15, 5, 15, 5);
         advancedPanel.add(blurRadiusLabel, gridBagConstraints);
 
-        blurRadiusField.setText(String.valueOf(filterRadius));
-        blurRadiusField.setEnabled(preProcess);
+        blurRadiusField.setText(props.getProperty(DefaultParams.NOISE_RED_LABEL));
+        blurRadiusField.setEnabled(Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL)));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 3;
@@ -375,9 +373,9 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(15, 5, 15, 5);
         advancedPanel.add(blurRadiusField, gridBagConstraints);
 
-        lightBGRadio.setSelected(lightBackground);
-        lightBGRadio.setText("Light Background");
-        lightBGRadio.setEnabled(preProcess);
+        lightBGRadio.setSelected(Boolean.parseBoolean(props.getProperty(DefaultParams.LIGHT_BACK_LABEL)));
+        lightBGRadio.setText(DefaultParams.LIGHT_BACK_LABEL);
+        lightBGRadio.setEnabled(Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL)));
         lightBGRadio.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 lightBGRadioActionPerformed(evt);
@@ -394,9 +392,9 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(15, 5, 15, 5);
         advancedPanel.add(lightBGRadio, gridBagConstraints);
 
-        darkBGRadio.setSelected(!lightBackground);
-        darkBGRadio.setText("Dark Background");
-        darkBGRadio.setEnabled(preProcess);
+        darkBGRadio.setSelected(!Boolean.parseBoolean(props.getProperty(DefaultParams.LIGHT_BACK_LABEL)));
+        darkBGRadio.setText(DefaultParams.DARK_BACK_LABEL);
+        darkBGRadio.setEnabled(Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL)));
         darkBGRadio.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 darkBGRadioActionPerformed(evt);
@@ -412,9 +410,9 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(15, 5, 15, 5);
         advancedPanel.add(darkBGRadio, gridBagConstraints);
 
-        autoThresholdRadio.setSelected(autoThreshold);
-        autoThresholdRadio.setText("Auto Threshold");
-        autoThresholdRadio.setEnabled(preProcess);
+        autoThresholdRadio.setSelected(Boolean.parseBoolean(props.getProperty(DefaultParams.AUTO_THRESH_LABEL)));
+        autoThresholdRadio.setText(DefaultParams.AUTO_THRESH_LABEL);
+        autoThresholdRadio.setEnabled(Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL)));
         autoThresholdRadio.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 autoThresholdRadioActionPerformed(evt);
@@ -430,9 +428,9 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(15, 5, 0, 5);
         advancedPanel.add(autoThresholdRadio, gridBagConstraints);
 
-        manualThresholdRadio.setSelected(!autoThreshold);
-        manualThresholdRadio.setText("Manual Threshold");
-        manualThresholdRadio.setEnabled(preProcess);
+        manualThresholdRadio.setSelected(!Boolean.parseBoolean(props.getProperty(DefaultParams.AUTO_THRESH_LABEL)));
+        manualThresholdRadio.setText(DefaultParams.MAN_THRESH_LABEL);
+        manualThresholdRadio.setEnabled(Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL)));
         manualThresholdRadio.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 manualThresholdRadioActionPerformed(evt);
@@ -448,8 +446,8 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 15, 5);
         advancedPanel.add(manualThresholdRadio, gridBagConstraints);
 
-        thresholdLabel.setText("Threshold Level:");
-        thresholdLabel.setEnabled(preProcess&&manualThresholdRadio.isSelected());
+        thresholdLabel.setText(DefaultParams.THRESH_LEV_LABEL);
+        thresholdLabel.setEnabled(Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL))&&manualThresholdRadio.isSelected());
         thresholdLabel.setLabelFor(manualThresholdField);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -461,8 +459,8 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 15, 5);
         advancedPanel.add(thresholdLabel, gridBagConstraints);
 
-        manualThresholdField.setText(""+manualThreshold);
-        manualThresholdField.setEnabled(preProcess && manualThresholdRadio.isSelected());
+        manualThresholdField.setText(props.getProperty(DefaultParams.THRESH_LEV_LABEL));
+        manualThresholdField.setEnabled(Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL)) && manualThresholdRadio.isSelected());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 9;
@@ -473,9 +471,9 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 15, 5);
         advancedPanel.add(manualThresholdField, gridBagConstraints);
 
-        subBackgroundCheck.setSelected(subBackground);
-        subBackgroundCheck.setText("Remove Uneven Background?");
-        subBackgroundCheck.setEnabled(preProcess);
+        subBackgroundCheck.setSelected(Boolean.parseBoolean(props.getProperty(DefaultParams.REMOVE_BACK_LABEL)));
+        subBackgroundCheck.setText(DefaultParams.REMOVE_BACK_LABEL);
+        subBackgroundCheck.setEnabled(Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL)));
         subBackgroundCheck.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 subBackgroundCheckActionPerformed(evt);
@@ -491,8 +489,8 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(15, 5, 15, 5);
         advancedPanel.add(subBackgroundCheck, gridBagConstraints);
 
-        backgroundLabel.setText("Background Filter Radius ("+IJ.micronSymbol+"m^2):");
-        backgroundLabel.setEnabled(preProcess && subBackgroundCheck.isSelected());
+        backgroundLabel.setText(DefaultParams.BACK_FILT_LABEL);
+        backgroundLabel.setEnabled(Boolean.parseBoolean(props.getProperty(DefaultParams.BACK_FILT_LABEL)) && subBackgroundCheck.isSelected());
         backgroundLabel.setLabelFor(backgroundTextField);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -505,8 +503,8 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(15, 5, 15, 5);
         advancedPanel.add(backgroundLabel, gridBagConstraints);
 
-        backgroundTextField.setText(""+backgroundRadius);
-        backgroundTextField.setEnabled(preProcess && subBackgroundCheck.isSelected());
+        backgroundTextField.setText(props.getProperty(DefaultParams.BACK_FILT_LABEL));
+        backgroundTextField.setEnabled(Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL)) && subBackgroundCheck.isSelected());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 7;
@@ -517,8 +515,8 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(15, 5, 15, 5);
         advancedPanel.add(backgroundTextField, gridBagConstraints);
 
-        maskImageCheck.setSelected(createMasks);
-        maskImageCheck.setText("Create Mask Images?");
+        maskImageCheck.setSelected(Boolean.parseBoolean(props.getProperty(DefaultParams.CREATE_MASK_LABEL)));
+        maskImageCheck.setText(DefaultParams.CREATE_MASK_LABEL);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 11;
@@ -530,8 +528,8 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(15, 5, 0, 5);
         advancedPanel.add(maskImageCheck, gridBagConstraints);
 
-        watershedCheckBox.setSelected(doWatershed);
-        watershedCheckBox.setText("Separate Touching Objects?");
+        watershedCheckBox.setSelected(Boolean.parseBoolean(props.getProperty(DefaultParams.SEPARATE_TOUCHING_LABEL)));
+        watershedCheckBox.setText(DefaultParams.SEPARATE_TOUCHING_LABEL);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 12;
@@ -543,8 +541,8 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
         advancedPanel.add(watershedCheckBox, gridBagConstraints);
 
-        edgeCheckBox.setText("Exclude Edge Objects?");
-        edgeCheckBox.setSelected(excludeEdges);
+        edgeCheckBox.setText(DefaultParams.EXCLUDE_EDGE_LABEL);
+        edgeCheckBox.setSelected(Boolean.parseBoolean(props.getProperty(DefaultParams.EXCLUDE_EDGE_LABEL)));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 11;
@@ -555,8 +553,8 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(15, 5, 0, 5);
         advancedPanel.add(edgeCheckBox, gridBagConstraints);
 
-        wholeImageCheckBox.setSelected(wholeImage);
-        wholeImageCheckBox.setText("Treat Whole Image as One Object?");
+        wholeImageCheckBox.setSelected(Boolean.parseBoolean(props.getProperty(DefaultParams.WHOLE_IMAGE_LABEL)));
+        wholeImageCheckBox.setText(DefaultParams.WHOLE_IMAGE_LABEL);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 12;
@@ -568,8 +566,8 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         advancedPanel.add(wholeImageCheckBox, gridBagConstraints);
 
         threshComboBox.setModel(new DefaultComboBoxModel(AutoThresholder.Method.values()));
-        threshComboBox.setSelectedItem(String.valueOf(thresholdMethod));
-        threshComboBox.setEnabled(preProcess && autoThreshold);
+        threshComboBox.setSelectedItem(props.getProperty(DefaultParams.THRESH_METH_LABEL));
+        threshComboBox.setEnabled(Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL)) && Boolean.parseBoolean(props.getProperty(DefaultParams.AUTO_THRESH_LABEL)));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 8;
@@ -580,8 +578,8 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(15, 5, 0, 5);
         advancedPanel.add(threshComboBox, gridBagConstraints);
 
-        autoThresholdLabel.setText("Threshold Method:");
-        autoThresholdLabel.setEnabled(preProcess && autoThresholdRadio.isSelected());
+        autoThresholdLabel.setText(DefaultParams.THRESH_METH_LABEL);
+        autoThresholdLabel.setEnabled(Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL)) && autoThresholdRadio.isSelected());
         autoThresholdLabel.setLabelFor(threshComboBox);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -593,8 +591,8 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(15, 5, 0, 5);
         advancedPanel.add(autoThresholdLabel, gridBagConstraints);
 
-        preProcessCheckBox.setText("Pre-Process Images?");
-        preProcessCheckBox.setSelected(preProcess);
+        preProcessCheckBox.setText(DefaultParams.PRE_PROCESS_LABEL);
+        preProcessCheckBox.setSelected(Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL)));
         preProcessCheckBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 preProcessCheckBoxActionPerformed(evt);
@@ -610,7 +608,8 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(15, 5, 15, 5);
         advancedPanel.add(preProcessCheckBox, gridBagConstraints);
 
-        curveValsCheckBox.setText("Output curvature values?");
+        curveValsCheckBox.setText(DefaultParams.OUTPUT_CURVE_LABEL);
+        curveValsCheckBox.setSelected(Boolean.parseBoolean(props.getProperty(DefaultParams.OUTPUT_CURVE_LABEL)));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 13;
@@ -748,9 +747,6 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
     private void darkBGRadioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_darkBGRadioActionPerformed
         lightBGRadio.setSelected(!darkBGRadio.isSelected());
     }//GEN-LAST:event_darkBGRadioActionPerformed
-
-    private void imageFormatComboActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_imageFormatComboActionPerformed
-    }//GEN-LAST:event_imageFormatComboActionPerformed
 
     private void subBackgroundCheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subBackgroundCheckActionPerformed
         backgroundTextField.setEnabled(subBackgroundCheck.isSelected());
@@ -986,7 +982,7 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
     private static Method thresholdMethod = Method.Otsu;
     private DecimalFormat threePlaces = new DecimalFormat("0.000");
     private DecimalFormat onePlace = new DecimalFormat("0.0");
-    private final Properties props;
+    private static Properties props = new DefaultParams();
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel advancedPanel;
     private javax.swing.JCheckBox areaCheck;

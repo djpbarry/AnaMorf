@@ -343,7 +343,7 @@ public class Batch_Analyser implements PlugIn {
         boolean valid = false;
         while (!valid) {
             valid = true;
-            gui = new UserInterface(IJ.getInstance(), true, title);
+            gui = new UserInterface(IJ.getInstance(), true, title, null);
             gui.setVisible(true);
             if (!gui.exitProgram()) {
                 boolean options[] = gui.getOptions();

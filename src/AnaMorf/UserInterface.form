@@ -56,7 +56,9 @@
           <SubComponents>
             <Component class="javax.swing.JLabel" name="imageFormatLabel">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Image Format:"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="DefaultParams.IMAGE_FORMAT_LABEL" type="code"/>
+                </Property>
               </Properties>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="imageFormatLabel.setLabelFor(imageFormatCombo);"/>
@@ -70,7 +72,7 @@
             <Component class="javax.swing.JLabel" name="resLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="&quot;Image Resolution (&quot;+IJ.micronSymbol+&quot;m/pixel):&quot;" type="code"/>
+                  <Connection code="DefaultParams.IMAGE_RES_LABEL" type="code"/>
                 </Property>
               </Properties>
               <AuxValues>
@@ -85,7 +87,7 @@
             <Component class="javax.swing.JLabel" name="minBranchLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="&quot;Minimum Branch Length (&quot;+IJ.micronSymbol+&quot;m):&quot;" type="code"/>
+                  <Connection code="DefaultParams.MIN_BRANCH_LABEL" type="code"/>
                 </Property>
               </Properties>
               <AuxValues>
@@ -99,7 +101,9 @@
             </Component>
             <Component class="javax.swing.JLabel" name="maxCircLabel">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Maximum Circularity:"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="DefaultParams.MAX_CIRC_LABEL" type="code"/>
+                </Property>
               </Properties>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="maxCircLabel.setLabelFor(maxCircField);"/>
@@ -136,13 +140,10 @@
                     <StringItem index="4" value="TIF"/>
                   </StringArray>
                 </Property>
-                <Property name="selectedIndex" type="int" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="formatIndex" type="code"/>
-                </Property>
               </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="imageFormatComboActionPerformed"/>
-              </Events>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="imageFormatCombo.setSelectedItem(props.get(DefaultParams.IMAGE_FORMAT_LABEL));"/>
+              </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
                   <GridBagConstraints gridX="1" gridY="0" gridWidth="1" gridHeight="1" fill="2" ipadX="0" ipadY="0" insetsTop="5" insetsLeft="5" insetsBottom="5" insetsRight="5" anchor="22" weightX="1.0" weightY="1.0"/>
@@ -152,7 +153,7 @@
             <Component class="javax.swing.JTextField" name="imageResField">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="threePlaces.format(imageRes)" type="code"/>
+                  <Connection code="props.getProperty(DefaultParams.IMAGE_RES_LABEL)" type="code"/>
                 </Property>
               </Properties>
               <Constraints>
@@ -164,7 +165,7 @@
             <Component class="javax.swing.JTextField" name="minBranchField">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="onePlace.format(minLength)" type="code"/>
+                  <Connection code="props.getProperty(DefaultParams.MIN_BRANCH_LABEL)" type="code"/>
                 </Property>
               </Properties>
               <Constraints>
@@ -176,7 +177,7 @@
             <Component class="javax.swing.JTextField" name="maxCircField">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="threePlaces.format(maxCirc)" type="code"/>
+                  <Connection code="props.getProperty(DefaultParams.MAX_CIRC_LABEL)" type="code"/>
                 </Property>
               </Properties>
               <Constraints>
@@ -188,7 +189,7 @@
             <Component class="javax.swing.JTextField" name="minAreaField">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="onePlace.format(minArea)" type="code"/>
+                  <Connection code="props.getProperty(DefaultParams.MIN_AREA_LABEL)" type="code"/>
                 </Property>
               </Properties>
               <Constraints>
@@ -200,9 +201,11 @@
             <Component class="javax.swing.JCheckBox" name="areaCheck">
               <Properties>
                 <Property name="selected" type="boolean" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="area" type="code"/>
+                  <Connection code="Boolean.parseBoolean(props.getProperty(DefaultParams.PROJ_AREA_LABEL))" type="code"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Projected Area"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="DefaultParams.PROJ_AREA_LABEL" type="code"/>
+                </Property>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -213,9 +216,11 @@
             <Component class="javax.swing.JCheckBox" name="thlCheck">
               <Properties>
                 <Property name="selected" type="boolean" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="thl" type="code"/>
+                  <Connection code="Boolean.parseBoolean(props.getProperty(DefaultParams.TOT_LENGTH_LABEL))" type="code"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Total Length"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="DefaultParams.TOT_LENGTH_LABEL" type="code"/>
+                </Property>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -226,9 +231,11 @@
             <Component class="javax.swing.JCheckBox" name="hguCheck">
               <Properties>
                 <Property name="selected" type="boolean" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="hgu" type="code"/>
+                  <Connection code="Boolean.parseBoolean(props.getProperty(DefaultParams.FOURIER_FRAC_LABEL))" type="code"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Mean Branch Length"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="DefaultParams.MEAN_BRANCH_LABEL" type="code"/>
+                </Property>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -239,9 +246,11 @@
             <Component class="javax.swing.JCheckBox" name="fourierFracCheck">
               <Properties>
                 <Property name="selected" type="boolean" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="fourfrac" type="code"/>
+                  <Connection code="Boolean.parseBoolean(props.getProperty(DefaultParams.FOURIER_FRAC_LABEL))" type="code"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Fourier Fractal Dimension"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="DefaultParams.FOURIER_FRAC_LABEL" type="code"/>
+                </Property>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -251,10 +260,12 @@
             </Component>
             <Component class="javax.swing.JCheckBox" name="boxFracCheck">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Box-Counting Fractal Dimension"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="DefaultParams.BOX_COUNT_LABEL" type="code"/>
+                </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="boxFracCheck.setSelected(boxfrac);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="boxFracCheck.setSelected(Boolean.parseBoolean(props.getProperty(DefaultParams.BOX_COUNT_LABEL)));"/>
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -265,9 +276,11 @@
             <Component class="javax.swing.JCheckBox" name="circCheck">
               <Properties>
                 <Property name="selected" type="boolean" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="circ" type="code"/>
+                  <Connection code="Boolean.parseBoolean(props.getProperty(DefaultParams.CIRC_LABEL))" type="code"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Circularity"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="DefaultParams.CIRC_LABEL" type="code"/>
+                </Property>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -278,9 +291,11 @@
             <Component class="javax.swing.JCheckBox" name="lacCheck">
               <Properties>
                 <Property name="selected" type="boolean" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="lac" type="code"/>
+                  <Connection code="Boolean.parseBoolean(props.getProperty(DefaultParams.LAC_LABEL))" type="code"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Lacunarity"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="DefaultParams.LAC_LABEL" type="code"/>
+                </Property>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -291,9 +306,11 @@
             <Component class="javax.swing.JCheckBox" name="tipsCheck">
               <Properties>
                 <Property name="selected" type="boolean" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="tips" type="code"/>
+                  <Connection code="Boolean.parseBoolean(props.getProperty(DefaultParams.NUM_END_LABEL))" type="code"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Number of Endpoints"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="DefaultParams.NUM_END_LABEL" type="code"/>
+                </Property>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -304,9 +321,11 @@
             <Component class="javax.swing.JCheckBox" name="branchCheck">
               <Properties>
                 <Property name="selected" type="boolean" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="branches" type="code"/>
+                  <Connection code="Boolean.parseBoolean(props.getProperty(DefaultParams.NUM_BRANCH_LABEL))" type="code"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Number of Branchpoints"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="DefaultParams.NUM_BRANCH_LABEL" type="code"/>
+                </Property>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -316,10 +335,12 @@
             </Component>
             <Component class="javax.swing.JCheckBox" name="curveCheckBox">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Curvature"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="DefaultParams.CURVE_LABEL" type="code"/>
+                </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="curveCheckBox.setSelected(curvature);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="curveCheckBox.setSelected(Boolean.parseBoolean(props.getProperty(DefaultParams.CURVE_LABEL)));"/>
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -329,7 +350,9 @@
             </Component>
             <Component class="javax.swing.JLabel" name="curveWindowLabel">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Curvature Window:"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="DefaultParams.CURVE_WIN_LABEL" type="code"/>
+                </Property>
               </Properties>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="curveWindowLabel.setLabelFor(curveWindowTextField);"/>
@@ -343,7 +366,7 @@
             <Component class="javax.swing.JTextField" name="curveWindowTextField">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="String.valueOf(curvatureWindow)" type="code"/>
+                  <Connection code="props.getProperty(DefaultParams.CURVE_WIN_LABEL)" type="code"/>
                 </Property>
               </Properties>
               <Constraints>
@@ -368,11 +391,11 @@
             <Component class="javax.swing.JLabel" name="blurRadiusLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="&quot;Noise Reduction Filter Radius (&quot;+IJ.micronSymbol+&quot;m):&quot;" type="code"/>
+                  <Connection code="DefaultParams.NOISE_RED_LABEL" type="code"/>
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="blurRadiusLabel.setEnabled(preProcess);&#xa;blurRadiusLabel.setLabelFor(blurRadiusField);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="blurRadiusLabel.setEnabled(Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL)));&#xa;blurRadiusLabel.setLabelFor(blurRadiusField);"/>
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -383,11 +406,11 @@
             <Component class="javax.swing.JTextField" name="blurRadiusField">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="String.valueOf(filterRadius)" type="code"/>
+                  <Connection code="props.getProperty(DefaultParams.NOISE_RED_LABEL)" type="code"/>
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="blurRadiusField.setEnabled(preProcess);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="blurRadiusField.setEnabled(Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL)));"/>
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -398,15 +421,17 @@
             <Component class="javax.swing.JRadioButton" name="lightBGRadio">
               <Properties>
                 <Property name="selected" type="boolean" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="lightBackground" type="code"/>
+                  <Connection code="Boolean.parseBoolean(props.getProperty(DefaultParams.LIGHT_BACK_LABEL))" type="code"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Light Background"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="DefaultParams.LIGHT_BACK_LABEL" type="code"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="lightBGRadioActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="lightBGRadio.setEnabled(preProcess);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="lightBGRadio.setEnabled(Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL)));"/>
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -417,15 +442,17 @@
             <Component class="javax.swing.JRadioButton" name="darkBGRadio">
               <Properties>
                 <Property name="selected" type="boolean" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="!lightBackground" type="code"/>
+                  <Connection code="!Boolean.parseBoolean(props.getProperty(DefaultParams.LIGHT_BACK_LABEL))" type="code"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Dark Background"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="DefaultParams.DARK_BACK_LABEL" type="code"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="darkBGRadioActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="darkBGRadio.setEnabled(preProcess);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="darkBGRadio.setEnabled(Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL)));"/>
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -436,15 +463,17 @@
             <Component class="javax.swing.JRadioButton" name="autoThresholdRadio">
               <Properties>
                 <Property name="selected" type="boolean" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="autoThreshold" type="code"/>
+                  <Connection code="Boolean.parseBoolean(props.getProperty(DefaultParams.AUTO_THRESH_LABEL))" type="code"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Auto Threshold"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="DefaultParams.AUTO_THRESH_LABEL" type="code"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="autoThresholdRadioActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="autoThresholdRadio.setEnabled(preProcess);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="autoThresholdRadio.setEnabled(Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL)));"/>
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -455,15 +484,17 @@
             <Component class="javax.swing.JRadioButton" name="manualThresholdRadio">
               <Properties>
                 <Property name="selected" type="boolean" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="!autoThreshold" type="code"/>
+                  <Connection code="!Boolean.parseBoolean(props.getProperty(DefaultParams.AUTO_THRESH_LABEL))" type="code"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Manual Threshold"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="DefaultParams.MAN_THRESH_LABEL" type="code"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="manualThresholdRadioActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="manualThresholdRadio.setEnabled(preProcess);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="manualThresholdRadio.setEnabled(Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL)));"/>
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -473,10 +504,12 @@
             </Component>
             <Component class="javax.swing.JLabel" name="thresholdLabel">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Threshold Level:"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="DefaultParams.THRESH_LEV_LABEL" type="code"/>
+                </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="thresholdLabel.setEnabled(preProcess&amp;&amp;manualThresholdRadio.isSelected());&#xa;thresholdLabel.setLabelFor(manualThresholdField);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="thresholdLabel.setEnabled(Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL))&amp;&amp;manualThresholdRadio.isSelected());&#xa;thresholdLabel.setLabelFor(manualThresholdField);"/>
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -487,10 +520,10 @@
             <Component class="javax.swing.JTextField" name="manualThresholdField">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="&quot;&quot;+manualThreshold" type="code"/>
+                  <Connection code="props.getProperty(DefaultParams.THRESH_LEV_LABEL)" type="code"/>
                 </Property>
                 <Property name="enabled" type="boolean" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="preProcess &amp;&amp; manualThresholdRadio.isSelected()" type="code"/>
+                  <Connection code="Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL)) &amp;&amp; manualThresholdRadio.isSelected()" type="code"/>
                 </Property>
               </Properties>
               <Constraints>
@@ -502,15 +535,17 @@
             <Component class="javax.swing.JCheckBox" name="subBackgroundCheck">
               <Properties>
                 <Property name="selected" type="boolean" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="subBackground" type="code"/>
+                  <Connection code="Boolean.parseBoolean(props.getProperty(DefaultParams.REMOVE_BACK_LABEL))" type="code"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Remove Uneven Background?"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="DefaultParams.REMOVE_BACK_LABEL" type="code"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="subBackgroundCheckActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="subBackgroundCheck.setEnabled(preProcess);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="subBackgroundCheck.setEnabled(Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL)));"/>
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -521,11 +556,11 @@
             <Component class="javax.swing.JLabel" name="backgroundLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="&quot;Background Filter Radius (&quot;+IJ.micronSymbol+&quot;m^2):&quot;" type="code"/>
+                  <Connection code="DefaultParams.BACK_FILT_LABEL" type="code"/>
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="backgroundLabel.setEnabled(preProcess &amp;&amp; subBackgroundCheck.isSelected());&#xa;backgroundLabel.setLabelFor(backgroundTextField);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="backgroundLabel.setEnabled(Boolean.parseBoolean(props.getProperty(DefaultParams.BACK_FILT_LABEL)) &amp;&amp; subBackgroundCheck.isSelected());&#xa;backgroundLabel.setLabelFor(backgroundTextField);"/>
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -536,11 +571,11 @@
             <Component class="javax.swing.JTextField" name="backgroundTextField">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="&quot;&quot;+backgroundRadius" type="code"/>
+                  <Connection code="props.getProperty(DefaultParams.BACK_FILT_LABEL)" type="code"/>
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="backgroundTextField.setEnabled(preProcess &amp;&amp; subBackgroundCheck.isSelected());"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="backgroundTextField.setEnabled(Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL)) &amp;&amp; subBackgroundCheck.isSelected());"/>
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -551,9 +586,11 @@
             <Component class="javax.swing.JCheckBox" name="maskImageCheck">
               <Properties>
                 <Property name="selected" type="boolean" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="createMasks" type="code"/>
+                  <Connection code="Boolean.parseBoolean(props.getProperty(DefaultParams.CREATE_MASK_LABEL))" type="code"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Create Mask Images?"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="DefaultParams.CREATE_MASK_LABEL" type="code"/>
+                </Property>
               </Properties>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -563,10 +600,12 @@
             </Component>
             <Component class="javax.swing.JCheckBox" name="watershedCheckBox">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Separate Touching Objects?"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="DefaultParams.SEPARATE_TOUCHING_LABEL" type="code"/>
+                </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="watershedCheckBox.setSelected(doWatershed);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="watershedCheckBox.setSelected(Boolean.parseBoolean(props.getProperty(DefaultParams.SEPARATE_TOUCHING_LABEL)));"/>
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -576,10 +615,12 @@
             </Component>
             <Component class="javax.swing.JCheckBox" name="edgeCheckBox">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Exclude Edge Objects?"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="DefaultParams.EXCLUDE_EDGE_LABEL" type="code"/>
+                </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="edgeCheckBox.setSelected(excludeEdges);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="edgeCheckBox.setSelected(Boolean.parseBoolean(props.getProperty(DefaultParams.EXCLUDE_EDGE_LABEL)));"/>
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -589,10 +630,12 @@
             </Component>
             <Component class="javax.swing.JCheckBox" name="wholeImageCheckBox">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Treat Whole Image as One Object?"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="DefaultParams.WHOLE_IMAGE_LABEL" type="code"/>
+                </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="wholeImageCheckBox.setSelected(wholeImage);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="wholeImageCheckBox.setSelected(Boolean.parseBoolean(props.getProperty(DefaultParams.WHOLE_IMAGE_LABEL)));"/>
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -607,7 +650,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="threshComboBox.setSelectedItem(String.valueOf(thresholdMethod));&#xa;threshComboBox.setEnabled(preProcess &amp;&amp; autoThreshold);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="threshComboBox.setSelectedItem(props.getProperty(DefaultParams.THRESH_METH_LABEL));&#xa;threshComboBox.setEnabled(Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL)) &amp;&amp; Boolean.parseBoolean(props.getProperty(DefaultParams.AUTO_THRESH_LABEL)));"/>
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -617,10 +660,12 @@
             </Component>
             <Component class="javax.swing.JLabel" name="autoThresholdLabel">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Threshold Method:"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="DefaultParams.THRESH_METH_LABEL" type="code"/>
+                </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="autoThresholdLabel.setEnabled(preProcess &amp;&amp; autoThresholdRadio.isSelected());&#xa;autoThresholdLabel.setLabelFor(threshComboBox);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="autoThresholdLabel.setEnabled(Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL)) &amp;&amp; autoThresholdRadio.isSelected());&#xa;autoThresholdLabel.setLabelFor(threshComboBox);"/>
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -630,13 +675,15 @@
             </Component>
             <Component class="javax.swing.JCheckBox" name="preProcessCheckBox">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Pre-Process Images?"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="DefaultParams.PRE_PROCESS_LABEL" type="code"/>
+                </Property>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="preProcessCheckBoxActionPerformed"/>
               </Events>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="preProcessCheckBox.setSelected(preProcess);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="preProcessCheckBox.setSelected(Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL)));"/>
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -646,8 +693,13 @@
             </Component>
             <Component class="javax.swing.JCheckBox" name="curveValsCheckBox">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Output curvature values?"/>
+                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+                  <Connection code="DefaultParams.OUTPUT_CURVE_LABEL" type="code"/>
+                </Property>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="curveValsCheckBox.setSelected(Boolean.parseBoolean(props.getProperty(DefaultParams.OUTPUT_CURVE_LABEL)));"/>
+              </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
                   <GridBagConstraints gridX="0" gridY="13" gridWidth="1" gridHeight="1" fill="1" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="5" insetsBottom="15" insetsRight="0" anchor="10" weightX="1.0" weightY="1.0"/>
