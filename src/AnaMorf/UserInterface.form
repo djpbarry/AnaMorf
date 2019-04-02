@@ -58,6 +58,9 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Image Format:"/>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="imageFormatLabel.setLabelFor(imageFormatCombo);"/>
+              </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
                   <GridBagConstraints gridX="-1" gridY="-1" gridWidth="1" gridHeight="1" fill="2" ipadX="0" ipadY="0" insetsTop="5" insetsLeft="5" insetsBottom="5" insetsRight="5" anchor="21" weightX="1.0" weightY="1.0"/>
@@ -70,6 +73,9 @@
                   <Connection code="&quot;Image Resolution (&quot;+IJ.micronSymbol+&quot;m/pixel):&quot;" type="code"/>
                 </Property>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="resLabel.setLabelFor(imageResField);"/>
+              </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
                   <GridBagConstraints gridX="0" gridY="1" gridWidth="1" gridHeight="1" fill="2" ipadX="0" ipadY="0" insetsTop="5" insetsLeft="5" insetsBottom="5" insetsRight="5" anchor="21" weightX="1.0" weightY="1.0"/>
@@ -82,6 +88,9 @@
                   <Connection code="&quot;Minimum Branch Length (&quot;+IJ.micronSymbol+&quot;m):&quot;" type="code"/>
                 </Property>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="minBranchLabel.setLabelFor(minBranchField);"/>
+              </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
                   <GridBagConstraints gridX="0" gridY="2" gridWidth="1" gridHeight="1" fill="2" ipadX="0" ipadY="0" insetsTop="5" insetsLeft="5" insetsBottom="5" insetsRight="5" anchor="21" weightX="1.0" weightY="1.0"/>
@@ -92,6 +101,9 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Maximum Circularity:"/>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="maxCircLabel.setLabelFor(maxCircField);"/>
+              </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
                   <GridBagConstraints gridX="0" gridY="3" gridWidth="1" gridHeight="1" fill="2" ipadX="0" ipadY="0" insetsTop="5" insetsLeft="5" insetsBottom="5" insetsRight="5" anchor="21" weightX="1.0" weightY="1.0"/>
@@ -104,6 +116,9 @@
                   <Connection code="&quot;Minimum Area (&quot;+IJ.micronSymbol+&quot;m^2):&quot;" type="code"/>
                 </Property>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="minAreaLabel.setLabelFor(minAreaField);"/>
+              </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
                   <GridBagConstraints gridX="0" gridY="4" gridWidth="1" gridHeight="1" fill="2" ipadX="0" ipadY="0" insetsTop="5" insetsLeft="5" insetsBottom="5" insetsRight="5" anchor="21" weightX="1.0" weightY="1.0"/>
@@ -316,6 +331,9 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Curvature Window:"/>
               </Properties>
+              <AuxValues>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="curveWindowLabel.setLabelFor(curveWindowTextField);"/>
+              </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
                   <GridBagConstraints gridX="0" gridY="5" gridWidth="1" gridHeight="1" fill="2" ipadX="0" ipadY="0" insetsTop="5" insetsLeft="5" insetsBottom="5" insetsRight="5" anchor="21" weightX="0.0" weightY="0.0"/>
@@ -354,7 +372,7 @@
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="blurRadiusLabel.setEnabled(preProcess);"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="blurRadiusLabel.setEnabled(preProcess);&#xa;blurRadiusLabel.setLabelFor(blurRadiusField);"/>
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -458,7 +476,7 @@
                 <Property name="text" type="java.lang.String" value="Threshold Level:"/>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="thresholdLabel.setEnabled(preProcess&amp;&amp;manualThresholdRadio.isSelected());"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="thresholdLabel.setEnabled(preProcess&amp;&amp;manualThresholdRadio.isSelected());&#xa;thresholdLabel.setLabelFor(manualThresholdField);"/>
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -500,14 +518,14 @@
                 </Constraint>
               </Constraints>
             </Component>
-            <Component class="javax.swing.JLabel" name="jLabel1">
+            <Component class="javax.swing.JLabel" name="backgroundLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
                   <Connection code="&quot;Background Filter Radius (&quot;+IJ.micronSymbol+&quot;m^2):&quot;" type="code"/>
                 </Property>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="jLabel1.setEnabled(preProcess &amp;&amp; subBackgroundCheck.isSelected());"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="backgroundLabel.setEnabled(preProcess &amp;&amp; subBackgroundCheck.isSelected());&#xa;backgroundLabel.setLabelFor(backgroundTextField);"/>
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -552,7 +570,7 @@
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
-                  <GridBagConstraints gridX="0" gridY="12" gridWidth="2" gridHeight="1" fill="1" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="5" insetsBottom="15" insetsRight="5" anchor="21" weightX="1.0" weightY="1.0"/>
+                  <GridBagConstraints gridX="0" gridY="12" gridWidth="2" gridHeight="1" fill="1" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="5" insetsBottom="0" insetsRight="5" anchor="21" weightX="1.0" weightY="1.0"/>
                 </Constraint>
               </Constraints>
             </Component>
@@ -578,7 +596,7 @@
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
-                  <GridBagConstraints gridX="2" gridY="12" gridWidth="1" gridHeight="1" fill="1" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="5" insetsBottom="15" insetsRight="5" anchor="21" weightX="1.0" weightY="1.0"/>
+                  <GridBagConstraints gridX="2" gridY="12" gridWidth="1" gridHeight="1" fill="1" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="5" insetsBottom="0" insetsRight="5" anchor="21" weightX="1.0" weightY="1.0"/>
                 </Constraint>
               </Constraints>
             </Component>
@@ -602,7 +620,7 @@
                 <Property name="text" type="java.lang.String" value="Threshold Method:"/>
               </Properties>
               <AuxValues>
-                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="autoThresholdLabel.setEnabled(preProcess &amp;&amp; autoThresholdRadio.isSelected());"/>
+                <AuxValue name="JavaCodeGenerator_InitCodePost" type="java.lang.String" value="autoThresholdLabel.setEnabled(preProcess &amp;&amp; autoThresholdRadio.isSelected());&#xa;autoThresholdLabel.setLabelFor(threshComboBox);"/>
               </AuxValues>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -623,6 +641,16 @@
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
                   <GridBagConstraints gridX="0" gridY="1" gridWidth="1" gridHeight="1" fill="2" ipadX="0" ipadY="0" insetsTop="15" insetsLeft="5" insetsBottom="15" insetsRight="5" anchor="21" weightX="1.0" weightY="1.0"/>
+                </Constraint>
+              </Constraints>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="curveValsCheckBox">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Output curvature values?"/>
+              </Properties>
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
+                  <GridBagConstraints gridX="0" gridY="13" gridWidth="1" gridHeight="1" fill="1" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="5" insetsBottom="15" insetsRight="0" anchor="10" weightX="1.0" weightY="1.0"/>
                 </Constraint>
               </Constraints>
             </Component>

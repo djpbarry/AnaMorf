@@ -165,7 +165,7 @@ public class Batch_Analyser implements PlugIn {
         if (analyseFiles(currentDirectory, resultsDirectory)) {
             try {
                 saveResults(resultsDirectory);
-                if ((outputData & CURVATURE) != 0) {
+                if ((outputData & CURVATURE) != 0 && gui.isCurveVals()) {
                     DataWriter.saveValues(cumulativeCurveStats,
                             new File(String.format("%s%s%s", resultsDirectory.getAbsolutePath(), File.separator, "CurvatureValues.csv")),
                             new String[]{"Image", "X", "Y", "Theta 1", "Theta 2"}, cumulativeCurveStatsLabels.toArray(new String[]{}), false);
