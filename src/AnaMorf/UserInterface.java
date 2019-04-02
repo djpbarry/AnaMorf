@@ -16,15 +16,19 @@
  */
 package AnaMorf;
 
+import UIClasses.GUIMethods;
+import UIClasses.PropertyExtractor;
 import ij.IJ;
 import ij.process.AutoThresholder;
 import ij.process.AutoThresholder.Method;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.text.DecimalFormat;
+import java.util.Properties;
 import javax.swing.DefaultComboBoxModel;
 
-public class UserInterface extends javax.swing.JDialog {
+public class UserInterface extends javax.swing.JDialog implements GUIMethods {
 
     /**
      * Creates new form UserInterface
@@ -33,6 +37,7 @@ public class UserInterface extends javax.swing.JDialog {
         super(parent, modal);
         exit = true;
         this.title = title;
+        this.props = new Properties();
         initComponents();
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         this.setLocation(dim.width / 2 - this.getWidth() / 2, dim.height / 2 - this.getHeight() / 2);
@@ -643,6 +648,7 @@ public class UserInterface extends javax.swing.JDialog {
 }//GEN-LAST:event_exitButtonActionPerformed
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
+        setVariables();
         exit = false;
 
         lac = lacCheck.isSelected();
@@ -735,8 +741,8 @@ public class UserInterface extends javax.swing.JDialog {
         lightBGRadio.setEnabled(preProcessCheckBox.isSelected());
         darkBGRadio.setEnabled(preProcessCheckBox.isSelected());
         subBackgroundCheck.setEnabled(preProcessCheckBox.isSelected());
-        jLabel1.setEnabled(preProcessCheckBox.isSelected()&&subBackgroundCheck.isSelected());
-        backgroundTextField.setEnabled(preProcessCheckBox.isSelected()&&subBackgroundCheck.isSelected());
+        jLabel1.setEnabled(preProcessCheckBox.isSelected() && subBackgroundCheck.isSelected());
+        backgroundTextField.setEnabled(preProcessCheckBox.isSelected() && subBackgroundCheck.isSelected());
         autoThresholdRadio.setEnabled(preProcessCheckBox.isSelected());
         manualThresholdRadio.setEnabled(preProcessCheckBox.isSelected());
         autoThresholdLabel.setEnabled(preProcessCheckBox.isSelected() && autoThresholdRadio.isSelected());
@@ -877,8 +883,6 @@ public class UserInterface extends javax.swing.JDialog {
         return curvature;
     }
 
-    
-    
     /**
      * Returns the manual grey-level threshold specified by the user if the
      * 'Manual' radio button was selected or -1 otherwise.
@@ -959,7 +963,20 @@ public class UserInterface extends javax.swing.JDialog {
     public boolean exitProgram() {
         return exit;
     }
-    
+
+    public boolean setVariables() {
+        setProperties(props, this);
+        return false;
+    }
+
+    public void setProperties(Properties p, Container c) {
+        PropertyExtractor.setProperties(p, c, PropertyExtractor.WRITE);
+    }
+
+    public Properties getProps() {
+        return props;
+    }
+
     private final String title;
     private double imageRes2;
     private static int formatIndex = 3, manualThreshold = 100, curvatureWindow = 20;
@@ -973,6 +990,7 @@ public class UserInterface extends javax.swing.JDialog {
     private static Method thresholdMethod = Method.Otsu;
     private DecimalFormat threePlaces = new DecimalFormat("0.000");
     private DecimalFormat onePlace = new DecimalFormat("0.0");
+    private final Properties props;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel advancedPanel;
     private javax.swing.JCheckBox areaCheck;

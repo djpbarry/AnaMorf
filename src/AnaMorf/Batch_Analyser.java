@@ -23,6 +23,7 @@ import IAClasses.FractalEstimator;
 import IAClasses.OnlyExt;
 import IAClasses.Pixel;
 import IO.DataWriter;
+import IO.PropertyWriter;
 import Revision.Revision;
 import Thresholding.FuzzyThresholder;
 import UtilClasses.GenUtils;
@@ -91,7 +92,7 @@ public class Batch_Analyser implements PlugIn {
     private ImageProcessor bwSkelImage;
     private FloatProcessor curveMap;
     private String imageName;
-    public String title = "AnaMorf";
+    public String title = String.format("AnaMorf v%d.%s", Revision.VERSION, new DecimalFormat("000").format(Revision.revisionNumber));
     UserInterface gui;
     ResultsTable resultsTable;
     private static File currentDirectory;
@@ -141,7 +142,6 @@ public class Batch_Analyser implements PlugIn {
      */
     public void run(String arg) {
         Prefs.blackBackground = false;
-        title = String.format("%s_v%d.%s", title, Revision.VERSION, new DecimalFormat("000").format(Revision.revisionNumber));
         if (!showGUI()) {
             return;
         }
@@ -174,7 +174,11 @@ public class Batch_Analyser implements PlugIn {
                 GenUtils.logError(e, "Could not save results file.");
             }
         }
-        generateParamsFile(resultsDirectory);
+        try {
+            PropertyWriter.printProperties(gui.getProps(), resultsDirectory.getAbsolutePath(), title, true);
+        } catch (Exception e) {
+            GenUtils.logError(e, "Failed to save property file.");
+        }
         IJ.log("Done");
         IJ.showStatus(title + " done: " + ((double) (System.currentTimeMillis() - startTime)) / 1000.0 + " s");
     }
