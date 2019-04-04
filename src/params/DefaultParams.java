@@ -58,11 +58,11 @@ public class DefaultParams extends Properties {
     public static final String OUTPUT_CURVE_LABEL = "Output Curvature Values";
 
     public DefaultParams() {
-        this.setProperty(IMAGE_FORMAT_LABEL, "BMP");
+        this.setProperty(IMAGE_FORMAT_LABEL, "PNG");
         this.setProperty(IMAGE_RES_LABEL, "1.0");
-        this.setProperty(MIN_BRANCH_LABEL, "0.0");
+        this.setProperty(MIN_BRANCH_LABEL, "10.0");
         this.setProperty(MAX_CIRC_LABEL, "1.0");
-        this.setProperty(MIN_AREA_LABEL, "0.0");
+        this.setProperty(MIN_AREA_LABEL, "10.0");
         this.setProperty(CURVE_WIN_LABEL, "10");
         this.setProperty(BOX_COUNT_LABEL, "true");
         this.setProperty(CIRC_LABEL, "true");
@@ -79,7 +79,7 @@ public class DefaultParams extends Properties {
         this.setProperty(DARK_BACK_LABEL, "false");
         this.setProperty(NOISE_RED_LABEL, "1.0");
         this.setProperty(REMOVE_BACK_LABEL, "true");
-        this.setProperty(BACK_FILT_LABEL, "1.0");
+        this.setProperty(BACK_FILT_LABEL, "50.0");
         this.setProperty(AUTO_THRESH_LABEL, "true");
         this.setProperty(MAN_THRESH_LABEL, "false");
         this.setProperty(THRESH_METH_LABEL, "Default");

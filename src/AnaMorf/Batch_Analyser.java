@@ -36,12 +36,12 @@ import ij.gui.Roi;
 import ij.gui.Wand;
 import ij.measure.Measurements;
 import ij.measure.ResultsTable;
-import ij.plugin.CanvasResizer;
 import ij.plugin.PlugIn;
 import ij.plugin.filter.Analyzer;
 import ij.plugin.filter.BackgroundSubtracter;
 import ij.plugin.filter.EDM;
 import ij.plugin.filter.GaussianBlur;
+import ij.process.AutoThresholder;
 import ij.process.Blitter;
 import ij.process.ByteBlitter;
 import ij.process.ByteProcessor;
@@ -56,18 +56,18 @@ import java.awt.Color;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Properties;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
+import params.DefaultParams;
 
 /**
  * BatchAnalyser is designed to automatically analyse a batch of images of
@@ -93,12 +93,12 @@ public class Batch_Analyser implements PlugIn {
     private FloatProcessor curveMap;
     private String imageName;
     public String title = String.format("AnaMorf v%d.%s", Revision.VERSION, new DecimalFormat("000").format(Revision.revisionNumber));
-    UserInterface gui;
     ResultsTable resultsTable;
     private static File currentDirectory;
     private DescriptiveStatistics wholeImageCurvature;
     ArrayList<ArrayList<Double>> cumulativeCurveStats;
     ArrayList<String> cumulativeCurveStatsLabels;
+    private static Properties props = new DefaultParams();
     /*
      * Column headings used for Results Table output
      */
@@ -165,7 +165,7 @@ public class Batch_Analyser implements PlugIn {
         if (analyseFiles(currentDirectory, resultsDirectory)) {
             try {
                 saveResults(resultsDirectory);
-                if ((outputData & CURVATURE) != 0 && gui.isCurveVals()) {
+                if ((outputData & CURVATURE) != 0 && Boolean.parseBoolean(props.getProperty(DefaultParams.OUTPUT_CURVE_LABEL))) {
                     DataWriter.saveValues(cumulativeCurveStats,
                             new File(String.format("%s%s%s", resultsDirectory.getAbsolutePath(), File.separator, "CurvatureValues.csv")),
                             new String[]{"Image", "X", "Y", "Theta 1", "Theta 2"}, cumulativeCurveStatsLabels.toArray(new String[]{}), false);
@@ -175,7 +175,7 @@ public class Batch_Analyser implements PlugIn {
             }
         }
         try {
-            PropertyWriter.printProperties(gui.getProps(), resultsDirectory.getAbsolutePath(), title, true);
+            PropertyWriter.printProperties(props, resultsDirectory.getAbsolutePath(), title, true);
         } catch (Exception e) {
             GenUtils.logError(e, "Failed to save property file.");
         }
@@ -209,10 +209,10 @@ public class Batch_Analyser implements PlugIn {
      * false otherwise.
      */
     public boolean analyseFiles(File directory, File resultsDirectory) {
-        FilenameFilter directoryFilter = new OnlyExt(gui.getImageFormat());
+        FilenameFilter directoryFilter = new OnlyExt(props.getProperty(DefaultParams.IMAGE_FORMAT_LABEL));
         String imageFilenames[] = directory.list(directoryFilter); // Generates a list of image filenames of the format specified by the user
         if (imageFilenames.length < 1) {
-            IJ.showMessage("'" + directory + "' contains no images of type ." + gui.getImageFormat());
+            IJ.showMessage("'" + directory + "' contains no images of type ." + props.getProperty(DefaultParams.IMAGE_FORMAT_LABEL));
             return false;
         }
         /*
@@ -221,7 +221,7 @@ public class Batch_Analyser implements PlugIn {
         for (int i = 0; i < imageFilenames.length; i++) {
             IJ.showProgress(i, imageFilenames.length);
             useMorphFilters = true;
-            outputResults = !gui.isWholeImage();
+            outputResults = !Boolean.parseBoolean(props.getProperty(DefaultParams.WHOLE_IMAGE_LABEL));
             imageName = imageFilenames[i];
             IJ.showStatus("Scanning " + imageName);
             ImagePlus currImage = new ImagePlus(directory + File.separator + imageName);
@@ -260,29 +260,29 @@ public class Batch_Analyser implements PlugIn {
             refProc.setValue(BACKGROUND);
             refProc.fill();
             ImageProcessor preProcessedImage;
-            if (gui.isPreProcess()) {
+            if (Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL))) {
                 preProcessedImage = preProcessImage(currImage.duplicate());
             } else {
                 preProcessedImage = currImage.getProcessor().duplicate();
             }
-            searchImage(preProcessedImage, gui.isExcludeEdges(), null);
+            searchImage(preProcessedImage, Boolean.parseBoolean(props.getProperty(DefaultParams.EXCLUDE_EDGE_LABEL)), null);
             ImagePlus maskOutput = new ImagePlus(imageName + " - Mask", maskImage.duplicate());
-            if (gui.isCreateMasks()) {
+            if (Boolean.parseBoolean(props.getProperty(DefaultParams.CREATE_MASK_LABEL))) {
                 IJ.saveAs(maskOutput, "png", resultsDirectory + "//" + maskOutput.getTitle());
             }
-            if (gui.isWholeImage() && maskOutput != null) {
+            if (Boolean.parseBoolean(props.getProperty(DefaultParams.WHOLE_IMAGE_LABEL)) && maskOutput != null) {
                 outputResults = true;
                 useMorphFilters = false;
                 ByteProcessor wholeImageMask = (ByteProcessor) maskImage.duplicate();
                 wholeImageMask.setValue(BACKGROUND);
                 wholeImageMask.fill();
-                analyseImage(wholeImageMask, maskImage, null, gui.isExcludeEdges(), null);
+                analyseImage(wholeImageMask, maskImage, null, Boolean.parseBoolean(props.getProperty(DefaultParams.EXCLUDE_EDGE_LABEL)), null);
             }
             if (((outputData & HYPHAL_GROWTH_UNIT) != 0) || ((outputData & NUMBER_OF_ENDPOINTS) != 0)
                     || ((outputData & TOTAL_HYPHAL_LENGTH) != 0) || ((outputData & CURVATURE) != 0)) {
                 ImagePlus skelOutput = new ImagePlus(imageName + " - Skeleton", colorSkelImage);
                 ImagePlus curveOutput = new ImagePlus(imageName + " - Curve Map", curveMap);
-                if (gui.isCreateMasks()) {
+                if (Boolean.parseBoolean(props.getProperty(DefaultParams.CREATE_MASK_LABEL))) {
                     IJ.saveAs(skelOutput, "png", resultsDirectory + "//" + skelOutput.getTitle());
                     IJ.saveAs(curveOutput, "tif", resultsDirectory + "//" + curveOutput.getTitle());
                 }
@@ -298,8 +298,9 @@ public class Batch_Analyser implements PlugIn {
             IJ.log("There was a problem reading " + currentImage.getTitle());
             return null;
         }
-        double filterRadius = gui.getFilterRadius() / gui.getRes();
-        if (!gui.isLightBackground()) {
+        double filterRadius = Double.parseDouble(props.getProperty(DefaultParams.NOISE_RED_LABEL)) / Double.parseDouble(props.getProperty(DefaultParams.IMAGE_RES_LABEL));
+
+        if (!Boolean.parseBoolean(props.getProperty(DefaultParams.LIGHT_BACK_LABEL))) {
             currentProcessor.invert();
         }
         if (currentProcessor instanceof FloatProcessor) {
@@ -308,25 +309,25 @@ public class Batch_Analyser implements PlugIn {
         /*
          * Low-frequency noise removal
          */
-        if (gui.isSubBackground()) {
+        if (Boolean.parseBoolean(props.getProperty(DefaultParams.REMOVE_BACK_LABEL))) {
             (new BackgroundSubtracter()).rollingBallBackground(currentProcessor,
-                    gui.getBackgroundRadius() / gui.getRes(), false, true, false,
+                    Double.parseDouble(props.getProperty(DefaultParams.BACK_FILT_LABEL)) / Double.parseDouble(props.getProperty(DefaultParams.IMAGE_RES_LABEL)), false, true, false,
                     true, false);
         }
         (new GaussianBlur()).blurGaussian(currentProcessor, filterRadius, filterRadius, 0.01);
-
         /*
          * Generate binary image
          */
-        if (gui.getManualThreshold() < 0) {
-            FuzzyThresholder ft = new FuzzyThresholder(currentProcessor.duplicate(), gui.getThresholdMethod(), 0.00);
+        if (Boolean.parseBoolean(props.getProperty(DefaultParams.AUTO_THRESH_LABEL))) {
+            FuzzyThresholder ft = new FuzzyThresholder(currentProcessor.duplicate(),
+                    AutoThresholder.Method.valueOf(props.getProperty(DefaultParams.THRESH_METH_LABEL)), 0.00);
             currentProcessor = ft.threshold();
             currentProcessor.erode();
             currentProcessor.dilate();
         } else {
-            currentProcessor.threshold(gui.getManualThreshold());
+            currentProcessor.threshold(Integer.parseInt(props.getProperty(DefaultParams.THRESH_LEV_LABEL)));
         }
-        if (gui.isDoWatershed()) {
+        if (Boolean.parseBoolean(props.getProperty(DefaultParams.SEPARATE_TOUCHING_LABEL))) {
             currentProcessor.invert();
             (new EDM()).toWatershed(currentProcessor);
             currentProcessor.invert();
@@ -343,7 +344,7 @@ public class Batch_Analyser implements PlugIn {
         boolean valid = false;
         while (!valid) {
             valid = true;
-            gui = new UserInterface(IJ.getInstance(), true, title, null);
+            UserInterface gui = new UserInterface(IJ.getInstance(), true, title, props);
             gui.setVisible(true);
             if (!gui.exitProgram()) {
                 boolean options[] = gui.getOptions();
@@ -380,7 +381,7 @@ public class Batch_Analyser implements PlugIn {
             refProc.setValue(BACKGROUND);
             refProc.fill();
         }
-        if (maskImage == null && gui.isCreateMasks()) {
+        if (maskImage == null && Boolean.parseBoolean(props.getProperty(DefaultParams.CREATE_MASK_LABEL))) {
             maskImage = new ByteProcessor(width, height);
             maskImage.setColor(BACKGROUND);
             maskImage.fill();
@@ -476,8 +477,10 @@ public class Batch_Analyser implements PlugIn {
 
     public boolean analyseImage(ByteProcessor objMask,
             ImageProcessor binProc, PolygonRoi objRoi, boolean excludeEdges, Roi imageRoi) {
+        double imageRes = Double.parseDouble(props.getProperty(DefaultParams.IMAGE_RES_LABEL));
+        double imageRes2 = imageRes * imageRes;
         int x, y, pixArea = 0, numEnds = 0, numBranches = 0;
-        int minPixLength = (int) Math.round(gui.getMinLength() / gui.getRes());
+        int minPixLength = (int) Math.round(Double.parseDouble(props.getProperty(DefaultParams.MIN_BRANCH_LABEL)) / Double.parseDouble(props.getProperty(DefaultParams.IMAGE_RES_LABEL)));
         double var, meanSq, objArea, objCirc, xCent, yCent, curvature = Double.NaN;
         double objectPerim = 1.0, lac = 1.0, distfracDim = Double.NaN;
         double xSum = 0.0, ySum = 0.0, growthUnit = 0.0, totalLength = 0.0;
@@ -490,7 +493,7 @@ public class Batch_Analyser implements PlugIn {
             objBox = new Rectangle(0, 0, objMask.getWidth(), objMask.getHeight());
         }
         if ((outputData & BOX_FRACTAL_DIMENSION) != 0) {
-            if (gui.isWholeImage()) {
+            if (Boolean.parseBoolean(props.getProperty(DefaultParams.WHOLE_IMAGE_LABEL))) {
                 boxFracDims = (new FractalEstimator()).do2DEstimate(binProc);
             } else {
                 binProc.setRoi(objBox);
@@ -526,7 +529,7 @@ public class Batch_Analyser implements PlugIn {
         if (excludeEdges && Utilities.checkBounds(objBox, imageRoiBounds)) {
             return false;
         }
-        objArea = pixArea * gui.getImageRes2();
+        objArea = pixArea * imageRes2;
         try {
             if (objRoi != null) {
                 objectPerim = objRoi.getLength();
@@ -548,8 +551,8 @@ public class Batch_Analyser implements PlugIn {
              * Check area and circularity against user-specified threshold
              * values.
              */
-            if ((objArea < gui.getMinArea()) || (objArea > MAX_AREA)
-                    || (objCirc < MIN_CIRC) || (objCirc > gui.getMaxCirc())) {
+            if ((objArea < Double.parseDouble(props.getProperty(DefaultParams.MIN_AREA_LABEL))) || (objArea > MAX_AREA)
+                    || (objCirc < MIN_CIRC) || (objCirc > Double.parseDouble(props.getProperty(DefaultParams.MAX_CIRC_LABEL)))) {
                 return false;
             }
             binProc.setRoi(objBox);
@@ -587,15 +590,15 @@ public class Batch_Analyser implements PlugIn {
                     || ((outputData & TOTAL_HYPHAL_LENGTH) != 0) || ((outputData & CURVATURE) != 0)) {
                 IJ.showStatus("Calculating HGU");
                 binProc.invert(); // Reverse inversion above
-                CanvasResizer resizer = new CanvasResizer();
                 /*
                  * Draw a white border around object to ensure no 'contact'
                  * between object and image boundary
                  */
-                IJ.setBackgroundColor(255, 255, 255);
                 try {
-                    ByteProcessor objProc = (ByteProcessor) resizer.expandImage(binProc,
-                            (objBox.width + 4), (objBox.height + 4), 2, 2);
+                    ByteProcessor objProc = (ByteProcessor) binProc.createProcessor((objBox.width + 4), (objBox.height + 4));
+                    objProc.setValue(BACKGROUND);
+                    objProc.fill();
+                    objProc.insert(binProc, 2, 2);
                     objBox = new Rectangle(objBox.x - 2, objBox.y - 2, objBox.width + 4, objBox.height + 4);
                     /*
                  * Skeletonise image for determinations of hyphal length and tip
@@ -609,11 +612,11 @@ public class Batch_Analyser implements PlugIn {
                     objProc = pruner1.getPrunedImage();
 //                    IJ.saveAs(new ImagePlus("", objProc), "PNG", "D:\\debugging\\anamorf_debug\\objProc");
 //                SkeletonPruner pruner2 = new SkeletonPruner(0, (ByteProcessor) objProc.duplicate(), objBox, true, true);
-                    curvature = generateCurveMap(new HyphalAnalyser(objProc.duplicate(), gui.getRes(), imageBox, objBox).findLongestPath(), imageRoiBounds.width, imageRoiBounds.height, curveMap, gui.getCurvatureWindow());
+                    curvature = generateCurveMap(new HyphalAnalyser(objProc.duplicate(), Double.parseDouble(props.getProperty(DefaultParams.IMAGE_RES_LABEL)), imageBox, objBox).findLongestPath(), imageRoiBounds.width, imageRoiBounds.height, curveMap, Integer.parseInt(props.getProperty(DefaultParams.CURVE_WIN_LABEL)));
                     if (!Double.isNaN(curvature)) {
                         wholeImageCurvature.addValue(curvature);
                     }
-                    HyphalAnalyser analyser = new HyphalAnalyser(objProc, gui.getRes(), imageBox, objBox);
+                    HyphalAnalyser analyser = new HyphalAnalyser(objProc, Double.parseDouble(props.getProperty(DefaultParams.IMAGE_RES_LABEL)), imageBox, objBox);
 //                analyser.findLongestPath();
                     analyser.analyse(); // Analyse pruned skeleton
                     growthUnit = analyser.getHGU();
@@ -647,13 +650,13 @@ public class Batch_Analyser implements PlugIn {
             yCent = ySum / pixArea;
             Pixel boundPoints[] = DSPProcessor.getDistanceSignal(polyObjRoi.getNCoordinates(),
                     xCent, yCent, polyObjRoi.getXCoordinates(),
-                    polyObjRoi.getYCoordinates(), gui.getRes());
+                    polyObjRoi.getYCoordinates(), Double.parseDouble(props.getProperty(DefaultParams.IMAGE_RES_LABEL)));
             double dist[] = new double[boundPoints.length];
             for (int i = 0; i < boundPoints.length; i++) {
                 dist[i] = boundPoints[i].getZ();
             }
             double[] upscaledDistInput = DSPProcessor.upScale(dist);
-            double sampleRate = (1.0d / gui.getRes())
+            double sampleRate = (1.0d / Double.parseDouble(props.getProperty(DefaultParams.IMAGE_RES_LABEL)))
                     * upscaledDistInput.length / dist.length;
             double distfracparams[] = DSPProcessor.calcFourierDim(DSPProcessor.calcFourierSpec(upscaledDistInput, sampleRate), sampleRate, 1.0);
             if (distfracparams != null) {
@@ -673,8 +676,8 @@ public class Batch_Analyser implements PlugIn {
             }
             if ((outputData & AREAS) != 0) {
                 double area = objArea;
-                if (gui.isWholeImage()) {
-                    area = binProc.getStatistics().histogram[FOREGROUND] * gui.getImageRes2();
+                if (Boolean.parseBoolean(props.getProperty(DefaultParams.WHOLE_IMAGE_LABEL))) {
+                    area = binProc.getStatistics().histogram[FOREGROUND] * imageRes2;
                 }
                 resultsTable.addValue(AREA_HEAD, area);
             }
@@ -685,13 +688,13 @@ public class Batch_Analyser implements PlugIn {
                 resultsTable.addValue(LAC_HEAD, lac);
             }
             if ((outputData & TOTAL_HYPHAL_LENGTH) != 0) {
-                resultsTable.addValue(LENGTH_HEAD, (totalLength * gui.getRes()));
+                resultsTable.addValue(LENGTH_HEAD, (totalLength * Double.parseDouble(props.getProperty(DefaultParams.IMAGE_RES_LABEL))));
             }
             if ((outputData & NUMBER_OF_ENDPOINTS) != 0) {
                 resultsTable.addValue(TIP_HEAD, numEnds);
             }
             if ((outputData & HYPHAL_GROWTH_UNIT) != 0) {
-                resultsTable.addValue(HGU_HEAD, (growthUnit * gui.getRes()));
+                resultsTable.addValue(HGU_HEAD, (growthUnit * Double.parseDouble(props.getProperty(DefaultParams.IMAGE_RES_LABEL))));
             }
             if ((outputData & NUMBER_OF_BRANCHES) != 0) {
                 resultsTable.addValue(BRANCH_HEAD, numBranches);
@@ -704,7 +707,7 @@ public class Batch_Analyser implements PlugIn {
                 }
             }
             if ((outputData & CURVATURE) != 0) {
-                if (gui.isWholeImage()) {
+                if (Boolean.parseBoolean(props.getProperty(DefaultParams.WHOLE_IMAGE_LABEL))) {
                     curvature = wholeImageCurvature.getMean();
                     double[] vals = wholeImageCurvature.getSortedValues();
                     vals = wholeImageCurvature.getValues();
@@ -785,27 +788,6 @@ public class Batch_Analyser implements PlugIn {
                 pixels[i] = (byte) foreground;
             }
         }
-    }
-
-    void generateParamsFile(File dir) {
-        File params;
-        PrintWriter outputStream;
-        try {
-            params = new File(dir + File.separator + "parameters.txt");
-        } catch (Exception e) {
-            IJ.error(e.toString());
-            return;
-        }
-        try {
-            outputStream = new PrintWriter(new FileOutputStream(params));
-        } catch (FileNotFoundException e) {
-            IJ.error("Could not write to results file.");
-            return;
-        }
-        outputStream.println(title);
-        outputStream.println();
-        outputStream.println(gui.toString());
-        outputStream.close();
     }
 
     double generateCurveMap(ArrayList<int[][]> branches, int width, int height, FloatProcessor curveMap, int window) {

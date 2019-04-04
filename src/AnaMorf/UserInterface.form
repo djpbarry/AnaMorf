@@ -117,7 +117,7 @@
             <Component class="javax.swing.JLabel" name="minAreaLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-                  <Connection code="&quot;Minimum Area (&quot;+IJ.micronSymbol+&quot;m^2):&quot;" type="code"/>
+                  <Connection code="DefaultParams.MIN_AREA_LABEL" type="code"/>
                 </Property>
               </Properties>
               <AuxValues>

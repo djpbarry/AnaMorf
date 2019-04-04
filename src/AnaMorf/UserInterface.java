@@ -40,6 +40,8 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         this.title = title;
         if (props != null) {
             this.props = props;
+        } else {
+            this.props = new DefaultParams();
         }
         initComponents();
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -156,7 +158,7 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         basicPanel.add(maxCircLabel, gridBagConstraints);
 
-        minAreaLabel.setText("Minimum Area ("+IJ.micronSymbol+"m^2):");
+        minAreaLabel.setText(DefaultParams.MIN_AREA_LABEL);
         minAreaLabel.setLabelFor(minAreaField);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -982,7 +984,7 @@ public class UserInterface extends javax.swing.JDialog implements GUIMethods {
     private static Method thresholdMethod = Method.Otsu;
     private DecimalFormat threePlaces = new DecimalFormat("0.000");
     private DecimalFormat onePlace = new DecimalFormat("0.0");
-    private static Properties props = new DefaultParams();
+    private Properties props;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel advancedPanel;
     private javax.swing.JCheckBox areaCheck;
