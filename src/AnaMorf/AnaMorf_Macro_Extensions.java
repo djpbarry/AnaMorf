@@ -34,9 +34,8 @@ public class AnaMorf_Macro_Extensions implements PlugIn {
                 + "\n"
                 + "This will enable the following macro functions:\n"
                 + "\n"
-                + "Ext.runAnaMorf(ImageStack, Template, Threshold);\n"
-                + "-- Runs template matching on the specified image stack with the\n"
-                + " specified template image. Correlations above the specified\n"
-                + " threshold value are output in the results.";
+                + "Ext.runAnaMorf(Input_Directory, Properties);\n"
+                + "-- Runs AnaMorf on the specified input directory with the\n"
+                + " specified properties.xml file.";
     }
 }

@@ -94,11 +94,12 @@ public class Batch_Analyser implements PlugIn {
     private String imageName;
     public String title = String.format("AnaMorf v%d.%s", Revision.VERSION, new DecimalFormat("000").format(Revision.revisionNumber));
     ResultsTable resultsTable;
-    private static File currentDirectory;
+    private File currentDirectory;
     private DescriptiveStatistics wholeImageCurvature;
     ArrayList<ArrayList<Double>> cumulativeCurveStats;
     ArrayList<String> cumulativeCurveStatsLabels;
     private static Properties props = new DefaultParams();
+    private final boolean macroMode;
     /*
      * Column headings used for Results Table output
      */
@@ -133,6 +134,13 @@ public class Batch_Analyser implements PlugIn {
 //        noEdge = false;
 //    }
     public Batch_Analyser() {
+        this(false, null, null);
+    }
+
+    public Batch_Analyser(boolean macroMode, File currentDirectory, Properties props) {
+        this.macroMode = macroMode;
+        this.currentDirectory = currentDirectory;
+        Batch_Analyser.props = props;
     }
 
     /**
@@ -142,11 +150,13 @@ public class Batch_Analyser implements PlugIn {
      */
     public void run(String arg) {
         Prefs.blackBackground = false;
-        if (!showGUI()) {
+        if (!macroMode && !showGUI()) {
             return;
         }
         try {
-            currentDirectory = Utilities.getFolder(new File(System.getProperty("user.dir")), null, true);
+            if (!macroMode) {
+                currentDirectory = Utilities.getFolder(new File(props.getProperty(DefaultParams.INPUT_DIR)), null, true);
+            }
         } catch (Exception e) {
             GenUtils.logError(e, "Could not open directory.");
             return;
@@ -154,6 +164,7 @@ public class Batch_Analyser implements PlugIn {
         if (currentDirectory == null) {
             return;
         }
+        props.setProperty(DefaultParams.INPUT_DIR, currentDirectory.getAbsolutePath());
         IJ.log(title);
         IJ.log(currentDirectory.getAbsolutePath());
         resultsTable = Analyzer.getResultsTable();
@@ -342,6 +353,9 @@ public class Batch_Analyser implements PlugIn {
      */
     public boolean showGUI() {
         boolean valid = false;
+        if (Batch_Analyser.props == null) {
+            Batch_Analyser.props = new DefaultParams();
+        }
         while (!valid) {
             valid = true;
             UserInterface gui = new UserInterface(IJ.getInstance(), true, title, props);

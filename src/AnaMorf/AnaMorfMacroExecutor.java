@@ -5,9 +5,12 @@
  */
 package AnaMorf;
 
-import ij.WindowManager;
+import IO.PropertyWriter;
+import UtilClasses.GenUtils;
 import ij.macro.ExtensionDescriptor;
 import ij.macro.MacroExtension;
+import java.io.File;
+import params.DefaultParams;
 
 /**
  *
@@ -15,26 +18,33 @@ import ij.macro.MacroExtension;
  */
 public class AnaMorfMacroExecutor implements MacroExtension {
 
-    private final String[] extensionFunctionNames = new String[]{"runTemplateMatcher"};
+    private final String[] extensionFunctionNames = new String[]{"runAnaMorf"};
 
+    public AnaMorfMacroExecutor(){
+        
+    }
+    
     public ExtensionDescriptor[] getExtensionFunctions() {
         return new ExtensionDescriptor[]{
             new ExtensionDescriptor(extensionFunctionNames[0], new int[]{
-                MacroExtension.ARG_STRING, MacroExtension.ARG_STRING, MacroExtension.ARG_NUMBER
+                MacroExtension.ARG_STRING, MacroExtension.ARG_STRING
             }, this)
         };
     }
 
     public String handleExtension(String name, Object[] args) {
         if (name.contentEquals(extensionFunctionNames[0])) {
-            if (!(args[0] instanceof String && args[1] instanceof String && args[2] instanceof Double)) {
+            if (!(args[0] instanceof String && args[1] instanceof String)) {
                 System.out.print(String.format("Error: arguments passed to %s are not valid.", extensionFunctionNames[0]));
                 return "";
             }
-//            this.image = WindowManager.getImage((String) args[0]).getImageStack();
-//            this.template = WindowManager.getImage((String) args[1]).getProcessor();
-//            this.threshold = (Double) args[2];
-//            run();
+            DefaultParams props = new DefaultParams();
+            try {
+                PropertyWriter.loadProperties(props, null, new File((String) args[1]));
+            } catch (Exception e) {
+                GenUtils.logError(e, "Failed to load AnaMorf properties file.");
+            }
+            (new Batch_Analyser(true, new File((String) args[0]), props)).run(null);
         }
         return null;
     }

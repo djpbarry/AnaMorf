@@ -56,6 +56,7 @@ public class DefaultParams extends Properties {
     public static final String SEPARATE_TOUCHING_LABEL = "Separate Touching Objects";
     public static final String WHOLE_IMAGE_LABEL = "Treat Whole Image as One Object";
     public static final String OUTPUT_CURVE_LABEL = "Output Curvature Values";
+    public static final String INPUT_DIR = "Input Directory";
 
     public DefaultParams() {
         this.setProperty(IMAGE_FORMAT_LABEL, "PNG");
@@ -89,6 +90,7 @@ public class DefaultParams extends Properties {
         this.setProperty(SEPARATE_TOUCHING_LABEL, "false");
         this.setProperty(WHOLE_IMAGE_LABEL, "false");
         this.setProperty(OUTPUT_CURVE_LABEL, "false");
+        this.setProperty(INPUT_DIR, System.getProperty("user.dir"));
     }
 
 }

@@ -5,14 +5,18 @@
  */
 package AnaMorf;
 
+import ij.IJ;
+
 public class Main {
 
     public static void main(String args[]) {
-        Batch_Analyser ba = new Batch_Analyser();
-        ba.run(null);
+//        Batch_Analyser ba = new Batch_Analyser();
+//        ba.run(null);
+        (new AnaMorfMacroExecutor()).handleExtension("runAnaMorf", new String[]{"D:/debugging/anamorf_debug/AnaMorf Test",
+            "D:/debugging/anamorf_debug/AnaMorf Test/AnaMorf v2.011_Output/properties.xml"});
 //        SkeletonPruner sp = new SkeletonPruner(100, (ByteProcessor) (IJ.openImage()).getProcessor().convertToByteProcessor());
 //
 //        IJ.saveAs(new ImagePlus("Pruned", sp.getPrunedImage()), "PNG", "D:\\OneDrive - The Francis Crick Institute\\Working Data\\Tapon\\Maxine\\Tiffs\\Pruned");
-        System.exit(0);
+//        System.exit(0);
     }
 }
