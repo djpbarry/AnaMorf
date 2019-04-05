@@ -16,6 +16,7 @@
  */
 package AnaMorf;
 
+import Binary.BinaryMaker;
 import Curvature.CurveAnalyser;
 import UtilClasses.Utilities;
 import IAClasses.DSPProcessor;
@@ -273,6 +274,9 @@ public class Batch_Analyser implements PlugIn {
             ImageProcessor preProcessedImage;
             if (Boolean.parseBoolean(props.getProperty(DefaultParams.PRE_PROCESS_LABEL))) {
                 preProcessedImage = preProcessImage(currImage.duplicate());
+            } else if (!BinaryMaker.checkIfBinary(currImage)) {
+                GenUtils.logError(null, "Aborting - an 8-bit binary image is required.");
+                return;
             } else {
                 preProcessedImage = currImage.getProcessor().duplicate();
             }
