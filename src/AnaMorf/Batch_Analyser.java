@@ -154,6 +154,7 @@ public class Batch_Analyser implements PlugIn {
         if (!macroMode && !showGUI()) {
             return;
         }
+        setOutputs();
         try {
             if (!macroMode) {
                 currentDirectory = Utilities.getFolder(new File(props.getProperty(DefaultParams.INPUT_DIR)), null, true);
@@ -365,17 +366,21 @@ public class Batch_Analyser implements PlugIn {
             UserInterface gui = new UserInterface(IJ.getInstance(), true, title, props);
             gui.setVisible(true);
             if (!gui.exitProgram()) {
-                boolean options[] = gui.getOptions();
-                for (int n = 0; n < options.length; n++) {
-                    if (options[n]) {
-                        outputData += (int) Math.round(Math.pow(2.0, n));
-                    }
-                }
+                return true;
             } else {
                 return false;
             }
         }
         return true;
+    }
+
+    private void setOutputs() {
+        boolean options[] = getOptions();
+        for (int n = 0; n < options.length; n++) {
+            if (options[n]) {
+                outputData += (int) Math.round(Math.pow(2.0, n));
+            }
+        }
     }
 
     /**
@@ -832,5 +837,18 @@ public class Batch_Analyser implements PlugIn {
             }
         }
         return stats.getMean();
+    }
+
+    public boolean[] getOptions() {
+        return new boolean[]{Boolean.parseBoolean(props.getProperty(DefaultParams.PROJ_AREA_LABEL)),
+            Boolean.parseBoolean(props.getProperty(DefaultParams.CIRC_LABEL)),
+            Boolean.parseBoolean(props.getProperty(DefaultParams.MEAN_BRANCH_LABEL)),
+            Boolean.parseBoolean(props.getProperty(DefaultParams.TOT_LENGTH_LABEL)),
+            Boolean.parseBoolean(props.getProperty(DefaultParams.NUM_END_LABEL)),
+            Boolean.parseBoolean(props.getProperty(DefaultParams.NUM_BRANCH_LABEL)),
+            Boolean.parseBoolean(props.getProperty(DefaultParams.FOURIER_FRAC_LABEL)),
+            Boolean.parseBoolean(props.getProperty(DefaultParams.BOX_COUNT_LABEL)),
+            Boolean.parseBoolean(props.getProperty(DefaultParams.LAC_LABEL)),
+            Boolean.parseBoolean(props.getProperty(DefaultParams.CURVE_LABEL))};
     }
 }
