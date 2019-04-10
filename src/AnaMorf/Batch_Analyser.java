@@ -105,14 +105,14 @@ public class Batch_Analyser implements PlugIn {
      * Column headings used for Results Table output
      */
     public static final String CIRC_HEAD = "Circularity",
-            AREA_HEAD = "Area (" + IJ.micronSymbol + "m^2)",
-            TOT_AREA_HEAD = "Total Area (" + IJ.micronSymbol + "m^2)",
+            AREA_HEAD = "Area (microns^2)",
+            TOT_AREA_HEAD = "Total Area (microns^2)",
             FOUR_FRAC_HEAD = "Fourier Fractal Dimension",
             BOX_FRAC_HEAD = "Box-Counting Fractal Dimension",
             LAC_HEAD = "Lacunarity",
-            LENGTH_HEAD = "Total Length (" + IJ.micronSymbol + "m)",
+            LENGTH_HEAD = "Total Length (microns)",
             TIP_HEAD = "Endpoints",
-            HGU_HEAD = "HGU (" + IJ.micronSymbol + "m)",
+            HGU_HEAD = "HGU (microns)",
             BRANCH_HEAD = "Branchpoints",
             CURVE_HEAD = "Curvature";
 
