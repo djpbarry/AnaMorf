@@ -99,8 +99,16 @@ public class Batch_Analyser implements PlugIn {
     private DescriptiveStatistics wholeImageCurvature;
     ArrayList<ArrayList<Double>> cumulativeCurveStats;
     ArrayList<String> cumulativeCurveStatsLabels;
-    private static Properties props = new DefaultParams();
+    private static Properties props;
     private final boolean macroMode;
+
+    static {
+        if (props == null) {
+            IJ.log("Initialising properties...");
+            props = new DefaultParams();
+        }
+    }
+
     /*
      * Column headings used for Results Table output
      */
@@ -141,7 +149,6 @@ public class Batch_Analyser implements PlugIn {
     public Batch_Analyser(boolean macroMode, File currentDirectory, Properties props) {
         this.macroMode = macroMode;
         this.currentDirectory = currentDirectory;
-        Batch_Analyser.props = props;
     }
 
     /**
@@ -855,5 +862,5 @@ public class Batch_Analyser implements PlugIn {
     public static Properties getProps() {
         return props;
     }
-    
+
 }
