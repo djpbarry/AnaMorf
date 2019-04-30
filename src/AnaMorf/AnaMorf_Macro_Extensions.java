@@ -34,8 +34,17 @@ public class AnaMorf_Macro_Extensions implements PlugIn {
                 + "\n"
                 + "This will enable the following macro functions:\n"
                 + "\n"
-                + "Ext.runAnaMorf(Input_Directory, Properties);\n"
-                + "-- Runs AnaMorf on the specified input directory with the\n"
-                + " specified properties.xml file.";
+                + "Ext.initialiseAnaMorf(Input_Directory, Properties);\n"
+                + "-- initialises AnaMorf with the specified input directory and the\n"
+                + " specified properties.xml file."
+                + "Ext.setAnaMorfFileType(File_Type);\n"
+                + "-- Specifies the format of the input files."
+                + "Ext.setAnaMorfCurvatureWindow(Curvature_Window);\n"
+                + "-- Specifies the curvature window parameter for AnaMorf."
+                + "Ext.setAnaMorfMinBranchLength(Min_Branch_Length);\n"
+                + "-- Specifies the minimum branch length for AnaMorf."
+                + "Ext.runAnaMorf();\n"
+                + "-- Runs AnaMorf.";
     }
+
 }

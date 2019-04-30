@@ -851,4 +851,9 @@ public class Batch_Analyser implements PlugIn {
             Boolean.parseBoolean(props.getProperty(DefaultParams.LAC_LABEL)),
             Boolean.parseBoolean(props.getProperty(DefaultParams.CURVE_LABEL))};
     }
+
+    public static Properties getProps() {
+        return props;
+    }
+    
 }
