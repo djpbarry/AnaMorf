@@ -195,7 +195,7 @@ public class Batch_Analyser implements PlugIn {
             }
         }
         try {
-            PropertyWriter.printProperties(props, resultsDirectory.getAbsolutePath(), title, true);
+            PropertyWriter.saveProperties(props, resultsDirectory.getAbsolutePath(), title, true);
         } catch (Exception e) {
             GenUtils.logError(e, "Failed to save property file.");
         }
