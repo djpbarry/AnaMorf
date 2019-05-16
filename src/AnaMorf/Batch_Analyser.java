@@ -149,6 +149,7 @@ public class Batch_Analyser implements PlugIn {
     public Batch_Analyser(boolean macroMode, File currentDirectory, Properties props) {
         this.macroMode = macroMode;
         this.currentDirectory = currentDirectory;
+        Batch_Analyser.props = props;
     }
 
     /**
