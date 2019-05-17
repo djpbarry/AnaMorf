@@ -93,15 +93,15 @@ public class AnaMorfMacroExecutor implements MacroExtension {
     }
 
     void setCurvature(Object[] args) {
-        if (!(args[0] instanceof Integer)) {
+        if (!(args[0] instanceof Number)) {
             invalidArguments();
             return;
         }
-        Batch_Analyser.getProps().setProperty(DefaultParams.CURVE_WIN_LABEL, String.valueOf((Integer) args[0]));
+        Batch_Analyser.getProps().setProperty(DefaultParams.CURVE_WIN_LABEL, String.valueOf((Double) args[0]));
     }
 
     void setMinBranchLength(Object[] args) {
-        if (!(args[0] instanceof Double)) {
+        if (!(args[0] instanceof Number)) {
             invalidArguments();
             return;
         }
