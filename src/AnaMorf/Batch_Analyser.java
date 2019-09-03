@@ -200,7 +200,7 @@ public class Batch_Analyser implements PlugIn {
         } catch (Exception e) {
             GenUtils.logError(e, "Failed to save property file.");
         }
-        IJ.log(title + " done: " + ((double) (System.currentTimeMillis() - startTime)) / 1000.0 + " s");
+        IJ.log(String.format("\n%s done: %f s", title, ((double) (System.currentTimeMillis() - startTime)) / 1000.0));
     }
 
     void saveResults(File resultsDirectory) throws IOException {
@@ -243,9 +243,8 @@ public class Batch_Analyser implements PlugIn {
             useMorphFilters = true;
             outputResults = !Boolean.parseBoolean(props.getProperty(DefaultParams.WHOLE_IMAGE_LABEL));
             imageName = imageFilenames[i];
-            IJ.log("Scanning " + imageName);
             ImagePlus currImage = new ImagePlus(directory + File.separator + imageName);
-            IJ.log(String.format("Analysing image %d of %d - %s", i + 1, imageFilenames.length, currImage.getShortTitle()));
+            IJ.log(String.format("\nAnalysing image %d of %d - %s", i + 1, imageFilenames.length, currImage.getShortTitle()));
             try {
                 analyseFile(currImage, resultsDirectory);
             } catch (Exception e) {
@@ -442,8 +441,9 @@ public class Batch_Analyser implements PlugIn {
                      * Ensure that a foreground pixel exists 'south-east' of the
                      * current position
                      */
-                    IJ.showStatus("Generating Outline");
+                    IJ.log(String.format("\nFound object at (%d, %d) - generating outline...", x, y, DefaultParams.BOX_COUNT_LABEL));
                     wand.autoOutline(x, y, 0.0, Wand.EIGHT_CONNECTED);
+                    IJ.log("Analysing object...");
                     if (analyseObject(wand.xpoints, wand.ypoints, wand.npoints,
                             binaryProcessor.duplicate(), excludeEdges, roi)) {
                         objects++;
@@ -522,15 +522,6 @@ public class Batch_Analyser implements PlugIn {
         } else {
             objBox = new Rectangle(0, 0, objMask.getWidth(), objMask.getHeight());
         }
-        if ((outputData & BOX_FRACTAL_DIMENSION) != 0) {
-            IJ.log(String.format("Calculating %s", DefaultParams.BOX_COUNT_LABEL));
-            if (Boolean.parseBoolean(props.getProperty(DefaultParams.WHOLE_IMAGE_LABEL))) {
-                boxFracDims = (new FractalEstimator()).do2DEstimate(binProc);
-            } else {
-                binProc.setRoi(objBox);
-                boxFracDims = (new FractalEstimator()).do2DEstimate(binProc.crop());
-            }
-        }
         IJ.log(String.format("Calculating %s", DefaultParams.PROJ_AREA_LABEL));
         if (refProc != null) {
             refProc.setColor(FOREGROUND);
@@ -558,6 +549,7 @@ public class Batch_Analyser implements PlugIn {
         Rectangle imageRoiBounds = (imageRoi == null)
                 ? new Rectangle(0, 0, binProc.getWidth(), binProc.getHeight()) : imageRoi.getBounds();
         if (excludeEdges && Utilities.checkBounds(objBox, imageRoiBounds)) {
+            IJ.log("Edge object - skipping.");
             return false;
         }
         objArea = pixArea * imageRes2;
@@ -584,6 +576,7 @@ public class Batch_Analyser implements PlugIn {
              */
             if ((objArea < Double.parseDouble(props.getProperty(DefaultParams.MIN_AREA_LABEL))) || (objArea > MAX_AREA)
                     || (objCirc < MIN_CIRC) || (objCirc > Double.parseDouble(props.getProperty(DefaultParams.MAX_CIRC_LABEL)))) {
+                IJ.log("Object does not meet morphological criteria for further analysis.");
                 return false;
             }
             binProc.setRoi(objBox);
@@ -697,6 +690,16 @@ public class Batch_Analyser implements PlugIn {
                 distfracDim = (5.0 - Math.abs(distfracparams[1])) / 2.0;
             } else {
                 distfracDim = Double.NaN;
+            }
+        }
+
+        if ((outputData & BOX_FRACTAL_DIMENSION) != 0) {
+            IJ.log(String.format("Calculating %s", DefaultParams.BOX_COUNT_LABEL));
+            if (Boolean.parseBoolean(props.getProperty(DefaultParams.WHOLE_IMAGE_LABEL))) {
+                boxFracDims = (new FractalEstimator()).do2DEstimate(binProc);
+            } else {
+                binProc.setRoi(objBox);
+                boxFracDims = (new FractalEstimator()).do2DEstimate(binProc.crop());
             }
         }
 
