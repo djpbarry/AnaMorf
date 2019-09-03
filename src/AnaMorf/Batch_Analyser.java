@@ -200,8 +200,7 @@ public class Batch_Analyser implements PlugIn {
         } catch (Exception e) {
             GenUtils.logError(e, "Failed to save property file.");
         }
-        IJ.log("Done");
-        IJ.showStatus(title + " done: " + ((double) (System.currentTimeMillis() - startTime)) / 1000.0 + " s");
+        IJ.log(title + " done: " + ((double) (System.currentTimeMillis() - startTime)) / 1000.0 + " s");
     }
 
     void saveResults(File resultsDirectory) throws IOException {
@@ -244,7 +243,7 @@ public class Batch_Analyser implements PlugIn {
             useMorphFilters = true;
             outputResults = !Boolean.parseBoolean(props.getProperty(DefaultParams.WHOLE_IMAGE_LABEL));
             imageName = imageFilenames[i];
-            IJ.showStatus("Scanning " + imageName);
+            IJ.log("Scanning " + imageName);
             ImagePlus currImage = new ImagePlus(directory + File.separator + imageName);
             IJ.log(String.format("Analysing image %d of %d - %s", i + 1, imageFilenames.length, currImage.getShortTitle()));
             try {
@@ -524,6 +523,7 @@ public class Batch_Analyser implements PlugIn {
             objBox = new Rectangle(0, 0, objMask.getWidth(), objMask.getHeight());
         }
         if ((outputData & BOX_FRACTAL_DIMENSION) != 0) {
+            IJ.log(String.format("Calculating %s", DefaultParams.BOX_COUNT_LABEL));
             if (Boolean.parseBoolean(props.getProperty(DefaultParams.WHOLE_IMAGE_LABEL))) {
                 boxFracDims = (new FractalEstimator()).do2DEstimate(binProc);
             } else {
@@ -531,7 +531,7 @@ public class Batch_Analyser implements PlugIn {
                 boxFracDims = (new FractalEstimator()).do2DEstimate(binProc.crop());
             }
         }
-        IJ.showStatus("Calculating Area");
+        IJ.log(String.format("Calculating %s", DefaultParams.PROJ_AREA_LABEL));
         if (refProc != null) {
             refProc.setColor(FOREGROUND);
         }
@@ -609,7 +609,7 @@ public class Batch_Analyser implements PlugIn {
              * whether an accurate evaluation of hyphal length and number of
              * hyphal tips is possible.
              */
-            IJ.showStatus("Calculating Lacunarity");
+            IJ.log(String.format("Calculating %s", DefaultParams.LAC_LABEL));
             binProc.setMask(objMask); // Restrict calculation of lacunarity to within object boundary
             binProc.invert(); // Foreground pixels = 255, to ensure non-zero mean
             ImageStatistics objStats = ImageStatistics.getStatistics(binProc,
@@ -619,13 +619,13 @@ public class Batch_Analyser implements PlugIn {
             lac = Math.abs((var / meanSq) - 1.0);
             if (((outputData & HYPHAL_GROWTH_UNIT) != 0) || ((outputData & NUMBER_OF_ENDPOINTS) != 0)
                     || ((outputData & TOTAL_HYPHAL_LENGTH) != 0) || ((outputData & CURVATURE) != 0)) {
-                IJ.showStatus("Calculating HGU");
                 binProc.invert(); // Reverse inversion above
                 /*
                  * Draw a white border around object to ensure no 'contact'
                  * between object and image boundary
                  */
                 try {
+                    IJ.log("Skeletonising...");
                     ByteProcessor objProc = (ByteProcessor) binProc.createProcessor((objBox.width + 4), (objBox.height + 4));
                     objProc.setValue(BACKGROUND);
                     objProc.fill();
@@ -639,14 +639,17 @@ public class Batch_Analyser implements PlugIn {
                     /*
                  * Prune image to remove artefacts of skeletonisation
                      */
+                    IJ.log("Pruning skeleton...");
                     SkeletonPruner pruner1 = new SkeletonPruner(minPixLength, objProc, objBox, false, false);
                     objProc = pruner1.getPrunedImage();
 //                    IJ.saveAs(new ImagePlus("", objProc), "PNG", "D:\\debugging\\anamorf_debug\\objProc");
 //                SkeletonPruner pruner2 = new SkeletonPruner(0, (ByteProcessor) objProc.duplicate(), objBox, true, true);
+                    IJ.log(String.format("Calculating %s", DefaultParams.CURVE_LABEL));
                     curvature = generateCurveMap(new HyphalAnalyser(objProc.duplicate(), Double.parseDouble(props.getProperty(DefaultParams.IMAGE_RES_LABEL)), imageBox, objBox).findLongestPath(), imageRoiBounds.width, imageRoiBounds.height, curveMap, (int) Math.round(Double.parseDouble(props.getProperty(DefaultParams.CURVE_WIN_LABEL))));
                     if (!Double.isNaN(curvature)) {
                         wholeImageCurvature.addValue(curvature);
                     }
+                    IJ.log("Analysing skeleton...");
                     HyphalAnalyser analyser = new HyphalAnalyser(objProc, Double.parseDouble(props.getProperty(DefaultParams.IMAGE_RES_LABEL)), imageBox, objBox);
 //                analyser.findLongestPath();
                     analyser.analyse(); // Analyse pruned skeleton
@@ -666,7 +669,7 @@ public class Batch_Analyser implements PlugIn {
         }
 
         if ((outputData & FOURIER_FRACTAL_DIMENSION) != 0 && objRoi != null) {
-            IJ.showStatus("Calculating Boundary Fractal");
+            IJ.log(String.format("Calculating %s", DefaultParams.FOURIER_FRAC_LABEL));
             /*
              * A different form of <i>PolygonRoi</i> (<i>Roi.POLYGON</i>) is
              * contructed to provide an accurate determination of the number of
