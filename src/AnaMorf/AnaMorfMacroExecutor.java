@@ -97,7 +97,7 @@ public class AnaMorfMacroExecutor implements MacroExtension {
             invalidArguments();
             return;
         }
-        Batch_Analyser.getProps().setProperty(DefaultParams.CURVE_WIN_LABEL, String.valueOf((Double) args[0]));
+        Batch_Analyser.getProps().setProperty(DefaultParams.CURVE_WIN_LABEL, String.valueOf(args[0]));
     }
 
     void setMinBranchLength(Object[] args) {
@@ -105,7 +105,7 @@ public class AnaMorfMacroExecutor implements MacroExtension {
             invalidArguments();
             return;
         }
-        Batch_Analyser.getProps().setProperty(DefaultParams.MIN_BRANCH_LABEL, String.valueOf((Double) args[0]));
+        Batch_Analyser.getProps().setProperty(DefaultParams.MIN_BRANCH_LABEL, String.valueOf(args[0]));
     }
 
     void run() {
