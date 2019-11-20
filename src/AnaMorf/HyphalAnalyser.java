@@ -20,9 +20,8 @@ import Graph.Dijkstra;
 import Graph.Graph;
 import Graph.Node;
 import IAClasses.SkeletonProcessor;
-import ij.IJ;
-import ij.ImagePlus;
 import ij.process.ByteProcessor;
+import ij.process.ByteStatistics;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import java.awt.Color;
@@ -212,7 +211,7 @@ public class HyphalAnalyser {
                             continue;
                         }
                         Node start = nodes.get(n1);
-                        int[][] path = sp.traceBranch(ip, x, y, nodes);
+                        short[][] path = sp.traceBranch(ip, x, y, nodes, new ByteStatistics(processor).histogram[SkeletonPruner.FOREGROUND]);
 //                        drawPath(path, index++);
                         int length = path[0].length;
                         int n2 = findNodeIndex(nodes, path[0][length - 1], path[1][length - 1]);
@@ -222,7 +221,8 @@ public class HyphalAnalyser {
                         Node end = nodes.get(n2);
                         start.addDestination(end, path);
                         end.addDestination(start, path);
-                        sp.prunePoints(ip.getRoi(), ip);
+                        sp.prunePoints(path[0][0], path[0][1], ip);
+                        sp.prunePoints(path[0][length - 1], path[1][length - 1], ip);
                     }
                 }
             }
@@ -285,8 +285,8 @@ public class HyphalAnalyser {
         return null;
     }
 
-    Node findNode(Map<Node, int[][]> adjacentNodes, Node n1) {
-        for (Entry<Node, int[][]> adjNode : adjacentNodes.entrySet()) {
+    Node findNode(Map<Node, short[][]> adjacentNodes, Node n1) {
+        for (Entry<Node, short[][]> adjNode : adjacentNodes.entrySet()) {
             Node n2 = adjNode.getKey();
             if (n1.equals(n2)) {
                 return n2;
@@ -313,7 +313,7 @@ public class HyphalAnalyser {
 
     void drawPath(ImageProcessor image, LinkedList<Node> path) {
         for (int i = 0; i < path.size() - 1; i++) {
-            int[][] pixels = path.get(i).getAdjacentNodes().get(path.get(i + 1));
+            short[][] pixels = path.get(i).getAdjacentNodes().get(path.get(i + 1));
             for (int j = 0; j < pixels[0].length; j++) {
                 image.drawPixel(pixels[0][j], pixels[1][j]);
             }
@@ -343,7 +343,7 @@ public class HyphalAnalyser {
         ArrayList<int[]> output = new ArrayList();
         for (int i = 0; i < path.size() - 1; i++) {
 //            output.add(new int[]{path.get(i).getX() + objBounds.x, path.get(i).getY() + objBounds.y});
-            int[][] pixels = path.get(i).getAdjacentNodes().get(path.get(i + 1));
+            short[][] pixels = path.get(i).getAdjacentNodes().get(path.get(i + 1));
             int d1 = path.get(i).getSimpleDist(pixels[0][0], pixels[1][0]);
             int d2 = path.get(i + 1).getSimpleDist(pixels[0][0], pixels[1][0]);
             if (d1 > d2) {
@@ -361,9 +361,9 @@ public class HyphalAnalyser {
         return output2;
     }
 
-    int[][] reversePath(int[][] path) {
+    short[][] reversePath(short[][] path) {
         int l = path[0].length;
-        int[][] output = new int[2][l];
+        short[][] output = new short[2][l];
         for (int i = l - 1; i >= 0; i--) {
             output[0][l - 1 - i] = path[0][i];
             output[1][l - 1 - i] = path[1][i];

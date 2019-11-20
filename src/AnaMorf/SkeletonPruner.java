@@ -33,7 +33,8 @@ import java.util.ArrayList;
 public class SkeletonPruner {
 
     private ByteProcessor outputProcessor = null;
-    private final int FOREGROUND, BACKGROUND, MIN_BRANCH_LENGTH;
+    public static int FOREGROUND = 255, BACKGROUND = 0;
+    private final int MIN_BRANCH_LENGTH;
     private ArrayList<int[][]> branches = new ArrayList();
     private Rectangle roi;
     private final boolean removeAll;
@@ -41,8 +42,6 @@ public class SkeletonPruner {
 
     public SkeletonPruner(Rectangle roi) {
         this.roi = roi;
-        FOREGROUND = 0;
-        BACKGROUND = 255;
         MIN_BRANCH_LENGTH = 0;
         removeAll = false;
     }
@@ -83,6 +82,10 @@ public class SkeletonPruner {
         }
     }
 
+    public void prunePoints(int x, int y, ImageProcessor processor) {
+        prunePoints(new Rectangle(x - 1, y - 1, 3, 3), processor);
+    }
+
     /**
      * Removes all artifactual points from a skeleton structure.
      *
@@ -119,8 +122,8 @@ public class SkeletonPruner {
         Rectangle region;
         ByteStatistics stats = new ByteStatistics(processor);
         int size = stats.histogram[FOREGROUND];
-        int xPixels[] = new int[size];
-        int yPixels[] = new int[size];
+        short xPixels[] = new short[size];
+        short yPixels[] = new short[size];
         boolean change = false;
 
         processor.setColor(BACKGROUND);
@@ -135,8 +138,8 @@ public class SkeletonPruner {
                      */
                     if (loops || SkeletonProcessor.isEndPoint(x, y, processor, BACKGROUND)) {
                         length = 0;
-                        xPixels[length] = x;
-                        yPixels[length] = y;
+                        xPixels[length] = (short) x;
+                        yPixels[length] = (short) y;
                         /*
                          * Tracing of the skeleton proceeds until the end of the
                          * current branch is reached
@@ -200,12 +203,10 @@ public class SkeletonPruner {
         return change;
     }
 
-    public int[][] traceBranch(ImageProcessor processor, int x0, int y0, ArrayList<Node> nodes) {
+    public short[][] traceBranch(ImageProcessor processor, int x0, int y0, ArrayList<Node> nodes, int maxBranchLength) {
         int length = 0;
-        ByteStatistics stats = new ByteStatistics(processor);
-        int size = stats.histogram[FOREGROUND];
-        int xPixels[] = new int[size];
-        int yPixels[] = new int[size];
+        short xPixels[] = new short[maxBranchLength];
+        short yPixels[] = new short[maxBranchLength];
 
         processor.setColor(BACKGROUND);
         /*
@@ -216,8 +217,8 @@ public class SkeletonPruner {
                      * Tracing of branches commences from end-points only
              */
             if (SkeletonProcessor.isEndPoint(x0, y0, processor, BACKGROUND)) {
-                xPixels[length] = x0;
-                yPixels[length] = y0;
+                xPixels[length] = (short) x0;
+                yPixels[length] = (short) y0;
                 /*
                          * Tracing of the skeleton proceeds until the end of the
                          * current branch is reached
@@ -235,13 +236,13 @@ public class SkeletonPruner {
                 }
             }
         }
-        int[] truncXP = new int[length];
-        int[] truncYP = new int[length];
+        short[] truncXP = new short[length];
+        short[] truncYP = new short[length];
         for (int i = 0; i < length; i++) {
             truncXP[i] = xPixels[i];
             truncYP[i] = yPixels[i];
         }
-        return new int[][]{truncXP, truncYP};
+        return new short[][]{truncXP, truncYP};
     }
 
     /**
