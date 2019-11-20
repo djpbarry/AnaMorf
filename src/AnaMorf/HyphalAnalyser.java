@@ -20,6 +20,7 @@ import Graph.Dijkstra;
 import Graph.Graph;
 import Graph.Node;
 import IAClasses.SkeletonProcessor;
+import ij.IJ;
 import ij.process.ByteProcessor;
 import ij.process.ByteStatistics;
 import ij.process.ColorProcessor;
@@ -47,6 +48,7 @@ public class HyphalAnalyser {
     private ImageProcessor colorOutput, bwOutput;
     private Rectangle imageBounds, objBounds;
     static int longestPathIndex = 0;
+    private final int MAX_NODES = 1000;
 
     public HyphalAnalyser(ImageProcessor image, double res, Rectangle imageBox,
             Rectangle objBox) {
@@ -194,10 +196,12 @@ public class HyphalAnalyser {
         if (nodes.isEmpty()) {
             return null;
         }
-
+        if (nodes.size() > MAX_NODES) {
+            IJ.log("Structure too complex to find longest path in a reasonable time - skipping.");
+            return null;
+        }
         boolean change = true;
         SkeletonPruner sp = new SkeletonPruner(objBounds);
-        int index = 0;
         while (change) {
             change = false;
             for (int y = 0; y < height; y++) {
@@ -311,17 +315,16 @@ public class HyphalAnalyser {
         return minIndex;
     }
 
-    void drawPath(ImageProcessor image, LinkedList<Node> path) {
-        for (int i = 0; i < path.size() - 1; i++) {
-            short[][] pixels = path.get(i).getAdjacentNodes().get(path.get(i + 1));
-            for (int j = 0; j < pixels[0].length; j++) {
-                image.drawPixel(pixels[0][j], pixels[1][j]);
-            }
-            image.drawPixel(path.get(i).getX(), path.get(i).getY());
-            image.drawPixel(path.get(i + 1).getX(), path.get(i + 1).getY());
-        }
-    }
-
+//    void drawPath(ImageProcessor image, LinkedList<Node> path) {
+//        for (int i = 0; i < path.size() - 1; i++) {
+//            short[][] pixels = path.get(i).getAdjacentNodes().get(path.get(i + 1));
+//            for (int j = 0; j < pixels[0].length; j++) {
+//                image.drawPixel(pixels[0][j], pixels[1][j]);
+//            }
+//            image.drawPixel(path.get(i).getX(), path.get(i).getY());
+//            image.drawPixel(path.get(i + 1).getX(), path.get(i + 1).getY());
+//        }
+//    }
     void drawPath(int[][] path, int index) {
         ByteProcessor bp = new ByteProcessor(objBounds.width, objBounds.height);
         bp.setColor(255);
@@ -363,12 +366,12 @@ public class HyphalAnalyser {
 
     short[][] reversePath(short[][] path) {
         int l = path[0].length;
-        short[][] output = new short[2][l];
-        for (int i = l - 1; i >= 0; i--) {
-            output[0][l - 1 - i] = path[0][i];
-            output[1][l - 1 - i] = path[1][i];
-        }
-        return output;
-    }
+                short[][] output = new short[2][l];
+                for (int i = l - 1; i >= 0; i--) {
+                    output[0][l - 1 - i] = path[0][i];
+                    output[1][l - 1 - i] = path[1][i];
+                }
+                return output;
+            }
 
-}
+        }
