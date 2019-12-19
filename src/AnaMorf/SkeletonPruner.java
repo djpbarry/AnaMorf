@@ -18,6 +18,9 @@ package AnaMorf;
 
 import Graph.Node;
 import IAClasses.SkeletonProcessor;
+import ij.IJ;
+import ij.ImagePlus;
+import ij.WindowManager;
 import ij.process.ByteProcessor;
 import ij.process.ByteStatistics;
 import ij.process.ImageProcessor;
@@ -44,6 +47,30 @@ public class SkeletonPruner {
         this.roi = roi;
         MIN_BRANCH_LENGTH = 0;
         removeAll = false;
+    }
+
+    public static void prune(String minLength) {
+        if (IJ.getInstance() == null) {
+            return;
+        }
+        ImagePlus imp = WindowManager.getCurrentImage();
+        if (imp == null) {
+            return;
+        }
+        ImageProcessor ip = imp.getProcessor();
+        if (!(ip instanceof ByteProcessor)) {
+            return;
+        }
+        int min;
+        try {
+            min = Integer.parseInt(minLength);
+        } catch (NumberFormatException e) {
+            return;
+        }
+        SkeletonPruner sp = new SkeletonPruner(min, (ByteProcessor) ip);
+        if (sp.getPrunedImage() != null) {
+            (new ImagePlus(imp.getTitle() + "_Pruned", sp.getPrunedImage())).show();
+        }
     }
 
     public SkeletonPruner(int minimumLength, ByteProcessor inputProcessor) {
