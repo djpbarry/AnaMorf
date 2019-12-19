@@ -46,6 +46,10 @@ public class SkeletonPruner {
         removeAll = false;
     }
 
+    public SkeletonPruner(int minimumLength, ByteProcessor inputProcessor) {
+        this(minimumLength, inputProcessor, null, false, false);
+    }
+
     public SkeletonPruner(int minimumLength, ByteProcessor inputProcessor, Rectangle roi, boolean loops, boolean removeAll) {
         this.roi = roi;
         this.removeAll = removeAll;
@@ -125,6 +129,12 @@ public class SkeletonPruner {
         short xPixels[] = new short[size];
         short yPixels[] = new short[size];
         boolean change = false;
+        int rx = 0;
+        int ry = 0;
+        if (roi != null) {
+            rx = roi.x;
+            ry = roi.y;
+        }
 
         processor.setColor(BACKGROUND);
         for (y = 1; y < height - 1; y++) {
@@ -187,7 +197,7 @@ public class SkeletonPruner {
                         } else {
                             int[][] branchPix = new int[length][];
                             for (int j = 0; j < length; j++) {
-                                branchPix[j] = new int[]{xPixels[j] + roi.x, yPixels[j] + roi.y};
+                                branchPix[j] = new int[]{xPixels[j] + rx, yPixels[j] + ry};
                             }
                             branches.add(branchPix);
                             if (removeAll) {
