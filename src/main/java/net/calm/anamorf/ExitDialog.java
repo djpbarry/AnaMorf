@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package AnaMorf;
+package net.calm.anamorf;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
