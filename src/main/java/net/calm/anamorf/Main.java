@@ -8,15 +8,19 @@ package net.calm.anamorf;
 public class Main {
 
     public static void main(String args[]) {
-        Batch_Analyser ba = new Batch_Analyser();
-        ba.run(null);
-        
-//        AnaMorfMacroExecutor exec = new AnaMorfMacroExecutor();
-//        exec.handleExtension("initialiseAnaMorf", new String[]{"D:\\OneDrive - The Francis Crick Institute\\AnaMorf Test", "D:\\OneDrive - The Francis Crick Institute\\AnaMorf Test\\AnaMorf v2.023_Output\\properties.xml"});
-//        exec.handleExtension("setAnaMorfFileType", new String[]{"PNG"});
-//        exec.handleExtension("setAnaMorfCurvatureWindow", new Object[]{17});
-//        exec.handleExtension("setAnaMorfMinBranchLength", new Object[]{8.0});
-//        exec.handleExtension("runAnaMorf", new String[]{});
+//        Batch_Analyser ba = new Batch_Analyser();
+//        ba.run(null);
+
+        AnaMorfMacroExecutor exec = new AnaMorfMacroExecutor();
+        exec.handleExtension("initialiseAnaMorf", new String[]{"E:\\OneDrive - The Francis Crick Institute\\AnaMorf Test", "E:\\OneDrive - The Francis Crick Institute\\AnaMorf Test\\AnaMorf v2.023_Output\\properties.xml"});
+        exec.handleExtension("setAnaMorfFileType", new String[]{"PNG"});
+        exec.handleExtension("setAnaMorfCurvatureWindow", new Object[]{17});
+        exec.handleExtension("setAnaMorfMinBranchLength", new Object[]{8.0});
+        exec.handleExtension("runAnaMorf", new String[]{});
+
+        exec.handleExtension("resetParameters", new String[]{});
+        exec.handleExtension("setAnaMorfCurvatureWindow", new Object[]{27});
+        exec.handleExtension("runAnaMorf", new String[]{});
 
 //        SkeletonPruner sp = new SkeletonPruner(100, (ByteProcessor) (IJ.openImage()).getProcessor().convertToByteProcessor());
 //

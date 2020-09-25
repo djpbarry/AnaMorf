@@ -5,17 +5,17 @@
  */
 package net.calm.anamorf;
 
+import net.calm.anamorf.params.DefaultParams;
 import ij.IJ;
 import ij.macro.ExtensionDescriptor;
 import ij.macro.MacroExtension;
-import net.calm.anamorf.params.DefaultParams;
 import net.calm.iaclasslibrary.IO.PropertyWriter;
 import net.calm.iaclasslibrary.UtilClasses.GenUtils;
 
 import java.io.File;
+import java.util.Properties;
 
 /**
- *
  * @author David Barry <david.barry at crick dot ac dot uk>
  */
 public class AnaMorfMacroExecutor implements MacroExtension {
@@ -25,6 +25,7 @@ public class AnaMorfMacroExecutor implements MacroExtension {
     private final String SET_CURVATURE = "setAnaMorfCurvatureWindow";
     private final String SET_MIN_BRANCH = "setAnaMorfMinBranchLength";
     private final String RUN = "runAnaMorf";
+    private final String RESET_PARAMS = "resetParameters";
     private Batch_Analyser ba;
 
     public AnaMorfMacroExecutor() {
@@ -33,19 +34,20 @@ public class AnaMorfMacroExecutor implements MacroExtension {
 
     public ExtensionDescriptor[] getExtensionFunctions() {
         return new ExtensionDescriptor[]{
-            new ExtensionDescriptor(INITIALISE, new int[]{
-                MacroExtension.ARG_STRING, MacroExtension.ARG_STRING
-            }, this),
-            new ExtensionDescriptor(SET_FILE_TYPE, new int[]{
-                MacroExtension.ARG_STRING
-            }, this),
-            new ExtensionDescriptor(SET_CURVATURE, new int[]{
-                MacroExtension.ARG_NUMBER
-            }, this),
-            new ExtensionDescriptor(SET_MIN_BRANCH, new int[]{
-                MacroExtension.ARG_NUMBER
-            }, this),
-            new ExtensionDescriptor(RUN, new int[0], this)};
+                new ExtensionDescriptor(INITIALISE, new int[]{
+                        MacroExtension.ARG_STRING, MacroExtension.ARG_STRING
+                }, this),
+                new ExtensionDescriptor(SET_FILE_TYPE, new int[]{
+                        MacroExtension.ARG_STRING
+                }, this),
+                new ExtensionDescriptor(SET_CURVATURE, new int[]{
+                        MacroExtension.ARG_NUMBER
+                }, this),
+                new ExtensionDescriptor(SET_MIN_BRANCH, new int[]{
+                        MacroExtension.ARG_NUMBER
+                }, this),
+                new ExtensionDescriptor(RUN, new int[0], this),
+                new ExtensionDescriptor(RESET_PARAMS, new int[0], this)};
     }
 
     public String handleExtension(String name, Object[] args) {
@@ -64,6 +66,9 @@ public class AnaMorfMacroExecutor implements MacroExtension {
                 break;
             case RUN:
                 run();
+                break;
+            case RESET_PARAMS:
+                resetParams();
                 break;
             default:
                 IJ.log(String.format("Error: %s is not a valid command.", name));
@@ -98,6 +103,7 @@ public class AnaMorfMacroExecutor implements MacroExtension {
             invalidArguments();
             return;
         }
+        Batch_Analyser.getProps().setProperty(DefaultParams.CURVE_LABEL, "true");
         Batch_Analyser.getProps().setProperty(DefaultParams.CURVE_WIN_LABEL, String.valueOf(args[0]));
     }
 
@@ -111,6 +117,20 @@ public class AnaMorfMacroExecutor implements MacroExtension {
 
     void run() {
         ba.run(null);
+    }
+
+    void resetParams(){
+        Properties props = Batch_Analyser.getProps();
+        Batch_Analyser.getProps().setProperty(DefaultParams.BOX_COUNT_LABEL, "false");
+        Batch_Analyser.getProps().setProperty(DefaultParams.CIRC_LABEL, "false");
+        Batch_Analyser.getProps().setProperty(DefaultParams.CURVE_LABEL, "false");
+        Batch_Analyser.getProps().setProperty(DefaultParams.FOURIER_FRAC_LABEL, "false");
+        Batch_Analyser.getProps().setProperty(DefaultParams.LAC_LABEL, "false");
+        Batch_Analyser.getProps().setProperty(DefaultParams.MEAN_BRANCH_LABEL, "false");
+        Batch_Analyser.getProps().setProperty(DefaultParams.NUM_BRANCH_LABEL, "false");
+        Batch_Analyser.getProps().setProperty(DefaultParams.NUM_END_LABEL, "false");
+        Batch_Analyser.getProps().setProperty(DefaultParams.PROJ_AREA_LABEL, "false");
+        Batch_Analyser.getProps().setProperty(DefaultParams.TOT_LENGTH_LABEL, "false");
     }
 
     void invalidArguments() {

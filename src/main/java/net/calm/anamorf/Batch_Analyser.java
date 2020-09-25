@@ -16,6 +16,7 @@
  */
 package net.calm.anamorf;
 
+import net.calm.anamorf.params.DefaultParams;
 import Revision.Revision;
 import ij.IJ;
 import ij.ImagePlus;
@@ -53,7 +54,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Properties;
 
-import net.calm.anamorf.params.DefaultParams;
 import net.calm.iaclasslibrary.Binary.BinaryMaker;
 import net.calm.iaclasslibrary.Curvature.CurveAnalyser;
 import net.calm.iaclasslibrary.IAClasses.DSPProcessor;
@@ -383,6 +383,7 @@ public class Batch_Analyser implements PlugIn {
 
     private void setOutputs() {
         boolean options[] = getOptions();
+        outputData = 0;
         for (int n = 0; n < options.length; n++) {
             if (options[n]) {
                 outputData += (int) Math.round(Math.pow(2.0, n));

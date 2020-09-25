@@ -13,7 +13,7 @@
 
     <groupId>net.calm</groupId>
     <artifactId>anamorf</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>3.0-SNAPSHOT</version>
 
     <build>
         <plugins>
@@ -40,7 +40,7 @@
         </plugins>
     </build>
 
-    <name>AnaMorf</name>
+    <name>net.calm.anamorf</name>
     <description>Analysis of filamentous structures</description>
     <url>https://github.com/djpbarry/AnaMorf</url>
     <inceptionYear>2010</inceptionYear>
@@ -107,7 +107,7 @@
     </ciManagement>
 
     <properties>
-        <package-name>net.calm.anamorf</package-name>
+        <package-name>net.calm.anamorf.Anamorf</package-name>
         <main-class>net.calm.anamorf.Main</main-class>
         <license.licenseName>bsd_2</license.licenseName>
         <license.copyrightOwners>TU Dublin</license.copyrightOwners>
