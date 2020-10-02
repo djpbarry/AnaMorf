@@ -751,7 +751,7 @@ public class Batch_Analyser implements PlugIn {
                     double[] vals = wholeImageCurvature.getSortedValues();
                     vals = wholeImageCurvature.getValues();
                 }
-                resultsTable.addValue(CURVE_HEAD, curvature);
+                resultsTable.addValue(CURVE_HEAD + "_" + props.getProperty(DefaultParams.CURVE_WIN_LABEL), curvature);
             }
             resultsTable.addLabel("Image", imageName);
         }
