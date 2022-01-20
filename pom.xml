@@ -7,13 +7,13 @@
     <parent>
         <groupId>org.scijava</groupId>
         <artifactId>pom-scijava</artifactId>
-        <version>28.0.0</version>
+        <version>31.1.0</version>
         <relativePath/>
     </parent>
 
     <groupId>net.calm</groupId>
     <artifactId>anamorf</artifactId>
-    <version>3.0.2</version>
+    <version>3.0.3</version>
 
     <build>
         <plugins>
@@ -125,7 +125,7 @@
         <dependency>
             <groupId>net.calm</groupId>
             <artifactId>iaclasslibrary</artifactId>
-            <version>1.0.6</version>
+            <version>1.0.8</version>
         </dependency>
         <dependency>
             <groupId>net.imagej</groupId>
