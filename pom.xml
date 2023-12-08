@@ -114,6 +114,10 @@
     </properties>
 
     <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
         <!-- NB: for SciJava dependencies -->
         <repository>
             <id>scijava.public</id>
@@ -127,9 +131,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>net.calm</groupId>
+            <groupId>com.github.djpbarry</groupId>
             <artifactId>iaclasslibrary</artifactId>
-            <version>1.0.28</version>
+            <version>448e4c82e5</version>
         </dependency>
         <dependency>
             <groupId>net.imagej</groupId>
