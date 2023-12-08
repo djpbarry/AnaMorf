@@ -1,4 +1,6 @@
-[![Build](https://github.com/djpbarry/anamorf/actions/workflows/maven.yml/badge.svg)](https://github.com/djpbarry/anamorf/actions/workflows/maven.yml) ![Commit activity](https://img.shields.io/github/commit-activity/y/djpbarry/anamorf?style=plastic) ![GitHub](https://img.shields.io/github/license/djpbarry/anamorf?color=green&style=plastic)
+[![Build](https://github.com/djpbarry/anamorf/actions/workflows/maven.yml/badge.svg)](https://github.com/djpbarry/anamorf/actions/workflows/maven.yml)
+![Commit activity](https://img.shields.io/github/commit-activity/y/djpbarry/anamorf?style=plastic)
+![GitHub](https://img.shields.io/github/license/djpbarry/anamorf?color=green&style=plastic)
 
 # AnaMorf
 
