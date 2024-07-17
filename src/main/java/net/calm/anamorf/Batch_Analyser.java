@@ -836,7 +836,7 @@ public class Batch_Analyser implements PlugIn {
         if (cumulativeCurveStats == null) {
             cumulativeCurveStats = new ArrayList();
             cumulativeCurveStatsLabels = new ArrayList();
-            for (int c = 0; c < 4; c++) {
+            for (int c = 0; c < 3; c++) {
                 cumulativeCurveStats.add(new ArrayList<Double>());
             }
         }

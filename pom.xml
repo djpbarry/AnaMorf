@@ -7,13 +7,13 @@
     <parent>
         <groupId>org.scijava</groupId>
         <artifactId>pom-scijava</artifactId>
-        <version>33.2.0</version>
+        <version>37.0.0</version>
         <relativePath/>
     </parent>
 
     <groupId>net.calm</groupId>
     <artifactId>anamorf</artifactId>
-    <version>3.0.5</version>
+    <version>3.1.0</version>
 
     <build>
         <plugins>
@@ -123,17 +123,13 @@
             <id>scijava.public</id>
             <url>https://maven.scijava.org/content/groups/public</url>
         </repository>
-        <repository>
-            <id>github</id>
-            <url>https://maven.pkg.github.com/djpbarry/*</url>
-        </repository>
     </repositories>
 
     <dependencies>
         <dependency>
             <groupId>com.github.djpbarry</groupId>
             <artifactId>iaclasslibrary</artifactId>
-            <version>448e4c82e5</version>
+            <version>v1.032</version>
         </dependency>
         <dependency>
             <groupId>net.imagej</groupId>
