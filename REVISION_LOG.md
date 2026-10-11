@@ -1,0 +1,143 @@
+# Revision Log
+
+A chronological record of significant development decisions and changes to
+AnaMorf, and — more importantly — the mistakes made and lessons learned, so that
+the modernisation of this repository does not repeat the missteps already
+documented for its upstream dependency
+([`IAClassLibrary`](https://github.com/djpbarry/IAClassLibrary/blob/development/REVISION_LOG.md))
+and its siblings (`TrackerLibrary`, ADAPT).
+
+AnaMorf is a **Fiji/ImageJ plugin** and a **consumer** of `IAClassLibrary`. It
+is not a library, so the "public API" concerns that dominate the sibling logs
+apply only lightly here. Its modernisation is instead about build tooling,
+robustness, testability, and the migration onto the modernised
+`IAClassLibrary v2.x`.
+
+Git commit messages provide the fine-grained record; this file is the distilled,
+dated narrative plus the "what not to do again" notes.
+
+## Conventions
+
+- Entries are dated and reference commits and/or `DEVELOPMENT_PLAN.md` phases.
+- "Lesson" entries state what went wrong and the rule to apply next time.
+- Lessons marked *(inherited)* are carried forward from the sibling
+  `REVISION_LOG.md` files, whose modernisation explicitly names AnaMorf's
+  dependency chain and intends these rules to guide it.
+
+---
+
+## 2026-10-11 — Modernisation kick-off (planning only)
+
+Completed the initial review of AnaMorf and wrote the modernisation plan
+(`DEVELOPMENT_PLAN.md`), this log, `RELEASE_NOTES.md`, and `CITATION.cff`.
+No code changed yet.
+
+### What the review found
+
+- **AnaMorf is a full major version behind `IAClassLibrary`.** The dependency
+  coordinate `com.github.djpbarry:IAClassLibrary:8e10706f5e` resolves — read from
+  the packaged `META-INF/maven/.../pom.properties` — to **version 1.0.32**, while
+  IACL is now at `2.0.23` (Java 21, `pom-scijava:45.1.0`, GPL-3.0, JUnit 5). The
+  coordinate name does not reveal this; the jar is the ground truth.
+- **The API surface AnaMorf actually uses survived the 2.x break** (package root
+  `net.calm.iaclasslibrary` unchanged; `GenUtils`, `Utilities`, `PropertyWriter`,
+  `DataWriter`, `FuzzyThresholder`, `BinaryMaker`, `CurveAnalyser`, `Dijkstra`,
+  `Graph`/`Node` all present and source-compatible).
+- **Five deprecated symbols are on the critical path:** `OnlyExt`,
+  `SkeletonProcessor`, `FractalEstimator`, `DataStatistics`, and
+  `Revision.getVersionFromPom` (`@Deprecated` in favour of `Revision.getVersion()`).
+- **`FuzzyThresholder.threshold()` changed behaviourally** in IACL 2.x (the
+  auto-threshold is now scaled by `binSize`/`histMin`), so pre-processing output
+  may drift even though the call site compiles.
+- **`build.xml` is malformed** (a stray `</target>` with no opening tag, plus a
+  machine-specific Perl version-stamping hook). Maven only.
+- **No tests, no tags, no lint/format tooling.** `src/test/java/` is empty.
+
+### The eight resolved decisions (2026-10-11)
+
+Resolved with the maintainer; see `DEVELOPMENT_PLAN.md` section 5 for the full
+write-up. In brief:
+
+1. **License — GPL-3.0-or-later** (align with IACL/TrackerLibrary/ADAPT).
+2. **Java target — 21**, join the coordinated migration now.
+3. **Deprecated IACL symbols — accept the risk for now**, plan alternatives if
+   IACL does not un-deprecate before removal.
+4. **Output directory naming — rename** (`Revision.getVersionFromPom` →
+   `Revision.getVersion()`).
+5. **UI — rewrite** (drop the NetBeans `.form`/`GEN`-fenced Swing).
+6. **Entry point — no CLI; preserve macro scripting** (remove `Main`, keep the
+   `Ext.*` macro functions).
+7. **`ResultSummariser` — keep as-is, deferred** (uncertain intent; revisit after
+   characterisation).
+8. **Citation affiliation — The Francis Crick Institute**.
+
+Still open: the `net.calm` → `io.github.djpbarry` package-root rename (IACL
+Decision 7), to be confirmed during Phase G.
+
+### Lesson (new)
+
+The dependency coordinate was misleading. `com.github.djpbarry:IAClassLibrary:8e10706f5e`
+looked like a recent pin, but the actual jar was `1.0.32`. **Rule:** when
+assessing a JitPack commit-hash pin, read the version from the built artifact
+(`jar xf <jar> META-INF/maven/.../pom.properties`), not from the coordinate or
+the `pom.xml` `<version>` element.
+
+---
+
+## Lessons learned (mistakes to avoid)
+
+Carried forward from the sibling logs and re-stated only as they apply to AnaMorf.
+
+### L1 — Decide the Java target before touching build/CI *(inherited)*
+
+The siblings reversed a Java 11 → Java 21 decision mid-stream. AnaMorf has now
+settled this (Java 21, join now — Decision 2), but the coordinated bump must be
+a single, planned change (Phase A4/A5), not an incremental drift.
+
+**Rule:** confirm the cross-project Java / parent-POM / TrackMate version and
+dependency pins in writing before any build or CI edit.
+
+### L2 — Use consistent semver tag names *(inherited)*
+
+AnaMorf has **no `vX.Y.Z` tags**; its version is a bare `3.1.0`. The siblings
+standardised on `vX.Y.Z`.
+
+**Rule:** adopt `vX.Y.Z` from the first tag onward (see Phase F4).
+
+### L3 — Resolve the licence before tagging *(inherited)*
+
+AnaMorf had the exact contradiction the siblings fixed: GPLv3 source headers but
+BSD-2 `pom.xml`. Resolved to GPL-3.0-or-later (Decision 1).
+
+**Rule:** align `pom.xml` (`<licenses>`, `license.licenseName`,
+`license.copyrightOwners`) with the root `LICENSE` before tagging; treat the
+source-header tidy-up as a separate, deferred item.
+
+### L4 — "No references in this repo" does not apply, but "commented code is stale" does *(inherited, adapted)*
+
+AnaMorf is a plugin, not a library, so the "external consumers" concern is moot.
+But `Main.java` is almost entirely commented-out experiments and
+`ResultSummariser` is half disabled — both are stale and misleading.
+
+**Rule:** strip commented/experimental code (recoverable from git) rather than
+leaving it to mislead; where a block was disabled deliberately, record *why*
+before changing it.
+
+### L5 — Check the parent-POM move against the repository list *(inherited)*
+
+`pom-scijava:45.1.0` drops the implicit Maven Central, so a consumer on that
+parent must declare `central` explicitly. AnaMorf's current `pom.xml` does not
+declare `central` at all — this will bite in Phase A4.
+
+**Rule:** when moving to `pom-scijava:45.1.0`, declare `central` first in
+`<repositories>`.
+
+### L6 — The `main-class` was a scratchpad, not a CLI *(new, AnaMorf-specific)*
+
+`net.calm.anamorf.Main` runs `Batch_Analyser.run(null)` then `System.exit(0)`;
+the rest is commented-out OneDrive experiments. It was declared `main-class`
+but is not a usable entry point. The real scriptable surface is the ImageJ
+`Ext.*` macro layer.
+
+**Rule:** do not treat `Main` as a CLI, and do not let it regress the macro
+entry point (Decision 6).

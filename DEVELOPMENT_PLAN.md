@@ -1,6 +1,7 @@
 # AnaMorf Modernisation & IAClassLibrary Compatibility Plan
 
-Status: **proposal, no code changes made yet.** This document is a plan only.
+Status: **plan; no code changes made yet.** The maintainer decisions that gate
+execution are resolved (2026-10-11) and recorded in section 5.
 
 Scope: bring AnaMorf back into compatibility with the current IAClassLibrary and
 modernise the project on the same terms, and in the same style, as
@@ -221,24 +222,29 @@ Phase B's input.
    `FileExtensionFilter` uses `FilenameUtils.isExtension` and does **not** carry
    `OnlyExt`'s `TIF`/`TIFF` and `JPG`/`JPEG` special-casing. Verify against a
    directory containing `.tiff` and `.jpeg` files before and after.
-3. **B3** Decide the `Revision` story (2.3). Recommended: switch to
-   `Revision.getVersion()`, accept the output-directory rename, and record it in
-   `REVISION_LOG.md` as a user-visible change. The old behaviour is unreliable
-   anyway because it depends on `pom.xml` being next to the working directory.
+3. **B3** Switch `Revision.getVersionFromPom` to `Revision.getVersion()` (2.3).
+   **Decision (Q2):** accept the output-directory rename (`AnaMorf v3.1.0` →
+   `AnaMorf v<manifest version>`) and record it in `REVISION_LOG.md` as a
+   user-visible change. The old behaviour is unreliable anyway because it depends
+   on `pom.xml` being next to the working directory.
 4. **B4** Migrate `ResultSummariser` off `IAClasses.DataStatistics` to
    `DescriptiveStatistics` (2.2). Do this **together with** the Tier 3 dead-code
    cleanup (3.2), since the class is half disabled and rewriting it is cheaper
-   than un-disabling it. Decide and document what the summary rows should be.
+   than un-disabling it. **Decision (Q3):** keep the current mean + std-dev-only
+   behaviour for now; the confidence-interval row and per-column lookups stay
+   disabled and are revisited after B6 produces a known-good baseline.
 5. **B5** Replace `GenVariables.ISO` with `StandardCharsets.ISO_8859_1`, or drop
    it in favour of the default; make it a deliberate choice, not a silent one.
 6. **B6** **Characterise the pre-processing path.** Run a fixed image set through
    the plug-in before and after the bump and diff `results.csv`. `FuzzyThresholder`
    changed (see 1.3) and the parent bump can move ImageJ. Without this, any
    numerical drift is invisible.
-7. **B7** Long-term: since `SkeletonProcessor` and `FractalEstimator` are
-   deprecated and load-bearing, decide per symbol between (a) vendoring the logic
-   into AnaMorf, (b) requesting they be un-deprecated in IACL, or (c) accepting
-   the risk until IACL 3.x. Do not leave this implicit.
+7. **B7** Deprecated-symbol policy for `SkeletonProcessor` and `FractalEstimator`.
+   **Decision (Q1):** accept the risk for now — keep using them on the critical
+   path — and record a plan to find alternative implementations (vendor the logic
+   or migrate to a successor) if IACL does not un-deprecate them before removal.
+   The mechanical migrations (`OnlyExt` → `FileExtensionFilter`, `DataStatistics`
+   → `DescriptiveStatistics`) still happen in B2/B4 regardless.
 
 **Exit criteria:** compiles and runs against IACL 2.0.23 with no deprecated
 symbols on the critical path or a recorded decision for each remaining one, and
@@ -268,10 +274,12 @@ numerical output.
 
 ### Phase D — Code hygiene, mirroring IACL D1/D2
 
-1. **D1** Delete the scratchpad: strip `Main.main` to a documented entry point
-   and remove the commented-out OneDrive experiments (3.1). Remove the
-   `ResultSummariser` dead code (3.2) and the `build.xml` Perl hook (3.3) — the
-   latter falls out of A1.
+1. **D1** Delete the scratchpad: remove `Main.java` entirely and drop the
+   `main-class` property (no standalone entry point). The ImageJ macro surface
+   (`AnaMorfMacroExecutor` + `AnaMorf_Macro_Extensions`) is the scriptable entry
+   point and is preserved/enhanced, not replaced. Remove the `ResultSummariser`
+   dead code (3.2) and the `build.xml` Perl hook (3.3) — the latter falls out of
+   A1.
 2. **D2** Decompose `Batch_Analyser.analyseImage` (4.6) into
    single-responsibility helpers, extracting the pure math first so Phase C can
    cover it. Run this **before** Phase E so the threading work is not churning
@@ -299,10 +307,10 @@ numerical output.
    processed in a serial loop), adopt IACL's `MultiThreadedProcess.runWorkers`
    idiom rather than hand-rolling threads. If it is not parallelised, do not add
    concurrency just for its own sake.
-3. **E3** Replace the NetBeans-generated Swing with something maintainable, or
-   explicitly freeze it outside the `//GEN-*` fences (4.9). This is low value and
-   candidate for a documented deferral, exactly as IACL deferred its non-win
-   refactors.
+3. **E3** **Decision (Q4): rewrite the UI.** Drop the NetBeans `.form`/`GEN`-fenced
+   Swing (`UserInterface`, `ExitDialog`) in favour of a hand-managed layout,
+   following ADAPT's M5 step 3. Keep the same fields and tab structure so the
+   parameter surface is unchanged.
 4. **E4** Only now consider modern language features (`switch` expressions,
    pattern matching, `var`). IACL sequenced this last (G6) because doing it
    earlier churns code the structural phases then rewrite.
@@ -314,9 +322,10 @@ numerical output.
    dependency), and a package map.
 2. **F2** Keep `AGENTS.md` in sync as each phase lands — IACL treats this as a
    per-change obligation, and it is what makes the next migration cheap.
-3. **F3** Add a `DEVELOPMENT_PLAN.md` (this document) and a `REVISION_LOG.md` to
-   the repo, with a rule that they are updated in the same pass as any repo
-   change.
+3. **F3** Maintain the three-file source of truth — `DEVELOPMENT_PLAN.md` (what
+   is done/next), `REVISION_LOG.md` (the engineering narrative, decisions and
+   lessons), and `RELEASE_NOTES.md` (the user-facing changelog) — updated in the
+   same pass as any repo change, per the sibling convention.
 4. **F4** Adopt Conventional Commits and a `vX.Y.Z` tag per release (IACL
    Decision 2). Cut `v3.2.0` after Phase B and let the phases that follow be
    patches/minors.
@@ -329,11 +338,13 @@ AnaMorf is a consumer, but it sits on the same author's shelf as IACL,
 Java 21 / TrackMate 8.x / `io.github.djpbarry` namespace migration across all of
 them. Two things follow:
 
-1. **G1** Ask the maintainer whether AnaMorf joins the coordinated Java 21 /
-   `pom-scijava:45.1.0` / TrackMate 8.0.0 move, or trails it. Do not assume.
-2. **G2** Ask whether AnaMorf participates in the `net.calm` →
-   `io.github.djpbarry` package rename (IACL Decision 7). If yes, do it in
-   lockstep, not solo, because it is a breaking change across the suite.
+1. **G1 — Decision (Q5): join now.** AnaMorf adopts Java 21 + `pom-scijava:45.1.0`
+   + TrackMate 8.0.0 in lockstep with the siblings, rather than trailing on the
+   old IACL 1.0.32. This is folded into Phase A4/A5.
+2. **G2 — namespace rename (still open).** IACL Decision 7 proposes renaming the
+   package root `net.calm` → `io.github.djpbarry` across the whole suite. This was
+   *not* part of the resolved Q5 answer; confirm with the maintainer before
+   Phase E whether AnaMorf participates, and if so do it in lockstep, not solo.
 
 ## 4. Sequencing rationale
 
@@ -353,30 +364,40 @@ Ordering follows IACL's G7 reasoning, adapted:
 6. **Phase A2 (wrapper) before A5 (CI)** so CI tests the same Maven everyone else
    uses.
 
-## 5. Open questions requiring a maintainer decision
+## 5. Resolved decisions (2026-10-11)
 
-These are genuinely undecidable from the code and should not be guessed at:
+Maintainer decisions that gate execution. Recorded once, authoritative; the
+former open questions (Q1–Q8) are closed by these.
 
-1. **Deprecated-symbol policy (B7):** vendor, un-deprecate, or accept the risk for
-   `SkeletonProcessor` and `FractalEstimator`? This determines how much Phase B
-   costs.
-2. **`Revision` / output directory naming (B3):** is renaming the output folder
-   from `AnaMorf v3.1.0` to `AnaMorf v<manifest version>` acceptable? Users may
-   have scripts keyed to the folder name.
-3. **`ResultSummariser` intent (B4):** the confidence-interval row is disabled and
-   only HGU is treated as clean data. Is the disabled behaviour dead, or
-   temporarily off? Restoring it changes published output.
-4. **Swing/NetBeans forms (E3):** is keeping the `.form` files acceptable, or is
-   a hand-written UI wanted? The `.form` files imply a NetBeans designer workflow
-   that the rest of the plan removes.
-5. **Coordinated migration (G1/G2):** does AnaMorf join the Java 21 / TrackMate
-   8.x / namespace change, or trail it?
-6. **Software licence (A6/1.6):** `pom.xml` says BSD-2 (TU Dublin) while most
-   source headers are GPLv3 and IACL settled on GPL-3.0-or-later. This needs a
-   decision, not a guess.
-7. **`main-class` / run story (3.1):** `net.calm.anamorf.Main` is declared as the
-   `main-class` but is a scratchpad. Should there be a real headless CLI entry
-   point, and if so what is its interface?
+1. **License — GPL-3.0-or-later** *(Q6)*. Correct `pom.xml` from BSD-2 to
+   GPL-3.0 (`<licenses>`, `license.licenseName=gpl_v3`,
+   `license.copyrightOwners=The Francis Crick Institute`); replace the remaining
+   NetBeans "change this header" stubs with the GPL header. Aligns with IACL,
+   TrackerLibrary and ADAPT.
+2. **Java target — 21, join now** *(Q5)*. Adopt Java 21 + `pom-scijava:45.1.0` +
+   TrackMate 8.0.0 in lockstep with the siblings, not trail on IACL 1.0.32.
+3. **Deprecated IACL symbols — accept the risk for now** *(Q1)*. Keep
+   `SkeletonProcessor` and `FractalEstimator` on the critical path; do the
+   mechanical migrations (`OnlyExt` → `FileExtensionFilter`, `DataStatistics` →
+   `DescriptiveStatistics`) immediately, and record a plan to find alternatives
+   if IACL does not un-deprecate before removal.
+4. **Output directory naming — rename** *(Q2)*. Switch `Revision.getVersionFromPom`
+   → `Revision.getVersion()` and accept the `AnaMorf vX.Y.Z` folder-name change.
+5. **UI — rewrite** *(Q4)*. Drop the NetBeans `.form`/`GEN`-fenced Swing for a
+   hand-managed layout (ADAPT M5 step 3 pattern); keep the same fields/tabs.
+6. **Entry point — no CLI; preserve macro scripting** *(Q7)*. Remove `Main.java`
+   and the `main-class` property. The `Ext.*` ImageJ macro functions
+   (`AnaMorfMacroExecutor` + `AnaMorf_Macro_Extensions`) are the scriptable
+   surface and must be preserved, and enhanced where possible.
+7. **`ResultSummariser` — keep as-is, deferred** *(Q3)*. The confidence-interval
+   row and per-column lookups stay disabled; revisit after Phase B6 gives a
+   known-good baseline. (Maintainer uncertain of intent on this old code.)
+8. **Citation affiliation — The Francis Crick Institute** *(Q8)*, for
+   `CITATION.cff`.
+
+Still open: the `net.calm` → `io.github.djpbarry` namespace rename (G2) — confirm
+with the maintainer during Phase G; it is a breaking cross-suite change and must
+not be done solo.
 
 ## 6. What NOT to do
 
@@ -391,7 +412,10 @@ Recorded so the same mistakes are not repeated:
   plus a machine-specific Perl hook; IACL reached the same conclusion (Decision 6).
 - **Do not treat `target/` as source.** It contains hundreds of dependency JARs
   and is untracked-but-present in this working tree.
-- **Do not un-disable `ResultSummariser`'s commented-out code** without deciding
-  what it should do; it was disabled deliberately.
-- **Do not edit inside `//GEN-BEGIN`/`//GEN-END` fences.**
-- **Do not assume `Main` accepts arguments.**
+- **Do not un-disable `ResultSummariser`'s commented-out code** without a
+  known-good baseline; it was disabled deliberately and the intent is uncertain.
+- **Do not edit inside `//GEN-BEGIN`/`//GEN-END` fences** (moot once E3 rewrites
+  the UI, but true until then).
+- **Do not remove or regress the `Ext.*` macro functions** — they are the
+  scriptable entry point and must be preserved.
+- **Do not assume `Main` accepts arguments** (it is a scratchpad, removed in D1).

@@ -1,0 +1,47 @@
+cff-version: 1.2.0
+message: "If you use AnaMorf in your research, please cite it as below."
+title: "AnaMorf: analysis of filamentous microbe morphology"
+abstract: "AnaMorf is an ImageJ/Fiji plugin for automated analysis of the morphology of filamentous structures (e.g. fungal hyphae). From a directory of images it segments and traces each object and reports projected area, circularity, total length, endpoints, branchpoints, hyphal growth unit, lacunarity, box-counting and Fourier fractal dimensions, and curvature."
+type: software
+authors:
+  - family-names: Barry
+    given-names: David J
+    orcid: "https://orcid.org/0000-0003-2763-5244"
+    affiliation: "The Francis Crick Institute"
+repository-code: "https://github.com/djpbarry/AnaMorf"
+url: "https://github.com/djpbarry/AnaMorf/wiki"
+license: GPL-3.0-or-later
+keywords:
+  - filamentous fungi
+  - hyphae
+  - morphology
+  - fractal dimension
+  - lacunarity
+  - image analysis
+  - ImageJ
+  - Fiji
+identifiers:
+  - type: doi
+    value: 10.1007/s10295-009-0552-9
+    description: "The J Ind Microbiol Biotechnol 2009 paper describing AnaMorf."
+  - type: doi
+    value: 10.1002/bit.24709
+    description: "The Biotechnol Bioeng 2013 paper on fractal analysis of branching behaviour."
+preferred-citation:
+  type: article
+  title: "Morphological quantification of filamentous fungal development using membrane immobilization and automatic image analysis"
+  authors:
+    - family-names: Barry
+      given-names: David J
+      orcid: "https://orcid.org/0000-0003-2763-5244"
+    - family-names: Chan
+      given-names: Cecilia
+    - family-names: Williams
+      given-names: Gwilym A
+  journal: "Journal of Industrial Microbiology & Biotechnology"
+  volume: 36
+  issue: 6
+  start: 787
+  end: 800
+  year: 2009
+  doi: "10.1007/s10295-009-0552-9"

@@ -148,7 +148,11 @@ version **1.0.32**, so this project is a full major version behind and will not
 build on the toolchain IACL now requires.
 
 `DEVELOPMENT_PLAN.md` holds the compatibility assessment and the phased upgrade
-plan. Two things to note before touching the dependency:
+plan; the maintainer decisions that gate it are in its section 5 (resolved
+2026-10-11). `REVISION_LOG.md` is the dated engineering record,
+`RELEASE_NOTES.md` is the user-facing changelog, and `CITATION.cff` is the
+citation metadata. Keep all four in sync with any repo change. Two things to note
+before touching the dependency:
 
 - Package root (`net.calm.iaclasslibrary`) and every API AnaMorf calls survived the
   IACL 2.x break, **except** that `Revision.getVersionFromPom` is deprecated in
