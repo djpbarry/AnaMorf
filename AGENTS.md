@@ -139,12 +139,36 @@ Results always land in a sibling directory named after the plug-in title, produc
   directory**. Running the jar from somewhere without a `pom.xml` nearby will not give
   you the version you expect.
 
+## Dependency posture and modernisation
+
+`IAClassLibrary` has been modernised in place (v2.0.23: Java 21, parent
+`pom-scijava:45.1.0`, GPL-3.0, JUnit 5), and **AnaMorf has not followed**. The
+pinned coordinate `com.github.djpbarry:IAClassLibrary:8e10706f5e` resolves to
+version **1.0.32**, so this project is a full major version behind and will not
+build on the toolchain IACL now requires.
+
+`DEVELOPMENT_PLAN.md` holds the compatibility assessment and the phased upgrade
+plan. Two things to note before touching the dependency:
+
+- Package root (`net.calm.iaclasslibrary`) and every API AnaMorf calls survived the
+  IACL 2.x break, **except** that `Revision.getVersionFromPom` is deprecated in
+  favour of `Revision.getVersion()`, and `OnlyExt`, `SkeletonProcessor`,
+  `FractalEstimator` and `DataStatistics` are now `@Deprecated` (slated for removal).
+  `OnlyExt` and `DataStatistics` are on the critical path.
+- IACL 2.x changed `FuzzyThresholder.threshold()` (it now scales the auto-threshold
+  by `binSize`/`histMin`), so pre-processing output may drift. Characterise
+  `results.csv` before and after any dependency change.
+
 ## Gotchas
 
 - **`build.xml` is malformed.** It contains an `<exec>` block followed by a stray
   `</target>` with no matching opening tag. Any Ant/NetBeans build fails on parse.
   Use Maven. The stray block is also machine-specific: it shells out to a hardcoded
   `C:\Users\barryd\...\perl.exe` script to stamp a git version number.
+- **The `target/` JAR is the quickest way to read the real API.** Because the
+  build is broken here, `target/IAClassLibrary-8e10706f5e.jar` is the ground truth
+  for what is actually on the classpath; `jar xf <jar> META-INF/maven/.../pom.properties`
+  reveals the pinned version. Do not trust the coordinate's name.
 - **`Main.main` is a scratchpad, not a CLI.** It runs `Batch_Analyser.run(null)` and
   then `System.exit(0)`. The remaining lines are commented-out experiments referencing
   the original author's OneDrive paths. Do not assume `Main` accepts arguments.
