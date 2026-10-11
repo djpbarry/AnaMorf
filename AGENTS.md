@@ -163,6 +163,55 @@ before touching the dependency:
   by `binSize`/`histMin`), so pre-processing output may drift. Characterise
   `results.csv` before and after any dependency change.
 
+## Public API compatibility (downstream consumer: TWOMBLI)
+
+AnaMorf is consumed as a **library** by
+[TWOMBLI](https://github.com/FrancisCrickInstitute/TWOMBLI) (a Fiji plugin that
+analyses the ECM network around blood vessels). TWOMBLI pins AnaMorf at
+`com.github.djpbarry:Anamorf:d610176007` and calls it **directly from Java**, not
+via the ImageJ macro layer. Any change below breaks TWOMBLI — do not make it
+without coordinating with TWOMBLI first.
+
+**Frozen Java API** (imported by `TWOMBLIRunner.java`):
+- `net.calm.anamorf.Batch_Analyser` — constructor
+  `Batch_Analyser(boolean macroMode, File currentDirectory, Properties props)`,
+  `void run(String)`, and `static Properties getProps()`.
+- `net.calm.anamorf.params.DefaultParams` — no-arg constructor (it is a
+  `Properties` subclass, loaded by TWOMBLI via `loadFromXML`) and every
+  `public static final String` label.
+
+**Frozen property keys.** TWOMBLI ships a bundled `AnamorfProperties.xml` keyed by
+the *exact string values* of the `DefaultParams` labels, and loads it with
+`props.loadFromXML(...)`. Renaming a label constant (or its string) silently
+un-wires TWOMBLI's parameters. The label set is effectively an external contract.
+
+**Frozen output contract.** TWOMBLI drives AnaMorf by calling `run(null)` once per
+curvature window and then globbing the results directory that
+`GenUtils.openResultsDirectory` produces:
+- exactly **one** directory whose name ends in `Output`, containing `results.csv`;
+- the subsequent runs land in directories matching `.*Output_.*` (the
+  `_Output_(n)` suffix), each with its own `results.csv`.
+
+So the `_Output`/`_Output_(n)` naming, the `results.csv` filename, and the
+one-directory-per-run semantics are load-bearing. An ADAPT-style output restructure
+(e.g. `tables/`) would break TWOMBLI — any such change needs a compatibility shim.
+
+**Frozen JitPack coordinate.** `com.github.djpbarry:Anamorf` is derived from the
+**GitHub repo name** `djpbarry/AnaMorf` (mixed case), not from the `pom.xml`
+`groupId`/`artifactId` (`net.calm:anamorf`). Renaming or moving the repo breaks the
+coordinate, and TWOMBLI also pins a specific commit (`d610176007`).
+
+**Consequences for the plan:**
+- Phase E1 ("de-static `props`") is **not safe as written**: TWOMBLI mutates
+  `Batch_Analyser.getProps().setProperty(...)` between runs. Keep `getProps()`
+  static (even if it delegates to a static holder) or change it in lockstep with
+  TWOMBLI.
+- The G2 package-root rename (`net.calm` → `io.github.djpbarry`) **must include
+  TWOMBLI** as a lockstep party, or it breaks TWOMBLI's imports.
+- `Main` / `main-class` removal is safe (TWOMBLI does not use `Main`); the macro
+  layer (`AnaMorfMacroExecutor`) is also not used by TWOMBLI, but keep it for
+  other consumers.
+
 ## Gotchas
 
 - **`build.xml` is malformed.** It contains an `<exec>` block followed by a stray

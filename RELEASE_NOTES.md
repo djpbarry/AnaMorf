@@ -42,6 +42,10 @@ analysis pipeline and ImageJ macro interface are unchanged in behaviour.
   (`Ext.initialiseAnaMorf`, `Ext.setAnaMorfFileType`,
   `Ext.setAnaMorfCurvatureWindow`, `Ext.setAnaMorfMinBranchLength`,
   `Ext.resetParameters`, `Ext.runAnaMorf`).
+- **Downstream compatibility preserved.** The Java API used by TWOMBLI
+  (`Batch_Analyser` and `DefaultParams`) and the `results.csv` / `*_Output`
+  directory layout are kept unchanged, so TWOMBLI continues to work without
+  modification.
 - **Build is Maven-only** (the legacy, broken NetBeans/Ant build is removed) and
   will use a pinned Maven wrapper.
 

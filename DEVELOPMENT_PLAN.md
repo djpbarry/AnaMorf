@@ -111,6 +111,35 @@ AnaMorf resolves IAClassLibrary through JitPack at a 12-character commit
 modernisation, and it should be sequenced so that API migration and toolchain
 migration do not land in the same change.
 
+### 1.5 Downstream consumer: TWOMBLI (public API freeze)
+
+AnaMorf is consumed as a library by
+[TWOMBLI](https://github.com/FrancisCrickInstitute/TWOMBLI), which pins it at
+`com.github.djpbarry:Anamorf:d610176007` and calls it **directly from Java** (not
+via the macro layer). This turns several "internal" details into an external
+contract that the plan must respect. The full frozen surface is documented in
+`AGENTS.md`; the headline items are:
+
+- **Java API** — `net.calm.anamorf.Batch_Analyser` (constructor
+  `(boolean, File, Properties)`, `run(String)`, static `getProps()`) and
+  `net.calm.anamorf.params.DefaultParams` (no-arg constructor + every
+  `public static final String` label).
+- **Property keys** — TWOMBLI ships an `AnamorfProperties.xml` keyed by the exact
+  label strings; renaming a label silently breaks its parameter wiring.
+- **Output contract** — TWOMBLI globs for one `*_Output` dir + `results.csv`, then
+  `*_Output_(n)` dirs (one per curvature-window run). `GenUtils.openResultsDirectory`
+  naming, the `results.csv` filename, and the per-run directory semantics are
+  load-bearing.
+- **JitPack coordinate** — `com.github.djpbarry:Anamorf` is derived from the
+  **repo name**, not the `pom.xml` `groupId`/`artifactId` (`net.calm:anamorf`).
+  TWOMBLI also pins commit `d610176007`.
+
+**Plan impact:** (1) Phase E1 "de-static `props`" must keep `getProps()` static or
+be done in lockstep with TWOMBLI; (2) the G2 namespace rename must include TWOMBLI;
+(3) no ADAPT-style output restructure without a TWOMBLI-compatible shim; (4) the
+Decision-4 output-folder *rename* is safe (TWOMBLI matches on the `Output` suffix,
+not the version prefix) and actually a fix — see 1.3's `Revision` note.
+
 ## 2. Inventory of what needs to change at each tier
 
 ### Tier 0 — everything that physically cannot compile today
@@ -297,12 +326,15 @@ numerical output.
 
 ### Phase E — Structural modernisation (the IACL G1/G2 equivalent)
 
-1. **E1** De-static `props`. `Batch_Analyser.props` becomes instance state with
-   an explicit accessor for the macro layer (4.1). This is the highest-value
-   thread-safety fix and the direct analogue of IACL's `RegionGrower` work.
-   `AnaMorfMacroExecutor` currently writes through
-   `Batch_Analyser.getProps().setProperty(...)` **before** `initialise` constructs
-   the `Batch_Analyser`, so the ordering must be handled deliberately.
+1. **E1** De-static `props` **with a backward-compatible accessor.**
+   `Batch_Analyser.props` is a `static Properties` shared per JVM. TWOMBLI mutates
+   it via the static `Batch_Analyser.getProps().setProperty(...)` between runs, so
+   the `getProps()` static method must survive (even if it delegates to a static
+   holder). Any instance-scoping of `props` has to be coordinated with TWOMBLI and
+   the macro layer, both of which write through `getProps()` **before** the
+   `Batch_Analyser` is constructed. This is the direct analogue of IACL's
+   `RegionGrower` work, but the consumer coupling makes it a breaking change if
+   done naively.
 2. **E2** If any per-image work is parallelised (currently it is not — images are
    processed in a serial loop), adopt IACL's `MultiThreadedProcess.runWorkers`
    idiom rather than hand-rolling threads. If it is not parallelised, do not add
@@ -341,10 +373,14 @@ them. Two things follow:
 1. **G1 — Decision (Q5): join now.** AnaMorf adopts Java 21 + `pom-scijava:45.1.0`
    + TrackMate 8.0.0 in lockstep with the siblings, rather than trailing on the
    old IACL 1.0.32. This is folded into Phase A4/A5.
-2. **G2 — namespace rename (still open).** IACL Decision 7 proposes renaming the
-   package root `net.calm` → `io.github.djpbarry` across the whole suite. This was
-   *not* part of the resolved Q5 answer; confirm with the maintainer before
-   Phase E whether AnaMorf participates, and if so do it in lockstep, not solo.
+2. **G2 — namespace rename (still open, now includes TWOMBLI).** IACL Decision 7
+   proposes renaming the package root `net.calm` → `io.github.djpbarry` across the
+   whole suite. This was *not* part of the resolved Q5 answer. Because TWOMBLI
+   imports `net.calm.anamorf.*` directly, this rename **must include TWOMBLI** as a
+   lockstep party (and is a breaking change for its `com.github.djpbarry:Anamorf`
+   coordinate). Confirm with the maintainer before Phase E whether AnaMorf
+   participates, and if so do the rename across AnaMorf + TWOMBLI + the siblings
+   together, not solo.
 
 ## 4. Sequencing rationale
 
@@ -418,4 +454,9 @@ Recorded so the same mistakes are not repeated:
   the UI, but true until then).
 - **Do not remove or regress the `Ext.*` macro functions** — they are the
   scriptable entry point and must be preserved.
+- **Do not break TWOMBLI.** Do not change `Batch_Analyser`'s public constructor /
+  `run(String)` / static `getProps()`, the `DefaultParams` label strings, the
+  `results.csv` + `*_Output` directory contract, or the repo name behind the
+  `com.github.djpbarry:Anamorf` coordinate without coordinating with
+  [TWOMBLI](https://github.com/FrancisCrickInstitute/TWOMBLI).
 - **Do not assume `Main` accepts arguments** (it is a scratchpad, removed in D1).

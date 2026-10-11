@@ -84,6 +84,52 @@ the `pom.xml` `<version>` element.
 
 ---
 
+## 2026-10-11 — Downstream consumer identified: TWOMBLI (public API freeze)
+
+Confirmed that AnaMorf is consumed as a library by
+[TWOMBLI](https://github.com/FrancisCrickInstitute/TWOMBLI), which pins it at
+`com.github.djpbarry:Anamorf:d610176007` and calls it **directly from Java** (not
+via the macro layer). This converts several previously "internal" details into an
+external contract and changes the plan's risk profile.
+
+What TWOMBLI relies on (frozen):
+
+- `net.calm.anamorf.Batch_Analyser` — constructor `(boolean, File, Properties)`,
+  `run(String)`, and the **static** `getProps()`, which TWOMBLI mutates via
+  `Batch_Analyser.getProps().setProperty(...)` between successive `run(null)`
+  calls (one per curvature window).
+- `net.calm.anamorf.params.DefaultParams` — no-arg constructor and every
+  `public static final String` label, whose *string values* are the keys in the
+  `AnamorfProperties.xml` TWOMBLI ships and loads with `loadFromXML`.
+- The output contract: exactly one `*_Output` directory containing `results.csv`,
+  plus `*_Output_(n)` directories (one per curvature-window run), from
+  `GenUtils.openResultsDirectory`.
+- The JitPack coordinate `com.github.djpbarry:Anamorf`, derived from the **GitHub
+  repo name**, and the pinned commit `d610176007`.
+
+Plan consequences recorded in `DEVELOPMENT_PLAN.md` §1.5 and `AGENTS.md`:
+
+1. Phase E1 ("de-static `props`") must keep `getProps()` static or be done in
+   lockstep with TWOMBLI.
+2. The G2 package-root rename (`net.calm` → `io.github.djpbarry`) must include
+   TWOMBLI.
+3. No ADAPT-style output restructure without a TWOMBLI-compatible shim.
+4. The Decision-4 output-folder rename is still safe (TWOMBLI matches the `Output`
+   suffix, not the version prefix) and is actually a fix — `getVersionFromPom`
+   returns an error string when the JitPack-built jar is run from a working
+   directory with no `pom.xml`.
+
+### Lesson (new)
+
+"Not referenced inside this repo" is **not** the test for a plugin's public
+surface. AnaMorf's `Batch_Analyser`/`DefaultParams` are imported by an external
+project, so their signatures, label strings, and output directory layout are a
+contract even though nothing in AnaMorf itself declares them as such. **Rule:**
+before any "internal" rename, de-static, or output restructure, check downstream
+consumers (TWOMBLI) — not just the repo's own call sites.
+
+---
+
 ## Lessons learned (mistakes to avoid)
 
 Carried forward from the sibling logs and re-stated only as they apply to AnaMorf.
