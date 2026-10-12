@@ -26,7 +26,7 @@ dated narrative plus the "what not to do again" notes.
 
 ---
 
-## 2026-10-12 — Phase A: build & toolchain (A1–A3, A5)
+## 2026-10-12 — Phase A: build & toolchain (A1–A3, A5, A7)
 
 Started executing `DEVELOPMENT_PLAN.md` Phase A (build, toolchain, CI).
 
@@ -44,9 +44,12 @@ Started executing `DEVELOPMENT_PLAN.md` Phase A (build, toolchain, CI).
 - **A5 complete.** Modernised CI (`.github/workflows/maven.yml`): JDK 21
   (`temurin`), `./mvnw verify`, and an `actions/cache` for the Maven repository.
   Actions bumped to `checkout@v4` / `setup-java@v4` / `cache@v4`.
+- **A7 complete.** Fixed the malformed `scm` URL (`github.com/github.com/...` →
+  `github.com/djpbarry/AnaMorf`) and replaced the `ciManagement` block (`None`)
+  with GitHub Actions in `pom.xml`.
 
-No new lessons: A1–A3 and A5 were mechanical. A1 was already justified by the
-malformed `build.xml` and its machine-specific Perl hook (see the 2026-10-11
+No new lessons: A1–A3, A5 and A7 were mechanical. A1 was already justified by
+the malformed `build.xml` and its machine-specific Perl hook (see the 2026-10-11
 review and L4/L6).
 
 ---

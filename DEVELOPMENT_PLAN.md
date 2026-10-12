@@ -1,9 +1,9 @@
 # AnaMorf Modernisation & IAClassLibrary Compatibility Plan
 
-Status: **Phase A in progress.** A1–A3 and A5 complete (legacy build removed,
-Maven wrapper added, .gitignore rewritten, CI modernised); A7 next. The
-maintainer decisions that gate execution are resolved (2026-10-11) and recorded
-in section 5.
+Status: **Phase A in progress.** A1–A3, A5 and A7 complete (legacy build removed,
+Maven wrapper added, .gitignore rewritten, CI modernised, POM metadata fixed);
+A4 next. The maintainer decisions that gate execution are resolved (2026-10-11)
+and recorded in section 5.
 
 Scope: bring AnaMorf back into compatibility with the current IAClassLibrary and
 modernise the project on the same terms, and in the same style, as
@@ -239,7 +239,8 @@ phase is independently shippable.
    `build` and `test` once Phase C lands. **Done 2026-10-12.**
 6. **A6** Pin the IACL dependency to a **tag** (`v2.0.23`) rather than the
    12-character commit `8e10706f5e`. Keep JitPack; IACL is published there.
-7. **A7** Fix the `scm` URL typo and the `ciManagement` block while in `pom.xml`.
+7. ✅ **A7** Fix the `scm` URL typo and the `ciManagement` block while in `pom.xml`.
+   **Done 2026-10-12.**
 
 **Do A4 and A6 last within Phase A, and expect a compile break** — that break is
 Phase B's input.
