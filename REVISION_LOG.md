@@ -87,6 +87,10 @@ Re-planned Phase B after discovering the build compiles green (no compile break)
   "AnaMorf v2.027"), not IACL's `Revision.getVersionFromPom`; `javap` confirms
   IACL 2.0.23 has no `Revision.Revision` class.
 - **Re-sequenced** to B6 (characterisation) first, then B2, B4, B5, B3, B7.
+- **B2 approach:** migrate `OnlyExt` → `FileExtensionFilter` with symmetric
+  `TIF`/`TIFF` + `JPG`/`JPEG` aliasing. Deferred: Bio-Formats-based discovery,
+  with a headless caveat (readers are probably headless-safe inside an ImageJ/FIJI
+  plugin, but standalone headless scripts have failed; TWOMBLI runs headless).
 - **Test data:** 11 legacy regression PNGs committed to
   `src/test/resources/images/`; a JDK 11 (Temurin) install is underway for the
   B6 "before" baseline.

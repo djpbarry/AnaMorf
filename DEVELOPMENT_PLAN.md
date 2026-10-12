@@ -278,8 +278,20 @@ Ordered by risk-to-correctness:
 2. **B2 — `OnlyExt` → `IO.File.FileExtensionFilter` (2.1).** Mechanical but
    highest-risk (critical path). `FileExtensionFilter` takes `String[]` (not a
    single `String`) and uses `FilenameUtils.isExtension`, so it does **not** carry
-   `OnlyExt`'s `TIF`/`TIFF` and `JPG`/`JPEG` special-casing. Verify against a dir
-   containing `.tiff`/`.jpeg`.
+   `OnlyExt`'s `TIF`/`TIFF` and `JPG`/`JPEG` special-casing. **Decision
+   (2026-10-12):** preserve behaviour via symmetric aliasing — `TIF`/`TIFF` →
+   `{"tif","tiff"}`, `JPG`/`JPEG` → `{"jpg","jpeg"}`. Verify against a dir with
+   `.tiff`/`.jpeg`.
+
+   **Deferred — Bio-Formats-based discovery.** Instead of a hardcoded extension
+   list, accept anything Bio-Formats can read (`ImageReader.isThisType`) and open
+   via `BF.openImagePlus`/FIJI registration. More robust, but a behaviour change
+   touching TWOMBLI's frozen `IMAGE_FORMAT_LABEL` key and "which files get
+   processed"; also needs bio-formats as a direct dependency. **Headless caveat:**
+   Bio-Formats readers are probably headless-safe when called from inside an
+   ImageJ/FIJI plugin, but standalone headless scripts have been observed to fail;
+   TWOMBLI drives AnaMorf headlessly from Java, so verify before adopting. Track
+   as a separate step, coordinated with TWOMBLI.
 3. **B4 — `ResultSummariser` off `DataStatistics` → `DescriptiveStatistics`
    (2.2).** Rewrite `printStats`/`removeZeros` to mean + std-dev only (Decision 7;
    confidence interval stays disabled), together with the Tier 3.2 dead-code
