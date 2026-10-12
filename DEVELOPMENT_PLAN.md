@@ -1,9 +1,11 @@
 # AnaMorf Modernisation & IAClassLibrary Compatibility Plan
 
-Status: **Phase A steps complete; Phase B next.** Build now targets Java 21 /
-`pom-scijava:45.1.0` against IACL `v2.0.23`; compilation breaks as expected until
-Phase B lands. The maintainer decisions that gate execution are resolved
-(2026-10-11) and recorded in section 5.
+Status: **Phase A complete; build verified green.** `./mvnw verify` succeeds on
+JDK 21 against IACL `v2.0.23` — the predicted compile break did not occur (the
+IACL API surface AnaMorf uses is source-compatible). Phase B becomes deprecation
+cleanup + numerical characterisation rather than a required fix. The maintainer
+decisions that gate execution are resolved (2026-10-11) and recorded in
+section 5.
 
 Scope: bring AnaMorf back into compatibility with the current IAClassLibrary and
 modernise the project on the same terms, and in the same style, as
@@ -243,10 +245,11 @@ phase is independently shippable.
 7. ✅ **A7** Fix the `scm` URL typo and the `ciManagement` block while in `pom.xml`.
    **Done 2026-10-12.**
 
-**Do A4 and A6 last within Phase A, and expect a compile break** — that break is
-Phase B's input.
+**Do A4 and A6 last within Phase A.** *(2026-10-12 note: after A4+A6 the build
+compiled green — the predicted break did not materialise; see REVISION_LOG.)*
 
 **Exit criteria:** `./mvnw verify` green on JDK 21 against IACL 2.0.23; CI green.
+*(Met locally 2026-10-12; CI still to run.)*
 
 ### Phase B — IACL 2.x API compatibility
 

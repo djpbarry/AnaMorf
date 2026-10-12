@@ -55,9 +55,24 @@ Started executing `DEVELOPMENT_PLAN.md` Phase A (build, toolchain, CI).
   instead of the 12-character commit `8e10706f5e`; verified the tag exists on
   `djpbarry/IAClassLibrary`.
 
-No new lessons: A1–A6 were mechanical. A1 was already justified by the malformed
-`build.xml` and its machine-specific Perl hook (see the 2026-10-11 review and
-L4/L6).
+**Verification.** `./mvnw verify` (JDK 21, IACL `v2.0.23`) completed with BUILD
+SUCCESS in ~2 min. The predicted compile break did not occur: the IACL API
+surface AnaMorf uses is source-compatible with 2.x. Only warnings surfaced —
+deprecation (`OnlyExt`, `SkeletonProcessor`, `FractalEstimator`,
+`DataStatistics`, `Revision.getVersionFromPom`), unchecked/raw `ArrayList` usage,
+and an annotation-processor `RELEASE_8` vs `-source 21` notice.
+
+### Lesson (new) — the "compile break" was a toolchain mismatch, not an API break
+
+The plan assumed AnaMorf could not compile against IACL 2.x. Once AnaMorf is on
+the same toolchain (Java 21 + `pom-scijava:45.1.0`), it compiles cleanly, because
+the IACL 2.x break preserved the package root and every API AnaMorf calls (the
+deprecated symbols are `@Deprecated`, not removed). **Rule:** "does not compile"
+needs a stated toolchain; an API-surface survival check (§1.1) is a stronger
+predictor than a version-mismatch heuristic.
+
+(A1 itself was mechanical and already justified by the malformed `build.xml` and
+its machine-specific Perl hook; see the 2026-10-11 review and L4/L6.)
 
 ---
 
