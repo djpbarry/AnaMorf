@@ -249,7 +249,7 @@ phase is independently shippable.
 compiled green — the predicted break did not materialise; see REVISION_LOG.)*
 
 **Exit criteria:** `./mvnw verify` green on JDK 21 against IACL 2.0.23; CI green.
-*(Met locally 2026-10-12; CI still to run.)*
+*(Met locally and on CI 2026-10-12.)*
 
 ### Phase B — IACL 2.x API compatibility
 

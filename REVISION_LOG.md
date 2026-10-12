@@ -60,7 +60,8 @@ SUCCESS in ~2 min. The predicted compile break did not occur: the IACL API
 surface AnaMorf uses is source-compatible with 2.x. Only warnings surfaced —
 deprecation (`OnlyExt`, `SkeletonProcessor`, `FractalEstimator`,
 `DataStatistics`, `Revision.getVersionFromPom`), unchecked/raw `ArrayList` usage,
-and an annotation-processor `RELEASE_8` vs `-source 21` notice.
+and an annotation-processor `RELEASE_8` vs `-source 21` notice. CI (run #11)
+completed green on `development` too, fully meeting Phase A's exit criteria.
 
 ### Lesson (new) — the "compile break" was a toolchain mismatch, not an API break
 
