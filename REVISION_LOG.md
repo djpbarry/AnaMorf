@@ -26,7 +26,7 @@ dated narrative plus the "what not to do again" notes.
 
 ---
 
-## 2026-10-12 — Phase A: build & toolchain (A1, A2)
+## 2026-10-12 — Phase A: build & toolchain (A1–A3)
 
 Started executing `DEVELOPMENT_PLAN.md` Phase A (build, toolchain, CI).
 
@@ -38,8 +38,11 @@ Started executing `DEVELOPMENT_PLAN.md` Phase A (build, toolchain, CI).
   `only-script` distribution type (self-bootstrapping, no committed
   `maven-wrapper.jar`). Smoke-tested: `mvnw.cmd -version` on JDK 21 resolves and
   runs Maven 3.9.16.
+- **A3 complete.** Rewrote `.gitignore` — kept the legacy NetBeans paths for
+  existing clones, and added `/target/`, `.idea/`, `*.iml`, `.junie/`, and OS
+  files.
 
-No new lessons: A1/A2 were mechanical. A1 was already justified by the malformed
+No new lessons: A1–A3 were mechanical. A1 was already justified by the malformed
 `build.xml` and its machine-specific Perl hook (see the 2026-10-11 review and
 L4/L6).
 
