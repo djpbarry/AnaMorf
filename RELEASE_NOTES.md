@@ -46,8 +46,9 @@ analysis pipeline and ImageJ macro interface are unchanged in behaviour.
   (`Batch_Analyser` and `DefaultParams`) and the `results.csv` / `*_Output`
   directory layout are kept unchanged, so TWOMBLI continues to work without
   modification.
-- **Build is Maven-only** (the legacy, broken NetBeans/Ant build is removed) and
-  will use a pinned Maven wrapper.
+- **Build is Maven-only.** The legacy, broken NetBeans/Ant build (`build.xml` and
+  `nbproject/`) has been removed from the tree; a pinned Maven wrapper is being
+  added.
 
 ### Notes for upgraders
 

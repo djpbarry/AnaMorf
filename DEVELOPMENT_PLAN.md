@@ -1,7 +1,8 @@
 # AnaMorf Modernisation & IAClassLibrary Compatibility Plan
 
-Status: **plan; no code changes made yet.** The maintainer decisions that gate
-execution are resolved (2026-10-11) and recorded in section 5.
+Status: **Phase A in progress.** A1 complete (legacy NetBeans/Ant build removed);
+A2 next. The maintainer decisions that gate execution are resolved (2026-10-11)
+and recorded in section 5.
 
 Scope: bring AnaMorf back into compatibility with the current IAClassLibrary and
 modernise the project on the same terms, and in the same style, as
@@ -222,8 +223,8 @@ phase is independently shippable.
 
 ### Phase A — Build, toolchain, and CI (unblocks everything)
 
-1. **A1** Delete `build.xml` and `nbproject/` (IACL Decision 6, which deleted
-   exactly these from IACL).
+1. ✅ **A1** Delete `build.xml` and `nbproject/` (IACL Decision 6, which deleted
+   exactly these from IACL). **Done 2026-10-12.**
 2. **A2** Add a Maven wrapper (`mvnw`, `mvnw.cmd`, `.mvn/wrapper/`) pinned to a
    Maven 3.9.x, and use `./mvnw` everywhere.
 3. **A3** Rewrite `.gitignore`: keep the legacy NetBeans paths for compatibility
