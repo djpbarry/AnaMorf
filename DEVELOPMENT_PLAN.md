@@ -1,8 +1,9 @@
 # AnaMorf Modernisation & IAClassLibrary Compatibility Plan
 
-Status: **Phase A in progress.** A1–A3, A5, A7 and A4 complete (build now on
-Java 21 / `pom-scijava:45.1.0`); A6 next. The maintainer decisions that gate
-execution are resolved (2026-10-11) and recorded in section 5.
+Status: **Phase A steps complete; Phase B next.** Build now targets Java 21 /
+`pom-scijava:45.1.0` against IACL `v2.0.23`; compilation breaks as expected until
+Phase B lands. The maintainer decisions that gate execution are resolved
+(2026-10-11) and recorded in section 5.
 
 Scope: bring AnaMorf back into compatibility with the current IAClassLibrary and
 modernise the project on the same terms, and in the same style, as
@@ -236,8 +237,9 @@ phase is independently shippable.
    `pom-scijava:45.1.0` drops the implicit one. **Done 2026-10-12.**
 5. ✅ **A5** Bump CI to JDK 21, use `./mvnw verify`, add the Maven cache, and split
    `build` and `test` once Phase C lands. **Done 2026-10-12.**
-6. **A6** Pin the IACL dependency to a **tag** (`v2.0.23`) rather than the
+6. ✅ **A6** Pin the IACL dependency to a **tag** (`v2.0.23`) rather than the
    12-character commit `8e10706f5e`. Keep JitPack; IACL is published there.
+   **Done 2026-10-12.**
 7. ✅ **A7** Fix the `scm` URL typo and the `ciManagement` block while in `pom.xml`.
    **Done 2026-10-12.**
 

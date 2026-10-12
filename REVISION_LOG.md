@@ -26,7 +26,7 @@ dated narrative plus the "what not to do again" notes.
 
 ---
 
-## 2026-10-12 — Phase A: build & toolchain (A1–A3, A5, A7, A4)
+## 2026-10-12 — Phase A complete: build & toolchain (A1–A7)
 
 Started executing `DEVELOPMENT_PLAN.md` Phase A (build, toolchain, CI).
 
@@ -51,10 +51,13 @@ Started executing `DEVELOPMENT_PLAN.md` Phase A (build, toolchain, CI).
   `scijava.jvm.version=21`, and added an explicit `central` repository (the
   `45.1.0` parent drops the implicit one). Compilation is expected to break from
   here; that break is Phase B's input.
+- **A6 complete.** Pinned the IACL dependency to the `v2.0.23` tag (JitPack)
+  instead of the 12-character commit `8e10706f5e`; verified the tag exists on
+  `djpbarry/IAClassLibrary`.
 
-No new lessons: A1–A3, A5, A7 and A4 were mechanical. A1 was already justified
-by the malformed `build.xml` and its machine-specific Perl hook (see the
-2026-10-11 review and L4/L6).
+No new lessons: A1–A6 were mechanical. A1 was already justified by the malformed
+`build.xml` and its machine-specific Perl hook (see the 2026-10-11 review and
+L4/L6).
 
 ---
 
