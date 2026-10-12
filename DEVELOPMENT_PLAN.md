@@ -1,9 +1,8 @@
 # AnaMorf Modernisation & IAClassLibrary Compatibility Plan
 
-Status: **Phase A in progress.** A1–A3, A5 and A7 complete (legacy build removed,
-Maven wrapper added, .gitignore rewritten, CI modernised, POM metadata fixed);
-A4 next. The maintainer decisions that gate execution are resolved (2026-10-11)
-and recorded in section 5.
+Status: **Phase A in progress.** A1–A3, A5, A7 and A4 complete (build now on
+Java 21 / `pom-scijava:45.1.0`); A6 next. The maintainer decisions that gate
+execution are resolved (2026-10-11) and recorded in section 5.
 
 Scope: bring AnaMorf back into compatibility with the current IAClassLibrary and
 modernise the project on the same terms, and in the same style, as
@@ -232,9 +231,9 @@ phase is independently shippable.
 3. ✅ **A3** Rewrite `.gitignore`: keep the legacy NetBeans paths for compatibility
    with existing clones, add `/target/`, `.idea/`, `*.iml`, `.junie/`, OS files.
    **Done 2026-10-12.**
-4. **A4** Bump the parent to `pom-scijava:45.1.0` and set
+4. ✅ **A4** Bump the parent to `pom-scijava:45.1.0` and set
    `scijava.jvm.version=21`. **Also add an explicit `central` repository** —
-   `pom-scijava:45.1.0` drops the implicit one.
+   `pom-scijava:45.1.0` drops the implicit one. **Done 2026-10-12.**
 5. ✅ **A5** Bump CI to JDK 21, use `./mvnw verify`, add the Maven cache, and split
    `build` and `test` once Phase C lands. **Done 2026-10-12.**
 6. **A6** Pin the IACL dependency to a **tag** (`v2.0.23`) rather than the

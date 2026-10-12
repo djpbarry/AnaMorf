@@ -26,7 +26,7 @@ dated narrative plus the "what not to do again" notes.
 
 ---
 
-## 2026-10-12 — Phase A: build & toolchain (A1–A3, A5, A7)
+## 2026-10-12 — Phase A: build & toolchain (A1–A3, A5, A7, A4)
 
 Started executing `DEVELOPMENT_PLAN.md` Phase A (build, toolchain, CI).
 
@@ -47,10 +47,14 @@ Started executing `DEVELOPMENT_PLAN.md` Phase A (build, toolchain, CI).
 - **A7 complete.** Fixed the malformed `scm` URL (`github.com/github.com/...` →
   `github.com/djpbarry/AnaMorf`) and replaced the `ciManagement` block (`None`)
   with GitHub Actions in `pom.xml`.
+- **A4 complete.** Bumped the parent to `pom-scijava:45.1.0`, set
+  `scijava.jvm.version=21`, and added an explicit `central` repository (the
+  `45.1.0` parent drops the implicit one). Compilation is expected to break from
+  here; that break is Phase B's input.
 
-No new lessons: A1–A3, A5 and A7 were mechanical. A1 was already justified by
-the malformed `build.xml` and its machine-specific Perl hook (see the 2026-10-11
-review and L4/L6).
+No new lessons: A1–A3, A5, A7 and A4 were mechanical. A1 was already justified
+by the malformed `build.xml` and its machine-specific Perl hook (see the
+2026-10-11 review and L4/L6).
 
 ---
 

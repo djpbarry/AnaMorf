@@ -18,7 +18,7 @@ analysis pipeline and ImageJ macro interface are unchanged in behaviour.
 ### Requirements / upgrade notes
 
 - **Java 21** — Fiji must run on a Java 21 runtime.
-- **TrackMate 8** is resolved transitively via the updated `IAClassLibrary`.
+- **TrackMate 8** is resolved transitively via the updated parent (`pom-scijava:45.1.0`).
 - **`IAClassLibrary` is upgraded** from the legacy `1.0.32` to the modernised
   `2.x` line. This is the substance of the compatibility work; the package name
   (`net.calm.iaclasslibrary`) is unchanged, but the classes `OnlyExt`,
