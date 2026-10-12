@@ -270,9 +270,10 @@ Ordered by risk-to-correctness:
 1. **B6 — Characterise the dependency bump (do first).**
    `FuzzyThresholder.threshold()` now scales the auto-threshold by
    `binSize`/`histMin` (see 1.3). Diff `results.csv` on a fixed image set:
-   "before" (IACL 1.0.32) vs "after" (2.0.23). **Open:** no regression images in
-   the repo, and the "before" state needs the pre-A6 commit on the old toolchain
-   (parent 35.0.0 + IACL `8e10706f5e`, Java 11). Possible shortcut:
+   "before" (IACL 1.0.32) vs "after" (2.0.23). Regression images committed at
+   `src/test/resources/images/` (11 PNGs); the "before" state still needs the
+   pre-A6 commit on the old toolchain (parent 35.0.0 + IACL `8e10706f5e`,
+   JDK 11 — being installed). Possible shortcut:
    `preProcessImage` converts to a `ShortProcessor` with `binSize=1`, so the
    scaling may be a no-op — verify against the 2.0.23 source.
 2. **B2 — `OnlyExt` → `IO.File.FileExtensionFilter` (2.1).** Mechanical but

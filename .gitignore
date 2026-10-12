@@ -5,6 +5,7 @@
 .idea/
 *.iml
 .junie/
+/AnaMorf_Test_Data_and_Documentation/
 .DS_Store
 Thumbs.db
 Desktop.ini

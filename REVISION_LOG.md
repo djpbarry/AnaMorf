@@ -87,6 +87,9 @@ Re-planned Phase B after discovering the build compiles green (no compile break)
   "AnaMorf v2.027"), not IACL's `Revision.getVersionFromPom`; `javap` confirms
   IACL 2.0.23 has no `Revision.Revision` class.
 - **Re-sequenced** to B6 (characterisation) first, then B2, B4, B5, B3, B7.
+- **Test data:** 11 legacy regression PNGs committed to
+  `src/test/resources/images/`; a JDK 11 (Temurin) install is underway for the
+  B6 "before" baseline.
 
 **Decision (version):** bump the project from `3.1.0` to `4.0.0-SNAPSHOT` given
 the significant changes ahead; cut `v4.0.0` as the next release.
