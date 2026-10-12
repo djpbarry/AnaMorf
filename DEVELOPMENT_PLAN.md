@@ -1,8 +1,8 @@
 # AnaMorf Modernisation & IAClassLibrary Compatibility Plan
 
-Status: **Phase A in progress.** A1 complete (legacy NetBeans/Ant build removed);
-A2 next. The maintainer decisions that gate execution are resolved (2026-10-11)
-and recorded in section 5.
+Status: **Phase A in progress.** A1 and A2 complete (legacy build removed, Maven
+wrapper added); A3 next. The maintainer decisions that gate execution are
+resolved (2026-10-11) and recorded in section 5.
 
 Scope: bring AnaMorf back into compatibility with the current IAClassLibrary and
 modernise the project on the same terms, and in the same style, as
@@ -225,8 +225,9 @@ phase is independently shippable.
 
 1. ✅ **A1** Delete `build.xml` and `nbproject/` (IACL Decision 6, which deleted
    exactly these from IACL). **Done 2026-10-12.**
-2. **A2** Add a Maven wrapper (`mvnw`, `mvnw.cmd`, `.mvn/wrapper/`) pinned to a
-   Maven 3.9.x, and use `./mvnw` everywhere.
+2. ✅ **A2** Add a Maven wrapper (`mvnw`, `mvnw.cmd`, `.mvn/wrapper/`) pinned to a
+   Maven 3.9.x, and use `./mvnw` everywhere. **Done 2026-10-12 (Maven 3.9.9,
+   `only-script` distribution type).**
 3. **A3** Rewrite `.gitignore`: keep the legacy NetBeans paths for compatibility
    with existing clones, add `/target/`, `.idea/`, `*.iml`, `.junie/`, OS files.
 4. **A4** Bump the parent to `pom-scijava:45.1.0` and set

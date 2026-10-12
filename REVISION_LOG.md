@@ -26,15 +26,19 @@ dated narrative plus the "what not to do again" notes.
 
 ---
 
-## 2026-10-12 — Phase A begins: legacy build removed (A1)
+## 2026-10-12 — Phase A: build & toolchain (A1, A2)
 
 Started executing `DEVELOPMENT_PLAN.md` Phase A (build, toolchain, CI).
 
 - **A1 complete.** Deleted `build.xml` and `nbproject/` (the malformed legacy
   NetBeans/Ant build), matching IACL Decision 6 and plan Phase A1. Maven is now
   the only build system in the tree.
+- **A2 complete.** Added the Maven wrapper (`mvnw`, `mvnw.cmd`,
+  `.mvn/wrapper/maven-wrapper.properties`), pinned to Maven 3.9.9, using the
+  `only-script` distribution type (self-bootstrapping, no committed
+  `maven-wrapper.jar`).
 
-No new lesson: A1 was mechanical and already justified by the malformed
+No new lessons: A1/A2 were mechanical. A1 was already justified by the malformed
 `build.xml` and its machine-specific Perl hook (see the 2026-10-11 review and
 L4/L6).
 
