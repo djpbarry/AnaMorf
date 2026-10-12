@@ -136,6 +136,23 @@ fallback, not a first choice.
 
 ---
 
+## 2026-10-12 — B3 versioning: resource-filtered version
+
+Implemented the versioning re-scope (Decision 9):
+
+- Bumped `pom.xml` to `4.0.0-SNAPSHOT`.
+- Deleted the stale local `src/main/java/Revision/Revision.java` (hardcoded
+  `VERSION=2, revisionNumber=27` → "AnaMorf v2.027").
+- Added `src/main/resources/anamorf-version.properties`
+  (`version=${project.version}`) with Maven resource filtering enabled.
+- `Batch_Analyser.title` now reads that resource → `"AnaMorf v4.0.0-SNAPSHOT"`.
+
+Chose option (c) resource filtering over (b) manifest version because (b) returns
+null outside a jar, whereas (c) works from the jar and `target/classes`, and it
+keeps `pom.xml` as the single source of truth. Build verified green.
+
+---
+
 ## 2026-10-11 — Modernisation kick-off (planning only)
 
 Completed the initial review of AnaMorf and wrote the modernisation plan

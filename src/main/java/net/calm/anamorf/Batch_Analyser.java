@@ -17,7 +17,6 @@
 package net.calm.anamorf;
 
 import net.calm.anamorf.params.DefaultParams;
-import Revision.Revision;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.Prefs;
@@ -49,8 +48,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -94,7 +93,7 @@ public class Batch_Analyser implements PlugIn {
     private ImageProcessor bwSkelImage;
     private FloatProcessor curveMap;
     private String imageName;
-    public String title = String.format("AnaMorf v%d.%s", Revision.VERSION, new DecimalFormat("000").format(Revision.revisionNumber));
+    public String title = "AnaMorf v" + getVersion();
     ResultsTable resultsTable;
     private File currentDirectory;
     private DescriptiveStatistics wholeImageCurvature;
@@ -866,6 +865,18 @@ public class Batch_Analyser implements PlugIn {
             Boolean.parseBoolean(props.getProperty(DefaultParams.BOX_COUNT_LABEL)),
             Boolean.parseBoolean(props.getProperty(DefaultParams.LAC_LABEL)),
             Boolean.parseBoolean(props.getProperty(DefaultParams.CURVE_LABEL))};
+    }
+
+    private static String getVersion() {
+        Properties versionProps = new Properties();
+        try (InputStream in = Batch_Analyser.class.getResourceAsStream("/anamorf-version.properties")) {
+            if (in != null) {
+                versionProps.load(in);
+            }
+        } catch (IOException e) {
+            GenUtils.logError(e, "Could not read version resource.");
+        }
+        return versionProps.getProperty("version", "unknown");
     }
 
     public static Properties getProps() {

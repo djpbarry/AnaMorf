@@ -1,10 +1,10 @@
 # AnaMorf Modernisation & IAClassLibrary Compatibility Plan
 
-Status: **Phase A complete; Phase B in progress (B6 done).** Build green on
+Status: **Phase A complete; Phase B in progress (B6, B3 done).** Build green on
 JDK 21 / IACL `v2.0.23` (no compile break); B6 characterisation found **no
-numerical drift** between IACL 1.0.32 and 2.0.23. Version will bump to
-`4.0.0-SNAPSHOT`. Maintainer decisions resolved (2026-10-11, 2026-10-12) and
-recorded in section 5.
+numerical drift** between IACL 1.0.32 and 2.0.23. Version is now
+`4.0.0-SNAPSHOT` (B3). Maintainer decisions resolved (2026-10-11, 2026-10-12)
+and recorded in section 5.
 
 Scope: bring AnaMorf back into compatibility with the current IAClassLibrary and
 modernise the project on the same terms, and in the same style, as
@@ -298,12 +298,13 @@ Ordered by risk-to-correctness:
    cleanup.
 4. **B5 — `GenVariables.ISO` → `StandardCharsets.ISO_8859_1` (2.6).** Trivial,
    zero risk.
-5. **B3 — Versioning (re-scoped).** Replace the stale local `Revision` with an
-   accurate source. **Decision 9 (2026-10-12): bump to `4.0.0-SNAPSHOT`.** Open
-   mechanism: (a) fix the local constants, (b) read
-   `Package.getImplementationVersion()`, or (c) Maven resource-filter the
-   `pom.xml` version. The output-directory name changes as a result, but TWOMBLI
-   matches the `Output` suffix (not the version prefix), so it is safe.
+5. ✅ **B3 — Versioning (re-scoped).** **Done 2026-10-12.** Replaced the stale
+   local `Revision` with Maven resource filtering (option c): deleted
+   `src/main/java/Revision/Revision.java`, added
+   `src/main/resources/anamorf-version.properties` (`version=${project.version}`,
+   filtered), and `Batch_Analyser.title` now reads it → `AnaMorf v4.0.0-SNAPSHOT`.
+   The output-directory name changes accordingly, but TWOMBLI matches the
+   `Output` suffix (not the version prefix), so it is safe.
 6. **B7 — Deprecated-symbol policy.** `SkeletonProcessor` and `FractalEstimator`
    have no drop-in replacement. **Decision 3 (Q1):** accept the risk — keep them on
    the critical path, and record a plan to find alternatives (vendor or migrate)

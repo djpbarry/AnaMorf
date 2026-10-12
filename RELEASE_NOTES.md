@@ -31,11 +31,11 @@ the dependency and toolchain break.
 ### Behaviour-changing / breaking changes
 
 - **Output directory name changes.** The results folder was previously named
-  `AnaMorf v<version>` where the version came from `Revision.getVersionFromPom`
-  (which read a nearby `pom.xml`). It now uses the version embedded in the JAR
-  manifest (`Revision.getVersion()`), so the folder name may differ slightly and
-  is no longer dependent on the process working directory. Scripts keyed to the
-  exact folder name should be updated.
+  `AnaMorf v<version>` where the version came from a hardcoded local `Revision`
+  class (stale "v2.027"). It now uses the project version injected via Maven
+  resource filtering, so the folder is `AnaMorf v4.0.0-SNAPSHOT_Output` during
+  development (`AnaMorf v4.0.0_Output` on release) and no longer depends on a
+  hardcoded value. Scripts keyed to the exact folder name should be updated.
 
 ### Improvements
 
