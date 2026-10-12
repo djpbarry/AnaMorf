@@ -77,6 +77,29 @@ its machine-specific Perl hook; see the 2026-10-11 review and L4/L6.)
 
 ---
 
+## 2026-10-12 — Phase B replanned; version → 4.0.0-SNAPSHOT
+
+Re-planned Phase B after discovering the build compiles green (no compile break):
+
+- **B1 is moot** — nothing to "fix what breaks"; the tree already compiles.
+- **B3's premise was wrong** — `Batch_Analyser` uses a local hardcoded
+  `Revision/Revision.java` (`VERSION=2, revisionNumber=27` → stale
+  "AnaMorf v2.027"), not IACL's `Revision.getVersionFromPom`; `javap` confirms
+  IACL 2.0.23 has no `Revision.Revision` class.
+- **Re-sequenced** to B6 (characterisation) first, then B2, B4, B5, B3, B7.
+
+**Decision (version):** bump the project from `3.1.0` to `4.0.0-SNAPSHOT` given
+the significant changes ahead; cut `v4.0.0` as the next release.
+
+### Lesson (new) — verify "what actually calls what" before planning a migration
+
+The plan's B3 (and Decision 4) assumed `Revision.getVersionFromPom` was on the
+critical path; grep + `javap` showed AnaMorf never calls it. **Rule:** confirm the
+real call sites and the real dependency's API surface before writing a migration
+step — doc prose can drift from code.
+
+---
+
 ## 2026-10-11 — Modernisation kick-off (planning only)
 
 Completed the initial review of AnaMorf and wrote the modernisation plan

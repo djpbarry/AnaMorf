@@ -15,6 +15,9 @@ AnaMorf is being modernised: the codebase will target **Java 21**, the
 project is being brought onto a maintainable, testable footing. The plugin's
 analysis pipeline and ImageJ macro interface are unchanged in behaviour.
 
+The next release is a **major version bump to 4.0.0** (from 3.1.0), reflecting
+the dependency and toolchain break.
+
 ### Requirements / upgrade notes
 
 - **Java 21** — Fiji must run on a Java 21 runtime.

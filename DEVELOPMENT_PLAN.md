@@ -1,11 +1,10 @@
 # AnaMorf Modernisation & IAClassLibrary Compatibility Plan
 
-Status: **Phase A complete; build verified green.** `./mvnw verify` succeeds on
-JDK 21 against IACL `v2.0.23` — the predicted compile break did not occur (the
-IACL API surface AnaMorf uses is source-compatible). Phase B becomes deprecation
-cleanup + numerical characterisation rather than a required fix. The maintainer
-decisions that gate execution are resolved (2026-10-11) and recorded in
-section 5.
+Status: **Phase A complete; Phase B replanned.** `./mvnw verify` succeeds on
+JDK 21 against IACL `v2.0.23` — the predicted compile break did not occur. Phase B
+is re-scoped (below) to deprecation cleanup + numerical characterisation, and the
+project version will bump to `4.0.0-SNAPSHOT`. The maintainer decisions that gate
+execution are resolved (2026-10-11, 2026-10-12) and recorded in section 5.
 
 Scope: bring AnaMorf back into compatibility with the current IAClassLibrary and
 modernise the project on the same terms, and in the same style, as
@@ -251,42 +250,56 @@ compiled green — the predicted break did not materialise; see REVISION_LOG.)*
 **Exit criteria:** `./mvnw verify` green on JDK 21 against IACL 2.0.23; CI green.
 *(Met locally and on CI 2026-10-12.)*
 
-### Phase B — IACL 2.x API compatibility
+### Phase B — IACL 2.x API compatibility (re-scoped 2026-10-12)
 
-1. **B1** Relax the Java level only as far as the tree actually requires. Compile,
-   fix what breaks, keep each fix mechanical.
-2. **B2** Migrate `OnlyExt` → `IO.File.FileExtensionFilter` (2.1). This is the
-   highest-risk single line in the migration because it is on the critical path:
-   `FileExtensionFilter` uses `FilenameUtils.isExtension` and does **not** carry
-   `OnlyExt`'s `TIF`/`TIFF` and `JPG`/`JPEG` special-casing. Verify against a
-   directory containing `.tiff` and `.jpeg` files before and after.
-3. **B3** Switch `Revision.getVersionFromPom` to `Revision.getVersion()` (2.3).
-   **Decision (Q2):** accept the output-directory rename (`AnaMorf v3.1.0` →
-   `AnaMorf v<manifest version>`) and record it in `REVISION_LOG.md` as a
-   user-visible change. The old behaviour is unreliable anyway because it depends
-   on `pom.xml` being next to the working directory.
-4. **B4** Migrate `ResultSummariser` off `IAClasses.DataStatistics` to
-   `DescriptiveStatistics` (2.2). Do this **together with** the Tier 3 dead-code
-   cleanup (3.2), since the class is half disabled and rewriting it is cheaper
-   than un-disabling it. **Decision (Q3):** keep the current mean + std-dev-only
-   behaviour for now; the confidence-interval row and per-column lookups stay
-   disabled and are revisited after B6 produces a known-good baseline.
-5. **B5** Replace `GenVariables.ISO` with `StandardCharsets.ISO_8859_1`, or drop
-   it in favour of the default; make it a deliberate choice, not a silent one.
-6. **B6** **Characterise the pre-processing path.** Run a fixed image set through
-   the plug-in before and after the bump and diff `results.csv`. `FuzzyThresholder`
-   changed (see 1.3) and the parent bump can move ImageJ. Without this, any
-   numerical drift is invisible.
-7. **B7** Deprecated-symbol policy for `SkeletonProcessor` and `FractalEstimator`.
-   **Decision (Q1):** accept the risk for now — keep using them on the critical
-   path — and record a plan to find alternative implementations (vendor the logic
-   or migrate to a successor) if IACL does not un-deprecate them before removal.
-   The mechanical migrations (`OnlyExt` → `FileExtensionFilter`, `DataStatistics`
-   → `DescriptiveStatistics`) still happen in B2/B4 regardless.
+The predicted compile break did not occur (see §1.1 and REVISION_LOG): on Java 21
+/ `pom-scijava:45.1.0` AnaMorf compiles cleanly against IACL 2.0.23. **B1 is
+therefore moot**, and the remaining work is deprecation cleanup + numerical
+characterisation.
+
+Confirmed deprecated/redundant IACL symbols actually in use: `OnlyExt`
+(`Batch_Analyser:233`), `DataStatistics` (`ResultSummariser:116`),
+`GenVariables.ISO` (`Batch_Analyser:208`), `SkeletonProcessor` (`HyphalAnalyser`,
+`SkeletonPruner`), `FractalEstimator` (`Batch_Analyser:701,704`).
+`Revision.getVersionFromPom` is **not** called — AnaMorf uses a local
+`Revision/Revision.java` (hardcoded `VERSION=2, revisionNumber=27` → a stale
+`AnaMorf v2.027`); IACL 2.0.23 has no `Revision.Revision` class.
+
+Ordered by risk-to-correctness:
+
+1. **B6 — Characterise the dependency bump (do first).**
+   `FuzzyThresholder.threshold()` now scales the auto-threshold by
+   `binSize`/`histMin` (see 1.3). Diff `results.csv` on a fixed image set:
+   "before" (IACL 1.0.32) vs "after" (2.0.23). **Open:** no regression images in
+   the repo, and the "before" state needs the pre-A6 commit on the old toolchain
+   (parent 35.0.0 + IACL `8e10706f5e`, Java 11). Possible shortcut:
+   `preProcessImage` converts to a `ShortProcessor` with `binSize=1`, so the
+   scaling may be a no-op — verify against the 2.0.23 source.
+2. **B2 — `OnlyExt` → `IO.File.FileExtensionFilter` (2.1).** Mechanical but
+   highest-risk (critical path). `FileExtensionFilter` takes `String[]` (not a
+   single `String`) and uses `FilenameUtils.isExtension`, so it does **not** carry
+   `OnlyExt`'s `TIF`/`TIFF` and `JPG`/`JPEG` special-casing. Verify against a dir
+   containing `.tiff`/`.jpeg`.
+3. **B4 — `ResultSummariser` off `DataStatistics` → `DescriptiveStatistics`
+   (2.2).** Rewrite `printStats`/`removeZeros` to mean + std-dev only (Decision 7;
+   confidence interval stays disabled), together with the Tier 3.2 dead-code
+   cleanup.
+4. **B5 — `GenVariables.ISO` → `StandardCharsets.ISO_8859_1` (2.6).** Trivial,
+   zero risk.
+5. **B3 — Versioning (re-scoped).** Replace the stale local `Revision` with an
+   accurate source. **Decision 9 (2026-10-12): bump to `4.0.0-SNAPSHOT`.** Open
+   mechanism: (a) fix the local constants, (b) read
+   `Package.getImplementationVersion()`, or (c) Maven resource-filter the
+   `pom.xml` version. The output-directory name changes as a result, but TWOMBLI
+   matches the `Output` suffix (not the version prefix), so it is safe.
+6. **B7 — Deprecated-symbol policy.** `SkeletonProcessor` and `FractalEstimator`
+   have no drop-in replacement. **Decision 3 (Q1):** accept the risk — keep them on
+   the critical path, and record a plan to find alternatives (vendor or migrate)
+   if IACL removes them. `OnlyExt`/`DataStatistics` still migrate in B2/B4.
 
 **Exit criteria:** compiles and runs against IACL 2.0.23 with no deprecated
-symbols on the critical path or a recorded decision for each remaining one, and
-results verified by B6.
+symbols on the critical path or a recorded decision for each remaining one
+(`SkeletonProcessor`, `FractalEstimator`), and results verified by B6.
 
 ### Phase C — Tests (the biggest maintainability win)
 
@@ -368,8 +381,8 @@ numerical output.
    lessons), and `RELEASE_NOTES.md` (the user-facing changelog) — updated in the
    same pass as any repo change, per the sibling convention.
 4. **F4** Adopt Conventional Commits and a `vX.Y.Z` tag per release (IACL
-   Decision 2). Cut `v3.2.0` after Phase B and let the phases that follow be
-   patches/minors.
+   Decision 2). The next release is `v4.0.0` (Decision 9), cut after Phase B;
+   phases that follow are patches/minors.
 5. **F5** Optional: a Javadoc publishing workflow, once F1/F3 exist.
 
 ### Phase G — Upstream coordination
@@ -397,8 +410,9 @@ Ordering follows IACL's G7 reasoning, adapted:
 
 1. **Phase A** first because nothing else can be verified until the build is on a
    toolchain that can consume IACL 2.x.
-2. **Phase B** second because it is where the compile break is resolved, and it is
-   best done as a small, mechanical, reviewable change.
+2. **Phase B** second because the dependency migration (deprecation cleanup) is
+   best done as small, mechanical, reviewable changes once the toolchain (A) is
+   stable. (The originally-predicted compile break did not occur.)
 3. **Phase C** before **Phase D/E** because D2 (god-method decomposition) and E1
    (de-static `props`) need behavioural tests to prove equivalence — IACL
    explicitly deferred its `RegionGrower` decomposition for exactly this reason.
@@ -409,10 +423,11 @@ Ordering follows IACL's G7 reasoning, adapted:
 6. **Phase A2 (wrapper) before A5 (CI)** so CI tests the same Maven everyone else
    uses.
 
-## 5. Resolved decisions (2026-10-11)
+## 5. Resolved decisions (2026-10-11, 2026-10-12)
 
 Maintainer decisions that gate execution. Recorded once, authoritative; the
-former open questions (Q1–Q8) are closed by these.
+former open questions (Q1–Q8) are closed by these, plus a 2026-10-12 version
+decision.
 
 1. **License — GPL-3.0-or-later** *(Q6)*. Correct `pom.xml` from BSD-2 to
    GPL-3.0 (`<licenses>`, `license.licenseName=gpl_v3`,
@@ -426,8 +441,12 @@ former open questions (Q1–Q8) are closed by these.
    mechanical migrations (`OnlyExt` → `FileExtensionFilter`, `DataStatistics` →
    `DescriptiveStatistics`) immediately, and record a plan to find alternatives
    if IACL does not un-deprecate before removal.
-4. **Output directory naming — rename** *(Q2)*. Switch `Revision.getVersionFromPom`
-   → `Revision.getVersion()` and accept the `AnaMorf vX.Y.Z` folder-name change.
+4. **Output directory naming — rename** *(Q2; corrected 2026-10-12)*. The original
+   mechanism (`Revision.getVersionFromPom` → `Revision.getVersion()`) was wrong:
+   AnaMorf uses a local hardcoded `Revision/Revision.java`, not IACL's `Revision`.
+   The *intent* stands — make the version string accurate and accept the
+   `AnaMorf vX.Y.Z` folder-name change (TWOMBLI matches the `Output` suffix, not
+   the version prefix).
 5. **UI — rewrite** *(Q4)*. Drop the NetBeans `.form`/`GEN`-fenced Swing for a
    hand-managed layout (ADAPT M5 step 3 pattern); keep the same fields/tabs.
 6. **Entry point — no CLI; preserve macro scripting** *(Q7)*. Remove `Main.java`
@@ -439,6 +458,9 @@ former open questions (Q1–Q8) are closed by these.
    known-good baseline. (Maintainer uncertain of intent on this old code.)
 8. **Citation affiliation — The Francis Crick Institute** *(Q8)*, for
    `CITATION.cff`.
+9. **Version — `4.0.0-SNAPSHOT`** *(2026-10-12)*. Given the significant changes
+   ahead, bump the project from `3.1.0` to `4.0.0-SNAPSHOT` (a major version) and
+   cut `v4.0.0` as the next release, rather than `3.2.0`.
 
 Still open: the `net.calm` → `io.github.djpbarry` namespace rename (G2) — confirm
 with the maintainer during Phase G; it is a breaking cross-suite change and must
