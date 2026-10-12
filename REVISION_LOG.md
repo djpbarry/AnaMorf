@@ -103,6 +103,35 @@ step — doc prose can drift from code.
 
 ---
 
+## 2026-10-12 — B6 characterisation: no numerical drift
+
+Ran AnaMorf headlessly (macro mode) on the 11 regression images, once with the
+pre-Phase-A build (IACL 1.0.32, JDK 11) and once with the current build
+(IACL 2.0.23, JDK 21), and diffed `results.csv`.
+
+- **Result: byte-identical** (both MD5 `586ddd9c…`). No numerical drift from the
+  IACL 1.0.32 → 2.0.23 bump, nor from the parent/ImageJ/bio-formats/Java changes.
+- Confirms the `FuzzyThresholder` `binSize`/`histMin` change is a no-op for 8-bit
+  input (`binSize=1`, `histMin=0`), as the plan's "shortcut" hypothesised.
+- Note: the test images are RGB; AnaMorf requires greyscale, so they were
+  converted RGB → 8-bit grey before the run.
+
+### Lesson (new) — characterise with a real before/after, not a shortcut
+
+The plan offered a "shortcut" (infer no-drift from `binSize=1`). The full run was
+cheap — a JDK 11 worktree plus a ~30-line headless runner — and gave a definitive,
+reproducible answer rather than an inference. **Rule:** when the correctness risk
+is real, build the actual "before" and "after" and diff; the shortcut is a
+fallback, not a first choice.
+
+### Housekeeping (pending)
+
+- The `before` build lives in a throwaway worktree (`git worktree remove` once
+  B6 is closed).
+- Scratch files under `C:/Users/barryd/b6/` are outside the repo, not committed.
+
+---
+
 ## 2026-10-11 — Modernisation kick-off (planning only)
 
 Completed the initial review of AnaMorf and wrote the modernisation plan

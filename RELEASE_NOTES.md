@@ -57,7 +57,8 @@ the dependency and toolchain break.
 ### Notes for upgraders
 
 - The results `*.csv` / `properties.xml` / `CurvatureValues.csv` file contents
-  are not intentionally changed. However, the `IAClassLibrary` upgrade alters
-  the underlying thresholding implementation, so **review your results after the
-  upgrade**; small numerical differences in derived metrics are possible and are
-  expected to be within the normal run-to-run range.
+  are not intentionally changed. Characterisation on a regression image set
+  found **byte-identical results** after the `IAClassLibrary` upgrade, so no
+  numerical drift is expected for typical 8-bit inputs. Review your results after
+  the upgrade regardless; edge cases (e.g. 16-bit or unusual histograms) were
+  not exercised.

@@ -1,10 +1,10 @@
 # AnaMorf Modernisation & IAClassLibrary Compatibility Plan
 
-Status: **Phase A complete; Phase B replanned.** `./mvnw verify` succeeds on
-JDK 21 against IACL `v2.0.23` — the predicted compile break did not occur. Phase B
-is re-scoped (below) to deprecation cleanup + numerical characterisation, and the
-project version will bump to `4.0.0-SNAPSHOT`. The maintainer decisions that gate
-execution are resolved (2026-10-11, 2026-10-12) and recorded in section 5.
+Status: **Phase A complete; Phase B in progress (B6 done).** Build green on
+JDK 21 / IACL `v2.0.23` (no compile break); B6 characterisation found **no
+numerical drift** between IACL 1.0.32 and 2.0.23. Version will bump to
+`4.0.0-SNAPSHOT`. Maintainer decisions resolved (2026-10-11, 2026-10-12) and
+recorded in section 5.
 
 Scope: bring AnaMorf back into compatibility with the current IAClassLibrary and
 modernise the project on the same terms, and in the same style, as
@@ -267,15 +267,14 @@ Confirmed deprecated/redundant IACL symbols actually in use: `OnlyExt`
 
 Ordered by risk-to-correctness:
 
-1. **B6 — Characterise the dependency bump (do first).**
+1. ✅ **B6 — Characterise the dependency bump (do first).** **Done 2026-10-12.**
    `FuzzyThresholder.threshold()` now scales the auto-threshold by
    `binSize`/`histMin` (see 1.3). Diff `results.csv` on a fixed image set:
-   "before" (IACL 1.0.32) vs "after" (2.0.23). Regression images committed at
-   `src/test/resources/images/` (11 PNGs); the "before" state still needs the
-   pre-A6 commit on the old toolchain (parent 35.0.0 + IACL `8e10706f5e`,
-   JDK 11 — being installed). Possible shortcut:
-   `preProcessImage` converts to a `ShortProcessor` with `binSize=1`, so the
-   scaling may be a no-op — verify against the 2.0.23 source.
+   "before" (IACL 1.0.32, JDK 11) vs "after" (2.0.23, JDK 21). Regression images
+   committed at `src/test/resources/images/` (11 PNGs, converted RGB → 8-bit grey
+   for the run). **Result: `results.csv` byte-identical (MD5 `586ddd9c…`) — no
+   numerical drift.** The `binSize=1` no-op hypothesis held, and the
+   ImageJ/bio-formats/Java bumps did not change results either.
 2. **B2 — `OnlyExt` → `IO.File.FileExtensionFilter` (2.1).** Mechanical but
    highest-risk (critical path). `FileExtensionFilter` takes `String[]` (not a
    single `String`) and uses `FilenameUtils.isExtension`, so it does **not** carry
