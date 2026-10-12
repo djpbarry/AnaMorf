@@ -34,7 +34,7 @@ Started executing `DEVELOPMENT_PLAN.md` Phase A (build, toolchain, CI).
   NetBeans/Ant build), matching IACL Decision 6 and plan Phase A1. Maven is now
   the only build system in the tree.
 - **A2 complete.** Added the Maven wrapper (`mvnw`, `mvnw.cmd`,
-  `.mvn/wrapper/maven-wrapper.properties`), pinned to Maven 3.9.9, using the
+  `.mvn/wrapper/maven-wrapper.properties`), pinned to Maven 3.9.16, using the
   `only-script` distribution type (self-bootstrapping, no committed
   `maven-wrapper.jar`).
 

@@ -226,7 +226,7 @@ phase is independently shippable.
 1. ✅ **A1** Delete `build.xml` and `nbproject/` (IACL Decision 6, which deleted
    exactly these from IACL). **Done 2026-10-12.**
 2. ✅ **A2** Add a Maven wrapper (`mvnw`, `mvnw.cmd`, `.mvn/wrapper/`) pinned to a
-   Maven 3.9.x, and use `./mvnw` everywhere. **Done 2026-10-12 (Maven 3.9.9,
+   Maven 3.9.x, and use `./mvnw` everywhere. **Done 2026-10-12 (Maven 3.9.16,
    `only-script` distribution type).**
 3. **A3** Rewrite `.gitignore`: keep the legacy NetBeans paths for compatibility
    with existing clones, add `/target/`, `.idea/`, `*.iml`, `.junie/`, OS files.

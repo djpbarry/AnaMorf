@@ -48,7 +48,7 @@ analysis pipeline and ImageJ macro interface are unchanged in behaviour.
   modification.
 - **Build is Maven-only.** The legacy, broken NetBeans/Ant build (`build.xml` and
   `nbproject/`) has been removed from the tree, and a Maven wrapper (pinned to
-  Maven 3.9.9) is now included for reproducible builds.
+  Maven 3.9.16) is now included for reproducible builds.
 
 ### Notes for upgraders
 
