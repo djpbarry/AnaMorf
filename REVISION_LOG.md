@@ -36,7 +36,8 @@ Started executing `DEVELOPMENT_PLAN.md` Phase A (build, toolchain, CI).
 - **A2 complete.** Added the Maven wrapper (`mvnw`, `mvnw.cmd`,
   `.mvn/wrapper/maven-wrapper.properties`), pinned to Maven 3.9.16, using the
   `only-script` distribution type (self-bootstrapping, no committed
-  `maven-wrapper.jar`).
+  `maven-wrapper.jar`). Smoke-tested: `mvnw.cmd -version` on JDK 21 resolves and
+  runs Maven 3.9.16.
 
 No new lessons: A1/A2 were mechanical. A1 was already justified by the malformed
 `build.xml` and its machine-specific Perl hook (see the 2026-10-11 review and
