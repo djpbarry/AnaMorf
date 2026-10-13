@@ -294,10 +294,14 @@ Ordered by risk-to-correctness:
    ImageJ/FIJI plugin, but standalone headless scripts have been observed to fail;
    TWOMBLI drives AnaMorf headlessly from Java, so verify before adopting. Track
    as a separate step, coordinated with TWOMBLI.
-3. **B4 — `ResultSummariser` off `DataStatistics` → `DescriptiveStatistics`
-   (2.2).** Rewrite `printStats`/`removeZeros` to mean + std-dev only (Decision 7;
-   confidence interval stays disabled), together with the Tier 3.2 dead-code
-   cleanup.
+3. ✅ **B4 — `ResultSummariser` off `DataStatistics` → `DescriptiveStatistics`
+   (2.2).** **Done 2026-10-13.** Rewrote `printStats`/`removeZeros` to mean +
+   population std-dev only (Decision 7; confidence interval stays disabled), and
+   removed the Tier 3.2 dead code (per-column lookups, CI row, commented
+   `printStats` calls, unused `alpha`). Uses `DescriptiveStatistics` with
+   `Math.sqrt(getPopulationVariance())` to match `DataStatistics`' population
+   std-dev. Also made mean and std-dev consistent over the same "clean" subset
+   (the old `calcMean` ran over the full column regardless of `cleanData`).
 4. **B5 — `GenVariables.ISO` → `StandardCharsets.ISO_8859_1` (2.6).** Trivial,
    zero risk.
 5. ✅ **B3 — Versioning (re-scoped).** **Done 2026-10-12 (design) / 2026-10-13

@@ -26,6 +26,31 @@ dated narrative plus the "what not to do again" notes.
 
 ---
 
+## 2026-10-13 — B4 done: `ResultSummariser` off `DataStatistics`
+
+Migrated `ResultSummariser` off the deprecated `IAClasses.DataStatistics` onto
+`org.apache.commons.math3.stat.descriptive.DescriptiveStatistics`:
+
+- Rewrote `printStats`/`removeZeros` to mean + population std-dev only
+  (confidence-interval row stays removed, per Decision 7).
+- Removed the Tier 3.2 dead code: the commented per-column lookups and
+  `printStats` calls, the CI row, and the now-unused static `alpha` field (the
+  `ResultSummariser(double)` constructor is retained as a no-op for API
+  compatibility).
+- Preserved population std-dev semantics: `DataStatistics.getStdDev()` divides by
+  `N` (`sqrt(sumvar/N)`), whereas `DescriptiveStatistics.getStandardDeviation()`
+  divides by `N-1`, so the code uses `Math.sqrt(getPopulationVariance())`.
+- Fixed a latent inconsistency: the old `calcMean(data)` iterated the *full*
+  column array while `calcStdDev` used `dataLength`, so the HGU "Mean" row was
+  over all values but the "Standard Deviation" row over only the positive
+  ("clean") ones. Both now use the same subset.
+
+`mvn -q -DskipTests compile` green. `ResultSummariser` remains dead code (no call
+sites in this repo), so this has no runtime effect; it is purely dependency
+cleanup ahead of Phase C.
+
+---
+
 ## 2026-10-13 — B2 done + version resource actually created
 
 Closed two Phase B items left dangling by `aaa520e` / `4986b6e`:
