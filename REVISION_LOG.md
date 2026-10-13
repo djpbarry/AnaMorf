@@ -26,6 +26,36 @@ dated narrative plus the "what not to do again" notes.
 
 ---
 
+## 2026-10-13 — B2 done + version resource actually created
+
+Closed two Phase B items left dangling by `aaa520e` / `4986b6e`:
+
+- **B2 — `OnlyExt` → `FileExtensionFilter`.** `Batch_Analyser.analyseFiles` now
+  builds a `net.calm.iaclasslibrary.IO.File.FileExtensionFilter` via a new
+  `getFileExtensions(String)` helper, which reproduces `OnlyExt`'s
+  `TIF`/`TIFF` and `JPG`/`JPEG` special-casing with symmetric aliasing
+  (`TIF`/`TIFF` → `{"tif","tiff"}`, `JPG`/`JPEG` → `{"jpg","jpeg"}`), as decided
+  on 2026-10-12. Removed the `IAClasses.OnlyExt` import. (`4986b6e` had only
+  documented this decision; the code was still using the deprecated `OnlyExt`.)
+- **Version resource.** `src/main/resources/anamorf-version.properties`
+  (`version=${project.version}`) was absent even though `aaa520e` claimed to add
+  it, so `Batch_Analyser.getVersion()` returned `"unknown"` (→ `AnaMorf vunknown`).
+  Created the file; Maven resource filtering now emits `version=4.0.0-SNAPSHOT`
+  (verified in `target/classes/anamorf-version.properties`).
+
+`mvn -q -DskipTests compile` and `mvn -q verify` both green.
+
+### Lesson (new) — a "resource filtering" change needs the template in the tree
+
+`aaa520e` added the pom.xml `<resources><filtering>` config and the Java reader,
+but never committed the `version=${project.version}` template, so the feature
+silently degraded to `"unknown"` until the missing file was noticed. **Rule:** a
+resource-filtering change is three pieces — the filtering config, the
+`${...}` template file, and the reader — and the template must actually be
+present (not just referenced) before the step is "done".
+
+---
+
 ## 2026-10-12 — Phase A complete: build & toolchain (A1–A7)
 
 Started executing `DEVELOPMENT_PLAN.md` Phase A (build, toolchain, CI).

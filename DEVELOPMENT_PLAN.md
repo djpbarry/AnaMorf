@@ -1,6 +1,6 @@
 # AnaMorf Modernisation & IAClassLibrary Compatibility Plan
 
-Status: **Phase A complete; Phase B in progress (B6, B3 done).** Build green on
+Status: **Phase A complete; Phase B in progress (B6, B3, B2 done).** Build green on
 JDK 21 / IACL `v2.0.23` (no compile break); B6 characterisation found **no
 numerical drift** between IACL 1.0.32 and 2.0.23. Version is now
 `4.0.0-SNAPSHOT` (B3). Maintainer decisions resolved (2026-10-11, 2026-10-12)
@@ -275,13 +275,15 @@ Ordered by risk-to-correctness:
    for the run). **Result: `results.csv` byte-identical (MD5 `586ddd9c…`) — no
    numerical drift.** The `binSize=1` no-op hypothesis held, and the
    ImageJ/bio-formats/Java bumps did not change results either.
-2. **B2 — `OnlyExt` → `IO.File.FileExtensionFilter` (2.1).** Mechanical but
-   highest-risk (critical path). `FileExtensionFilter` takes `String[]` (not a
-   single `String`) and uses `FilenameUtils.isExtension`, so it does **not** carry
-   `OnlyExt`'s `TIF`/`TIFF` and `JPG`/`JPEG` special-casing. **Decision
-   (2026-10-12):** preserve behaviour via symmetric aliasing — `TIF`/`TIFF` →
-   `{"tif","tiff"}`, `JPG`/`JPEG` → `{"jpg","jpeg"}`. Verify against a dir with
-   `.tiff`/`.jpeg`.
+2. ✅ **B2 — `OnlyExt` → `IO.File.FileExtensionFilter` (2.1).** **Done
+   2026-10-13.** Mechanical but highest-risk (critical path). `FileExtensionFilter`
+   takes `String[]` (not a single `String`) and uses `FilenameUtils.isExtension`,
+   so it does **not** carry `OnlyExt`'s `TIF`/`TIFF` and `JPG`/`JPEG`
+   special-casing. Implemented via a `getFileExtensions(String)` helper that
+   reproduces that casing with symmetric aliasing — `TIF`/`TIFF` →
+   `{"tif","tiff"}`, `JPG`/`JPEG` → `{"jpg","jpeg"}` — per the 2026-10-12
+   decision. `mvn verify` green; a runtime eyeball against a dir with
+   `.tiff`/`.jpeg` is the remaining confirmation.
 
    **Deferred — Bio-Formats-based discovery.** Instead of a hardcoded extension
    list, accept anything Bio-Formats can read (`ImageReader.isThisType`) and open
@@ -298,13 +300,15 @@ Ordered by risk-to-correctness:
    cleanup.
 4. **B5 — `GenVariables.ISO` → `StandardCharsets.ISO_8859_1` (2.6).** Trivial,
    zero risk.
-5. ✅ **B3 — Versioning (re-scoped).** **Done 2026-10-12.** Replaced the stale
-   local `Revision` with Maven resource filtering (option c): deleted
-   `src/main/java/Revision/Revision.java`, added
-   `src/main/resources/anamorf-version.properties` (`version=${project.version}`,
+5. ✅ **B3 — Versioning (re-scoped).** **Done 2026-10-12 (design) / 2026-10-13
+   (file actually landed).** Replaced the stale local `Revision` with Maven
+   resource filtering (option c): deleted `src/main/java/Revision/Revision.java`,
+   added `src/main/resources/anamorf-version.properties` (`version=${project.version}`,
    filtered), and `Batch_Analyser.title` now reads it → `AnaMorf v4.0.0-SNAPSHOT`.
    The output-directory name changes accordingly, but TWOMBLI matches the
-   `Output` suffix (not the version prefix), so it is safe.
+   `Output` suffix (not the version prefix), so it is safe. *(Note: the properties
+   template itself was missing until 2026-10-13, so `getVersion()` would have
+   returned `"unknown"`.)*
 6. **B7 — Deprecated-symbol policy.** `SkeletonProcessor` and `FractalEstimator`
    have no drop-in replacement. **Decision 3 (Q1):** accept the risk — keep them on
    the critical path, and record a plan to find alternatives (vendor or migrate)

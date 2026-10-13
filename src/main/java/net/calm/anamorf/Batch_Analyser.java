@@ -57,9 +57,9 @@ import net.calm.iaclasslibrary.Binary.BinaryMaker;
 import net.calm.iaclasslibrary.Curvature.CurveAnalyser;
 import net.calm.iaclasslibrary.IAClasses.DSPProcessor;
 import net.calm.iaclasslibrary.IAClasses.FractalEstimator;
-import net.calm.iaclasslibrary.IAClasses.OnlyExt;
 import net.calm.iaclasslibrary.IAClasses.Pixel;
 import net.calm.iaclasslibrary.IO.DataWriter;
+import net.calm.iaclasslibrary.IO.File.FileExtensionFilter;
 import net.calm.iaclasslibrary.IO.PropertyWriter;
 import net.calm.iaclasslibrary.Thresholding.FuzzyThresholder;
 import net.calm.iaclasslibrary.UtilClasses.GenUtils;
@@ -229,7 +229,7 @@ public class Batch_Analyser implements PlugIn {
      * false otherwise.
      */
     public boolean analyseFiles(File directory, File resultsDirectory) {
-        FilenameFilter directoryFilter = new OnlyExt(props.getProperty(DefaultParams.IMAGE_FORMAT_LABEL));
+        FilenameFilter directoryFilter = new FileExtensionFilter(getFileExtensions(props.getProperty(DefaultParams.IMAGE_FORMAT_LABEL)));
         String imageFilenames[] = directory.list(directoryFilter); // Generates a list of image filenames of the format specified by the user
         if (imageFilenames.length < 1) {
             IJ.showMessage("'" + directory + "' contains no images of type ." + props.getProperty(DefaultParams.IMAGE_FORMAT_LABEL));
@@ -865,6 +865,20 @@ public class Batch_Analyser implements PlugIn {
             Boolean.parseBoolean(props.getProperty(DefaultParams.BOX_COUNT_LABEL)),
             Boolean.parseBoolean(props.getProperty(DefaultParams.LAC_LABEL)),
             Boolean.parseBoolean(props.getProperty(DefaultParams.CURVE_LABEL))};
+    }
+
+    private static String[] getFileExtensions(String format) {
+        String upper = format == null ? "" : format.toUpperCase();
+        switch (upper) {
+            case "TIF":
+            case "TIFF":
+                return new String[]{"tif", "tiff"};
+            case "JPG":
+            case "JPEG":
+                return new String[]{"jpg", "jpeg"};
+            default:
+                return new String[]{format};
+        }
     }
 
     private static String getVersion() {
