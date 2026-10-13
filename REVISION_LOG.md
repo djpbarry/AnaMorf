@@ -37,11 +37,11 @@ Closed two Phase B items left dangling by `aaa520e` / `4986b6e`:
   (`TIF`/`TIFF` → `{"tif","tiff"}`, `JPG`/`JPEG` → `{"jpg","jpeg"}`), as decided
   on 2026-10-12. Removed the `IAClasses.OnlyExt` import. (`4986b6e` had only
   documented this decision; the code was still using the deprecated `OnlyExt`.)
-- **Version resource.** `src/main/resources/anamorf-version.properties`
+- **Version resource.** `src/main/resources/project.properties`
   (`version=${project.version}`) was absent even though `aaa520e` claimed to add
   it, so `Batch_Analyser.getVersion()` returned `"unknown"` (→ `AnaMorf vunknown`).
   Created the file; Maven resource filtering now emits `version=4.0.0-SNAPSHOT`
-  (verified in `target/classes/anamorf-version.properties`).
+  (verified in `target/classes/project.properties`).
 
 `mvn -q -DskipTests compile` and `mvn -q verify` both green.
 
@@ -173,7 +173,7 @@ Implemented the versioning re-scope (Decision 9):
 - Bumped `pom.xml` to `4.0.0-SNAPSHOT`.
 - Deleted the stale local `src/main/java/Revision/Revision.java` (hardcoded
   `VERSION=2, revisionNumber=27` → "AnaMorf v2.027").
-- Added `src/main/resources/anamorf-version.properties`
+- Added `src/main/resources/project.properties`
   (`version=${project.version}`) with Maven resource filtering enabled.
 - `Batch_Analyser.title` now reads that resource → `"AnaMorf v4.0.0-SNAPSHOT"`.
 

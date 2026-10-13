@@ -303,7 +303,7 @@ Ordered by risk-to-correctness:
 5. ✅ **B3 — Versioning (re-scoped).** **Done 2026-10-12 (design) / 2026-10-13
    (file actually landed).** Replaced the stale local `Revision` with Maven
    resource filtering (option c): deleted `src/main/java/Revision/Revision.java`,
-   added `src/main/resources/anamorf-version.properties` (`version=${project.version}`,
+   added `src/main/resources/project.properties` (`version=${project.version}`,
    filtered), and `Batch_Analyser.title` now reads it → `AnaMorf v4.0.0-SNAPSHOT`.
    The output-directory name changes accordingly, but TWOMBLI matches the
    `Output` suffix (not the version prefix), so it is safe. *(Note: the properties

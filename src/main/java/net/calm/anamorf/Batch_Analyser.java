@@ -883,7 +883,7 @@ public class Batch_Analyser implements PlugIn {
 
     private static String getVersion() {
         Properties versionProps = new Properties();
-        try (InputStream in = Batch_Analyser.class.getResourceAsStream("/anamorf-version.properties")) {
+        try (InputStream in = Batch_Analyser.class.getResourceAsStream("/project.properties")) {
             if (in != null) {
                 versionProps.load(in);
             }

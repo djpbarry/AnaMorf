@@ -134,10 +134,12 @@ Results always land in a sibling directory named after the plug-in title, produc
 - **Licensing is mixed.** `Batch_Analyser`, `UserInterface`, `HyphalAnalyser`,
   `ResultSummariser` and others carry GPLv3 headers, while `pom.xml` declares BSD-2 for
   the project. Match the header style of the file you are editing.
-- Version strings are resolved at runtime via
-  `Revision.getVersionFromPom("./pom.xml")`, i.e. **relative to the process working
-  directory**. Running the jar from somewhere without a `pom.xml` nearby will not give
-  you the version you expect.
+- Version strings are resolved at build time via Maven resource filtering: the
+  `src/main/resources/project.properties` template (`version=${project.version}`)
+  is filtered into the JAR, and `Batch_Analyser.getVersion()` reads it at runtime
+  to build the `title` / output-directory name. The version therefore comes from
+  `pom.xml` `<version>` and is not dependent on a `pom.xml` being next to the
+  process working directory.
 
 ## Dependency posture and modernisation
 
