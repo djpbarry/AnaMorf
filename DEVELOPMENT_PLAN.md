@@ -418,6 +418,19 @@ Make the B6 characterisation a repeatable *live* gate following ADAPT's
 → `compute-baseline` to generate the golden manifest (seeding it with the B6
 `586ddd9c…` output), then `verify-baseline` gates future changes.
 
+**Open issue — baseline portability (unresolved).** `results.csv` embeds the
+work directory's **absolute path** as its first data label
+(`Batch_Analyser.run` calls `resultsTable.addLabel(currentDirectory.getAbsolutePath())`),
+so the directory-label row differs per checkout location. That makes a naive
+SHA-256 baseline machine-specific. A stopgap was tried — a fixed work directory
+(`C:\anamorf-live`) in `RunAnamorf`/`run-anamorf.cmd` — but that hardcodes a
+Windows drive into a nominally portable tool. **The proper fix (both, for a
+maintainer decision):** (a) stop writing the directory path as a data label in
+`Batch_Analyser.run`, or (b) normalise that one label row out of the hash in
+`BaselineTool` (skip/rewrite the first data row before hashing). Deferred and
+documented in `bin/RunAnamorf.java` until decided; the runner currently gives an
+explicit `workDir` argument rather than relying on the `C:\` default.
+
 **Exit criteria:** `mvn test` runs real assertions covering pure logic (C2) and
 the headless ImageJ primitives (C3); the live-Fiji `bin/` scripts (`install`,
 `smoke-test`, `compute-baseline`/`verify-baseline`) provide the numerical golden

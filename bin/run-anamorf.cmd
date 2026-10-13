@@ -2,7 +2,7 @@
 rem Run AnaMorf headlessly over the regression images (Phase C4).
 rem
 rem Usage:   run-anamorf.cmd [imagesDir] [workDir]
-rem Defaults: src\test\resources\images, target\anamorf-live
+rem Defaults: src\test\resources\images, C:\anamorf-live (fixed for a stable baseline)
 rem
 rem Requires a prior `mvnw.cmd -DskipTests package` so target\classes and the
 rem dependency jars in target\ are present. The compiled plugin classes and all
@@ -24,7 +24,7 @@ set "JAVA=%JAVA_HOME%\bin\java.exe"
 set "OUT=%~dp0..\target\anamorf-runner"
 
 set "IMAGES=%~dp0..\src\test\resources\images"
-set "WORK=%~dp0..\target\anamorf-live"
+set "WORK=C:\anamorf-live"
 if not "%~1"=="" set "IMAGES=%~1"
 if not "%~2"=="" set "WORK=%~2"
 

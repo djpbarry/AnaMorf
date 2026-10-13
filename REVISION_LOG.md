@@ -50,6 +50,27 @@ Created the `bin/` live-test infrastructure, mirroring ADAPT's convention:
 then `install-to-fiji` → `run-anamorf` → `compute-baseline` to seed the golden
 manifest from the B6 output, and `verify-baseline` as the future gate.
 
+### Open issue — baseline portability (unresolved)
+
+The live run (`run-anamorf.cmd`, Fiji at
+`C:\Users\davej\fiji-latest-portable-nojava\Fiji`, JDK 21 at
+`C:\Program Files\Eclipse Adoptium\jdk-21.0.12.101-hotspot`) completed and
+produced a full `results.csv` (masks/skeletons/curve maps + `properties.xml`).
+But the first data row of `results.csv` is the **machine-specific absolute work
+directory path** — `Batch_Analyser.run` calls
+`resultsTable.addLabel(currentDirectory.getAbsolutePath())`, so that label (with
+all-zero metrics) is the directory path, not an image name. This makes a naive
+SHA-256 baseline non-portable across checkout locations.
+
+A stopgap was rehearsed (a fixed `C:\anamorf-live` work dir) but rejected: it
+hardcodes a Windows drive into a nominally portable tool. **Deferred as a
+documented TODO** (in `bin/RunAnamorf.java`), pending a maintainer decision
+between (a) stop writing the directory path as a data label in
+`Batch_Analyser.run`, or (b) normalise that one label row out of the hash in
+`BaselineTool`. The golden baseline manifest is therefore **not yet generated** —
+it should be cut only after the label-row question is settled, otherwise the
+manifest encodes a checkout-specific path.
+
 ---
 
 ## 2026-10-13 — C3 landed: headless ImageJ-primitive tests
