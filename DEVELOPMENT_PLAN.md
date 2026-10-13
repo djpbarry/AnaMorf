@@ -389,27 +389,34 @@ fighting the JVM.
 
 #### C4 — Live-Fiji test (the B6 repeatable) — ADAPT convention
 
+**Scaffolded 2026-10-13** (scripts written; `BaselineTool` self-tested; the live
+headless run + baseline generation still need a local `FIJI_DIR`/`JAVA_HOME`).
+
 Make the B6 characterisation a repeatable *live* gate following ADAPT's
 `bin/` convention, not a fragile JUnit test (the full pipeline needs `Wand`,
 `FuzzyThresholder`, `IJ.saveAs`, and Bio-Formats/Fiji):
 
-1. **`bin/local-env.cmd.example`** (committed) + gitignored `bin/local-env.cmd`
+1. ✅ **`bin/local-env.cmd.example`** (committed) + gitignored `bin/local-env.cmd`
    — machine-specific `FIJI_DIR`/`JAVA_HOME`, `call`ed by every script.
-2. **`bin/install-to-fiji.cmd`** — `mvnw.cmd -q -DskipTests clean package`, copy
-   the AnaMorf jar to `Fiji/plugins/` and IACL to `Fiji/jars/` (strip stale
-   versioned jars first).
-3. **`bin/smoke-test-fiji.cmd`** — headless `Class.forName` of the two
+2. ✅ **`bin/install-to-fiji.cmd`** — `mvnw.cmd -q -DskipTests clean package`, copy
+   the `anamorf-*.jar` to `Fiji/plugins/` and `IAClassLibrary-*.jar` to
+   `Fiji/jars/` (strip stale versioned jars first).
+3. ✅ **`bin/smoke-test-fiji.cmd`** — headless `Class.forName` of the two
    `plugins.config` classes (`Batch_Analyser`, `AnaMorf_Macro_Extensions`)
    against `jars\*;plugins\*`; assert `ALL_ANAMORF_PLUGINS_LOADABLE`.
-4. **Headless runner** — drive `new Batch_Analyser(true, dir, props).run(null)`
-   (macro mode) over `src/test/resources/images/` (RGB→8-bit grey, pre-processing
-   disabled, as B6 did) to produce `results.csv`.
-5. **`bin/compute-baseline.cmd` / `bin/verify-baseline.cmd`** + a self-contained
-   `BaselineTool` (mirroring ADAPT's `bin/BaselineTool.java`) — SHA-256 the
-   deterministic `results.csv` (and `CurvatureValues.csv`) against a committed
-   manifest under `test_data/baselines/`. `verify` exits non-zero on mismatch.
+4. ✅ **`bin/RunAnamorf.java` + `bin/run-anamorf.cmd`** — headless runner that
+   converts the RGB regression images to 8-bit grey and drives
+   `new Batch_Analyser(true, dir, props).run(null)` (macro mode) over
+   `src/test/resources/images/` to produce `results.csv`. Runs against
+   `target/classes` + `target/*` (no Fiji needed); compiles clean.
+5. ✅ **`bin/compute-baseline.cmd` / `bin/verify-baseline.cmd`** + `bin/BaselineTool.java`
+   (mirroring ADAPT's) — SHA-256 `results.csv` (+ `CurvatureValues.csv`) against
+   a committed manifest under `test_data/baselines/`. `verify` exits non-zero on
+   mismatch. `BaselineTool` self-tested (compute + verify pass).
 
-The golden baseline is the B6 `586ddd9c…` output. Sequenced after C1–C3.
+**Remaining:** set up `bin/local-env.cmd`, run `install-to-fiji` → `run-anamorf`
+→ `compute-baseline` to generate the golden manifest (seeding it with the B6
+`586ddd9c…` output), then `verify-baseline` gates future changes.
 
 **Exit criteria:** `mvn test` runs real assertions covering pure logic (C2) and
 the headless ImageJ primitives (C3); the live-Fiji `bin/` scripts (`install`,

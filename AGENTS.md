@@ -41,13 +41,34 @@ Notes:
 
 ## Testing
 
-There is **no test suite**. `src/test/java/` exists but is empty, and there are no test
-dependencies or test commands configured. Do not invent a `mvn test` workflow; if you
-add tests, you are also choosing and configuring the framework.
+**JUnit 5 unit tests** exist under `src/test/java/net/calm/anamorf/` (13 tests
+across 5 classes). They cover pure logic and headless ImageJ primitives
+(`getFileExtensions`, `getOptions`/`toOutputData`, `getVersion`, `removeZeros`,
+`saveResults`, `SkeletonPruner.traceBranch`, `HyphalAnalyser`). The
+`junit-jupiter-api`/`-engine` deps are parent-managed (no `<version>`); the
+`pom-scijava:45.1.0` parent wires surefire + JUnit Platform + JaCoCo. Run with
+`mvn test` / `mvn verify`.
 
-Verification is therefore manual: compile (`mvn package`) and, if you want to exercise
-behaviour, run the plug-in. `net.calm.anamorf.Main` is the `main-class`; its `main`
-method opens the interactive (GUI) path and calls `System.exit(0)` at the end.
+Tests live in the same package (`net.calm.anamorf`) so they can reach
+package-private members (several `private` methods were widened to
+package-private for this). No lint/format tooling.
+
+**Live-Fiji `bin/` scripts** (Phase C4) exercise the full pipeline, which needs
+`Wand`/`FuzzyThresholder`/`IJ.saveAs` and therefore a Fiji/ImageJ runtime:
+
+- `bin/install-to-fiji.cmd` — build + install plugin → `Fiji/plugins/`, IACL →
+  `Fiji/jars/`.
+- `bin/smoke-test-fiji.cmd` — headless `Class.forName` load-check.
+- `bin/run-anamorf.cmd` — headless pipeline run over `src/test/resources/images/`.
+- `bin/compute-baseline.cmd` / `verify-baseline.cmd` — SHA-256 `results.csv`
+  against a committed manifest.
+
+Machine-specific `FIJI_DIR`/`JAVA_HOME` live in `bin/local-env.cmd` (gitignored;
+template is `bin/local-env.cmd.example`). This mirrors ADAPT's convention.
+
+`net.calm.anamorf.Main` is the `main-class`; its `main` method opens the
+interactive (GUI) path and calls `System.exit(0)` at the end (a scratchpad, slated
+for removal in Phase D1).
 
 ## Code layout
 

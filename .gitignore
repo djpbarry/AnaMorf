@@ -6,6 +6,7 @@
 *.iml
 .junie/
 /AnaMorf_Test_Data_and_Documentation/
+/bin/local-env.cmd
 .DS_Store
 Thumbs.db
 Desktop.ini

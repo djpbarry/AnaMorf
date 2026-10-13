@@ -26,6 +26,32 @@ dated narrative plus the "what not to do again" notes.
 
 ---
 
+## 2026-10-13 — C4 scaffolding landed (live-Fiji `bin/` convention)
+
+Created the `bin/` live-test infrastructure, mirroring ADAPT's convention:
+
+- **`bin/local-env.cmd.example`** (committed template) + gitignored
+  `bin/local-env.cmd`; `.gitignore` updated to exclude the latter.
+- **`bin/install-to-fiji.cmd`** — builds (`mvnw.cmd -q -DskipTests clean
+  package`) and installs `anamorf-*.jar` → `Fiji/plugins/` and
+  `IAClassLibrary-*.jar` → `Fiji/jars/`.
+- **`bin/smoke-test-fiji.cmd`** — headless `Class.forName` load-check of the two
+  `plugins.config` classes; asserts `ALL_ANAMORF_PLUGINS_LOADABLE`.
+- **`bin/RunAnamorf.java` + `bin/run-anamorf.cmd`** — headless runner: converts
+  the RGB regression images to 8-bit grey (`convertToByte(false)`) and drives
+  `new Batch_Analyser(true, dir, props).run(null)` in macro mode. Runs against
+  `target/classes` + `target/*` (no Fiji install needed for the run itself).
+  `javac` against the classpath is clean.
+- **`bin/BaselineTool.java` + `compute-baseline.cmd` / `verify-baseline.cmd`** —
+  SHA-256 `results.csv`/`CurvatureValues.csv` against a committed manifest.
+  `BaselineTool` was self-tested (compute → manifest, verify → `BASELINE_PASS`).
+
+**Remaining (needs local env):** create `bin/local-env.cmd` (FIJI_DIR/JAVA_HOME),
+then `install-to-fiji` → `run-anamorf` → `compute-baseline` to seed the golden
+manifest from the B6 output, and `verify-baseline` as the future gate.
+
+---
+
 ## 2026-10-13 — C3 landed: headless ImageJ-primitive tests
 
 Added three headless tests exercising the `ij.process`/`ij.measure` plain-class
