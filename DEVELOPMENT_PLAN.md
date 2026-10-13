@@ -1,10 +1,10 @@
 # AnaMorf Modernisation & IAClassLibrary Compatibility Plan
 
-Status: **Phase A complete; Phase B in progress (B6, B3, B2 done).** Build green on
-JDK 21 / IACL `v2.0.23` (no compile break); B6 characterisation found **no
-numerical drift** between IACL 1.0.32 and 2.0.23. Version is now
-`4.0.0-SNAPSHOT` (B3). Maintainer decisions resolved (2026-10-11, 2026-10-12)
-and recorded in section 5.
+Status: **Phase A complete; Phase B nearly done (B6, B3, B2, B4, B5 done; B7 is a
+recorded decision).** Build green on JDK 21 / IACL `v2.0.23` (no compile break);
+B6 characterisation found **no numerical drift** between IACL 1.0.32 and 2.0.23.
+Version is now `4.0.0-SNAPSHOT` (B3). Maintainer decisions resolved (2026-10-11,
+2026-10-12) and recorded in section 5.
 
 Scope: bring AnaMorf back into compatibility with the current IAClassLibrary and
 modernise the project on the same terms, and in the same style, as
@@ -302,8 +302,9 @@ Ordered by risk-to-correctness:
    `Math.sqrt(getPopulationVariance())` to match `DataStatistics`' population
    std-dev. Also made mean and std-dev consistent over the same "clean" subset
    (the old `calcMean` ran over the full column regardless of `cleanData`).
-4. **B5 — `GenVariables.ISO` → `StandardCharsets.ISO_8859_1` (2.6).** Trivial,
-   zero risk.
+4. ✅ **B5 — `GenVariables.ISO` → `StandardCharsets.ISO_8859_1` (2.6).** **Done
+   2026-10-13.** Trivial, zero risk — replaced the `GenVariables.ISO` charset in
+   `Batch_Analyser.saveResults` and dropped the `GenVariables` import.
 5. ✅ **B3 — Versioning (re-scoped).** **Done 2026-10-12 (design) / 2026-10-13
    (file actually landed).** Replaced the stale local `Revision` with Maven
    resource filtering (option c): deleted `src/main/java/Revision/Revision.java`,

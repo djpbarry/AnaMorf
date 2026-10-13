@@ -50,6 +50,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -63,7 +64,6 @@ import net.calm.iaclasslibrary.IO.File.FileExtensionFilter;
 import net.calm.iaclasslibrary.IO.PropertyWriter;
 import net.calm.iaclasslibrary.Thresholding.FuzzyThresholder;
 import net.calm.iaclasslibrary.UtilClasses.GenUtils;
-import net.calm.iaclasslibrary.UtilClasses.GenVariables;
 import net.calm.iaclasslibrary.UtilClasses.Utilities;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -204,7 +204,7 @@ public class Batch_Analyser implements PlugIn {
     }
 
     void saveResults(File resultsDirectory) throws IOException {
-        CSVPrinter printer = new CSVPrinter(new OutputStreamWriter(new FileOutputStream(new File(resultsDirectory + File.separator + "results.csv")), GenVariables.ISO), CSVFormat.EXCEL);
+        CSVPrinter printer = new CSVPrinter(new OutputStreamWriter(new FileOutputStream(new File(resultsDirectory + File.separator + "results.csv")), StandardCharsets.ISO_8859_1), CSVFormat.EXCEL);
         printer.printRecord((Object[]) resultsTable.getHeadings());
         int n = resultsTable.size();
         int m = resultsTable.getLastColumn();

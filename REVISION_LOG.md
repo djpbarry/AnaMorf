@@ -26,6 +26,19 @@ dated narrative plus the "what not to do again" notes.
 
 ---
 
+## 2026-10-13 — B5 done: `GenVariables.ISO` → `StandardCharsets`
+
+Replaced the `GenVariables.ISO` charset in `Batch_Analyser.saveResults` with
+`java.nio.charset.StandardCharsets.ISO_8859_1` and removed the now-unused
+`GenVariables` import. No behaviour change (IACL 2.x already exposes `GenVariables.ISO`
+as `StandardCharsets.ISO_8859_1`). `mvn -q -DskipTests compile` green.
+
+This clears the last mechanical deprecation migration: the only deprecated IACL
+symbols still referenced are `SkeletonProcessor` and `FractalEstimator`, which
+B7 keeps on the critical path by decision (no drop-in replacement yet).
+
+---
+
 ## 2026-10-13 — B4 done: `ResultSummariser` off `DataStatistics`
 
 Migrated `ResultSummariser` off the deprecated `IAClasses.DataStatistics` onto
