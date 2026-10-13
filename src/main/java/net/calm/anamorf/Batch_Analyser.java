@@ -381,13 +381,17 @@ public class Batch_Analyser implements PlugIn {
     }
 
     private void setOutputs() {
-        boolean options[] = getOptions();
-        outputData = 0;
+        outputData = toOutputData(getOptions());
+    }
+
+    static int toOutputData(boolean[] options) {
+        int data = 0;
         for (int n = 0; n < options.length; n++) {
             if (options[n]) {
-                outputData += (int) Math.round(Math.pow(2.0, n));
+                data += (int) Math.round(Math.pow(2.0, n));
             }
         }
+        return data;
     }
 
     /**
@@ -867,7 +871,7 @@ public class Batch_Analyser implements PlugIn {
             Boolean.parseBoolean(props.getProperty(DefaultParams.CURVE_LABEL))};
     }
 
-    private static String[] getFileExtensions(String format) {
+    static String[] getFileExtensions(String format) {
         String upper = format == null ? "" : format.toUpperCase();
         switch (upper) {
             case "TIF":
@@ -881,7 +885,7 @@ public class Batch_Analyser implements PlugIn {
         }
     }
 
-    private static String getVersion() {
+    static String getVersion() {
         Properties versionProps = new Properties();
         try (InputStream in = Batch_Analyser.class.getResourceAsStream("/project.properties")) {
             if (in != null) {

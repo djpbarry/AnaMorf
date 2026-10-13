@@ -323,27 +323,80 @@ Ordered by risk-to-correctness:
 symbols on the critical path or a recorded decision for each remaining one
 (`SkeletonProcessor`, `FractalEstimator`), and results verified by B6.
 
-### Phase C — Tests (the biggest maintainability win)
+### Phase C — Tests (execution plan)
 
-AnaMorf has *nothing*, so this is a larger lift than it was for IACL, which
-already had 37 tests by the time it modernised.
+AnaMorf has **no test harness** (`src/test/java/` is empty), so this is a larger
+lift than IACL (which already had 37 tests). The regression images are already
+committed at `src/test/resources/images/` (11 PNGs). Order mirrors IACL: pure
+logic first, then headless ImageJ primitives, then the full headless pipeline.
 
-1. **C1** Add JUnit 5 (`junit-jupiter-api`/`-engine`, parent-managed) and make
-   `./mvnw test` meaningful.
-2. **C2** Start with the pure logic that needs no ImageJ runtime:
-   - `ResultSummariser.printStats`/`removeZeros` (once B4 lands)
-   - `Batch_Analyser.setOutputs`/`getOptions` — pin the positional bitmask
-     contract (4.3) with a test, which is the cheapest way to stop it rotting
-   - `SkeletonPruner` branch tracing
-   - `HyphalAnalyser` length/tip/branch counting on synthetic skeletons
-3. **C3** Golden-file tests for IACL interop: `IO.DataWriter.saveValues` and
-   `PropertyWriter` output schemas, so silent schema drift is caught.
-4. **C4** A small regression-image set plus a harness that runs the pipeline
-   headlessly and diffs `results.csv`. This is what makes B6 repeatable rather
-   than a one-off.
+**Testability refactors (small, no behaviour change):** ✅ done 2026-10-13.
+Tests live in `net.calm.anamorf` (same package) so they can touch package-private
+members.
 
-**Exit criteria:** `./mvnw test` runs real assertions and covers the pipeline's
-numerical output.
+- `Batch_Analyser.getFileExtensions`, `getVersion`, and
+  `ResultSummariser.removeZeros` widened `private` → package-private.
+- Bitmask loop extracted out of `setOutputs` into package-private
+  `static int toOutputData(boolean[])` (also the D5 precursor).
+
+#### C1 ✅ — JUnit 5 harness (done 2026-10-13)
+
+Added `junit-jupiter-api` + `junit-jupiter-engine` (scope `test`, **no
+`<version>`** — the `pom-scijava:45.1.0` parent manages it and wires
+`maven-surefire-plugin` + the JUnit Platform + JaCoCo). Verified:
+`org.apache.maven.surefire.junitplatform.JUnitPlatformProvider` is auto-detected;
+`mvn test` runs and reports green.
+
+#### C2 ✅ — Pure logic (no ImageJ runtime) (done 2026-10-13)
+
+10 tests across `Batch_AnalyserTest` and `ResultSummariserTest`:
+
+1. `Batch_Analyser.getFileExtensions(String)` — the B2 helper; pin `TIF`/`TIFF`
+   → `{"tif","tiff"}`, `JPG`/`JPEG` → `{"jpg","jpeg"}`, case-insensitivity, and
+   default single-extension passthrough.
+2. `Batch_Analyser.getOptions()` — pin the 10-element positional `boolean[]`
+   against a `DefaultParams` (drive the static `props` via the 3-arg
+   constructor). This locks the contract that index *n* corresponds to flag
+   *2ⁿ* (`PROJ_AREA`↔`AREAS=1` … `CURVE`↔`CURVATURE=512`).
+3. `Batch_Analyser.toOutputData(boolean[])` — pin the bitmask: each `true` at
+   index *n* contributes *2ⁿ*; spot-check the flag constants (`AREAS=1`,
+   `CIRC=2`, … `CURVATURE=512`).
+4. `Batch_Analyser.getVersion()` — returns the filtered `project.properties`
+   value (non-`"unknown"`).
+5. `ResultSummariser.removeZeros(float[], int)` — positive-only in-place
+   compaction returns the count.
+
+#### C3 — Headless ImageJ primitives (no GUI)
+
+`ij.process`/`ij.measure` classes are plain objects — constructible without
+ImageJ headless bootstrapping:
+
+1. `Batch_Analyser.saveResults(File)` — build a `ResultsTable`, assign it to the
+   package-private `resultsTable` field, and assert the written `results.csv`
+   schema (headings row, label + per-column cells) and ISO-8859-1 `µ` encoding.
+2. `SkeletonPruner` — synthetic `ByteProcessor` skeletons: prune endpoint/
+   branchpoint detection and branch tracing (`traceBranch`, `getBranches`,
+   `getPrunedImage`). Core algorithm; exercises IACL's deprecated-but-functional
+   `SkeletonProcessor`.
+3. `HyphalAnalyser` — synthetic skeletons: total length, tip count, branchpoint
+   count, hyphal growth unit (exercises IACL `Dijkstra`/`Graph`/`Node`).
+
+#### C4 — End-to-end headless pipeline (the B6 repeatable)
+
+Make the B6 characterisation a committed, repeatable test rather than a one-off:
+
+- Bootstrap headless ImageJ (`new ij.ImageJ(ij.ImageJ.NO_SHOW)`), drive
+  `new Batch_Analyser(true, dir, props).run(null)` in macro mode over
+  `src/test/resources/images/`, and diff `results.csv` against a committed
+  golden file (the B6 `586ddd9c…` output).
+- Highest value / highest effort: it exercises `Wand`, `FuzzyThresholder`,
+  `IJ.saveAs`, and the whole measurement block. Needs pre-processing disabled +
+  RGB→8-bit grey conversion (as B6 did), and may be flaky; do C1–C3 first and
+  treat C4 as a separate, possibly-scripted gate.
+
+**Exit criteria:** `mvn test` runs real assertions covering pure logic (C2) and
+skeleton analysis (C3); C4 is the numerical golden gate (done in-repo or via a
+committed `bin/` runner, matching ADAPT's `compute-baseline`/`verify-baseline`).
 
 ### Phase D — Code hygiene, mirroring IACL D1/D2
 

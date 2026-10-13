@@ -26,6 +26,51 @@ dated narrative plus the "what not to do again" notes.
 
 ---
 
+## 2026-10-13 — C1 + C2 landed: JUnit 5 harness + pure-logic tests
+
+Started Phase C. Added the JUnit 5 harness and the first real tests.
+
+- **C1** — `junit-jupiter-api` + `junit-jupiter-engine` (scope `test`, no
+  `<version>`; parent-managed). Confirmed the parent wires surefire + the JUnit
+  Platform + JaCoCo (`JUnitPlatformProvider` auto-detected). `mvn test` runs.
+- **Testability refactors** — widened `Batch_Analyser.getFileExtensions` /
+  `getVersion` and `ResultSummariser.removeZeros` to package-private, and
+  extracted `static int toOutputData(boolean[])` out of `setOutputs`.
+- **C2** — 10 tests:
+  - `getFileExtensions` (TIF/TIFF, JPG/JPEG aliasing + passthrough)
+  - `getOptions` positional `boolean[]` ↔ flag ordering
+  - `toOutputData` bitmask (empty, mixed, full = 1023) + flag constants
+  - `getVersion` (filtered `project.properties`)
+  - `removeZeros` positive-only compaction
+
+`mvn test` → 10/10 green. Note: the `Batch_Analyser` static initialiser prints
+`IJ.log("Initialising properties...")` to stdout headlessly (harmless; the
+static-`props` init is E1's problem, not a test concern).
+
+---
+
+## 2026-10-13 — Phase C planned (planning only)
+
+Replaced the sparse Phase C in `DEVELOPMENT_PLAN.md` with an ordered execution
+plan, grounded in what is actually testable in AnaMorf:
+
+- **C1** — JUnit 5 harness (parent-managed, no `<version>`).
+- **C2** — pure logic (no ImageJ): `getFileExtensions`, `getOptions` +
+  `toOutputData` bitmask, `getVersion`, `ResultSummariser.removeZeros`.
+- **C3** — headless `ij.process`/`ij.measure` primitives: `saveResults`,
+  `SkeletonPruner`, `HyphalAnalyser` on synthetic skeletons.
+- **C4** — full headless pipeline golden diff (repeatable B6), possibly as a
+  committed `bin/` runner.
+
+Notes captured for execution: tests live in `net.calm.anamorf` so they can reach
+package-private members; three `private` methods (`getFileExtensions`,
+`getVersion`, `removeZeros`) plus an extracted `toOutputData` need widening to
+package-private. `ij.process`/`ij.measure` classes are plain objects (no headless
+ImageJ bootstrap needed for C3); C4 needs `new ij.ImageJ(NO_SHOW)` and is the
+flaky/high-effort tier.
+
+---
+
 ## 2026-10-13 — B5 done: `GenVariables.ISO` → `StandardCharsets`
 
 Replaced the `GenVariables.ISO` charset in `Batch_Analyser.saveResults` with

@@ -84,7 +84,7 @@ public class ResultSummariser implements Measurements {
         results.setValue(columnIndex, rowNumber + 1, Math.sqrt(stats.getPopulationVariance()));
     }
 
-    private int removeZeros(float data[], int size) {
+    int removeZeros(float data[], int size) {
         int j = 0;
         for (int i = 0; i < size; i++) {
             if (data[i] > 0) {
