@@ -26,6 +26,30 @@ dated narrative plus the "what not to do again" notes.
 
 ---
 
+## 2026-10-13 — C4 re-planned to follow ADAPT's live-Fiji convention (planning only)
+
+Reviewed ADAPT's `bin/` "live test" convention and re-scoped AnaMorf's C4 to
+match it instead of a fragile JUnit end-to-end test:
+
+- **`bin/local-env.cmd.example`** (committed) + gitignored `local-env.cmd`
+  (`FIJI_DIR`/`JAVA_HOME`), `call`ed by every script.
+- **`bin/install-to-fiji.cmd`** — build + install plugin → `Fiji/plugins/`,
+  IACL → `Fiji/jars/`.
+- **`bin/smoke-test-fiji.cmd`** — headless `Class.forName` load-check of the two
+  `plugins.config` classes.
+- **headless runner** — `Batch_Analyser.run(null)` in macro mode over the
+  regression images → `results.csv`.
+- **`bin/compute-baseline.cmd` / `verify-baseline.cmd`** + a `BaselineTool` —
+  SHA-256 `results.csv` (+ `CurvatureValues.csv`) against a committed manifest,
+  mirroring ADAPT's `bin/BaselineTool.java`.
+
+Also noted that ADAPT keeps JUnit strictly pure-logic and pushes ImageJ-adjacent
+coverage into the live-Fiji layer; AnaMorf's C3 (plain `ResultsTable`/
+`ByteProcessor`) straddles that line and will shift to the runner if it needs
+`ij.IJ`/AWT. C1/C2 remain unchanged (pure logic in `mvn test`).
+
+---
+
 ## 2026-10-13 — C1 + C2 landed: JUnit 5 harness + pure-logic tests
 
 Started Phase C. Added the JUnit 5 harness and the first real tests.

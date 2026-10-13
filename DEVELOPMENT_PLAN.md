@@ -381,22 +381,40 @@ ImageJ headless bootstrapping:
 3. `HyphalAnalyser` — synthetic skeletons: total length, tip count, branchpoint
    count, hyphal growth unit (exercises IACL `Dijkstra`/`Graph`/`Node`).
 
-#### C4 — End-to-end headless pipeline (the B6 repeatable)
+Note: ADAPT keeps its *JUnit* tests strictly pure-logic and pushes everything
+ImageJ-adjacent into the live-Fiji `bin/` layer. AnaMorf's C3 straddles that
+line — `ResultsTable`/`ByteProcessor` are plain classes — but if any of these
+prove to need `ij.IJ`/AWT, shift them into the C4 live-Fiji runner rather than
+fighting the JVM.
 
-Make the B6 characterisation a committed, repeatable test rather than a one-off:
+#### C4 — Live-Fiji test (the B6 repeatable) — ADAPT convention
 
-- Bootstrap headless ImageJ (`new ij.ImageJ(ij.ImageJ.NO_SHOW)`), drive
-  `new Batch_Analyser(true, dir, props).run(null)` in macro mode over
-  `src/test/resources/images/`, and diff `results.csv` against a committed
-  golden file (the B6 `586ddd9c…` output).
-- Highest value / highest effort: it exercises `Wand`, `FuzzyThresholder`,
-  `IJ.saveAs`, and the whole measurement block. Needs pre-processing disabled +
-  RGB→8-bit grey conversion (as B6 did), and may be flaky; do C1–C3 first and
-  treat C4 as a separate, possibly-scripted gate.
+Make the B6 characterisation a repeatable *live* gate following ADAPT's
+`bin/` convention, not a fragile JUnit test (the full pipeline needs `Wand`,
+`FuzzyThresholder`, `IJ.saveAs`, and Bio-Formats/Fiji):
+
+1. **`bin/local-env.cmd.example`** (committed) + gitignored `bin/local-env.cmd`
+   — machine-specific `FIJI_DIR`/`JAVA_HOME`, `call`ed by every script.
+2. **`bin/install-to-fiji.cmd`** — `mvnw.cmd -q -DskipTests clean package`, copy
+   the AnaMorf jar to `Fiji/plugins/` and IACL to `Fiji/jars/` (strip stale
+   versioned jars first).
+3. **`bin/smoke-test-fiji.cmd`** — headless `Class.forName` of the two
+   `plugins.config` classes (`Batch_Analyser`, `AnaMorf_Macro_Extensions`)
+   against `jars\*;plugins\*`; assert `ALL_ANAMORF_PLUGINS_LOADABLE`.
+4. **Headless runner** — drive `new Batch_Analyser(true, dir, props).run(null)`
+   (macro mode) over `src/test/resources/images/` (RGB→8-bit grey, pre-processing
+   disabled, as B6 did) to produce `results.csv`.
+5. **`bin/compute-baseline.cmd` / `bin/verify-baseline.cmd`** + a self-contained
+   `BaselineTool` (mirroring ADAPT's `bin/BaselineTool.java`) — SHA-256 the
+   deterministic `results.csv` (and `CurvatureValues.csv`) against a committed
+   manifest under `test_data/baselines/`. `verify` exits non-zero on mismatch.
+
+The golden baseline is the B6 `586ddd9c…` output. Sequenced after C1–C3.
 
 **Exit criteria:** `mvn test` runs real assertions covering pure logic (C2) and
-skeleton analysis (C3); C4 is the numerical golden gate (done in-repo or via a
-committed `bin/` runner, matching ADAPT's `compute-baseline`/`verify-baseline`).
+the headless ImageJ primitives (C3); the live-Fiji `bin/` scripts (`install`,
+`smoke-test`, `compute-baseline`/`verify-baseline`) provide the numerical golden
+gate for C4, matching ADAPT's convention.
 
 ### Phase D — Code hygiene, mirroring IACL D1/D2
 
