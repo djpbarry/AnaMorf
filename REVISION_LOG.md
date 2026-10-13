@@ -26,6 +26,27 @@ dated narrative plus the "what not to do again" notes.
 
 ---
 
+## 2026-10-13 — C3 landed: headless ImageJ-primitive tests
+
+Added three headless tests exercising the `ij.process`/`ij.measure` plain-class
+surface (no Fiji/GUI bootstrap needed):
+
+- **`Batch_AnalyserIOTest.saveResultsWritesIso8859Csv`** — builds a `ResultsTable`
+  (with a `µ` heading), assigns it to `Batch_Analyser.resultsTable`, calls
+  `saveResults`, and asserts the `results.csv` schema plus the ISO-8859-1 `µ`
+  (0xB5) byte (not UTF-8 `0xC2 0xB5`).
+- **`HyphalAnalyserTest.analysesStraightLineLengthTipsAndHgu`** — a synthetic
+  11-pixel straight skeleton → length 11, 2 tips, 0 branchpoints, HGU 5.5.
+- **`SkeletonPrunerTest.traceBranchReturnsLinePath`** — `traceBranch` on a straight
+  line returns the expected 11-pixel path.
+
+`mvn test` → 13/13 green (10 C2 + 3 C3). Confirms `ResultsTable`/`ByteProcessor`
+and IACL's `SkeletonProcessor`/`Dijkstra` are plain classes that run headlessly —
+so C3 stays in JUnit rather than shifting to the live-Fiji runner (the C3 note's
+"straddle the line" concern was resolved in favour of JUnit).
+
+---
+
 ## 2026-10-13 — C4 re-planned to follow ADAPT's live-Fiji convention (planning only)
 
 Reviewed ADAPT's `bin/` "live test" convention and re-scoped AnaMorf's C4 to

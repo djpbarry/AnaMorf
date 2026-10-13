@@ -366,20 +366,20 @@ Added `junit-jupiter-api` + `junit-jupiter-engine` (scope `test`, **no
 5. `ResultSummariser.removeZeros(float[], int)` — positive-only in-place
    compaction returns the count.
 
-#### C3 — Headless ImageJ primitives (no GUI)
+#### C3 ✅ — Headless ImageJ primitives (no GUI) (done 2026-10-13)
 
 `ij.process`/`ij.measure` classes are plain objects — constructible without
 ImageJ headless bootstrapping:
 
-1. `Batch_Analyser.saveResults(File)` — build a `ResultsTable`, assign it to the
-   package-private `resultsTable` field, and assert the written `results.csv`
-   schema (headings row, label + per-column cells) and ISO-8859-1 `µ` encoding.
-2. `SkeletonPruner` — synthetic `ByteProcessor` skeletons: prune endpoint/
-   branchpoint detection and branch tracing (`traceBranch`, `getBranches`,
-   `getPrunedImage`). Core algorithm; exercises IACL's deprecated-but-functional
-   `SkeletonProcessor`.
-3. `HyphalAnalyser` — synthetic skeletons: total length, tip count, branchpoint
-   count, hyphal growth unit (exercises IACL `Dijkstra`/`Graph`/`Node`).
+1. ✅ `Batch_Analyser.saveResults(File)` — `Batch_AnalyserIOTest`: builds a
+   `ResultsTable`, assigns it to the package-private `resultsTable` field, asserts
+   the written `results.csv` schema and ISO-8859-1 `µ` (0xB5) encoding.
+2. ✅ `SkeletonPruner` — `SkeletonPrunerTest.traceBranchReturnsLinePath`: a
+   synthetic `ByteProcessor` straight line traces to the expected 11-pixel path.
+3. ✅ `HyphalAnalyser` — `HyphalAnalyserTest`: a straight line gives length 11,
+   2 tips, 0 branchpoints, HGU 5.5.
+
+Total now **13 tests** green across 5 test classes.
 
 Note: ADAPT keeps its *JUnit* tests strictly pure-logic and pushes everything
 ImageJ-adjacent into the live-Fiji `bin/` layer. AnaMorf's C3 straddles that
