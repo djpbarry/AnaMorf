@@ -26,6 +26,24 @@ dated narrative plus the "what not to do again" notes.
 
 ---
 
+## 2026-10-14 — D2 done: decomposed `analyseImage` helpers
+
+Extracted five helpers from `Batch_Analyser.analyseImage` (the ~250-line god
+method), prioritising pure math for Phase C testability:
+
+- `static double circularity(pixArea, objectPerim)` — pure.
+- `static double lacunarity(variance, meanSq)` — pure.
+- `boolean meetsMorphologicalCriteria(objArea, objCirc)` — threshold check.
+- `double fourierFractalDimension(pixArea, xSum, ySum, objRoi, imageRes)` —
+  also dropped dead `polyproc` draw code and the now-unused `Color` import.
+- `double[] boxFractalDimension(binProc, objBox, wholeImage)`.
+
+The area-counting loop, skeleton-analysis block, and results-writing block remain
+inline: they mutate the cropped `binProc`/`objBox` coordinate state and are
+riskier to extract. `mvn test` 13/13 green.
+
+---
+
 ## 2026-10-14 — D4 done: named `fill()` flood-fill sentinel
 
 `Batch_Analyser.fill()` hardcoded `127` as its flood-fill marker (both the

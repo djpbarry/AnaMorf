@@ -452,10 +452,14 @@ gate for C4, matching ADAPT's convention.
    the `main-class` property (no standalone entry point). The ImageJ macro surface
    (`AnaMorfMacroExecutor` + `AnaMorf_Macro_Extensions`) is the scriptable entry
    point and is preserved/enhanced, not replaced. `mvn test` still 13/13 green.
-2. **D2** Decompose `Batch_Analyser.analyseImage` (4.6) into
+2. ✅ **D2** Decompose `Batch_Analyser.analyseImage` (4.6) into
    single-responsibility helpers, extracting the pure math first so Phase C can
    cover it. Run this **before** Phase E so the threading work is not churning
-   the same code twice — the same ordering IACL chose (G7).
+   the same code twice — the same ordering IACL chose (G7). **Done 2026-10-14**
+   (extracted `circularity`, `lacunarity`, `meetsMorphologicalCriteria`,
+   `fourierFractalDimension`, `boxFractalDimension`; the area loop, skeleton
+   block, and results-writing block remain inline — entangled with the cropped
+   `binProc`/`objBox` coordinate state).
 3. ✅ **D3 — remove the dead `while (!valid)` loop in `showGUI()`** (done
    2026-10-14). The loop body unconditionally returned, so the method was a plain
    dialog call; reduced to construct → `setVisible(true)` → `return !exitProgram()`.

@@ -41,7 +41,6 @@ import ij.process.FloodFiller;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import ij.process.TypeConverter;
-import java.awt.Color;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.io.File;
@@ -506,7 +505,7 @@ public class Batch_Analyser implements PlugIn {
         double imageRes2 = imageRes * imageRes;
         int x, y, pixArea = 0, numEnds = 0, numBranches = 0;
         int minPixLength = (int) Math.round(Double.parseDouble(props.getProperty(DefaultParams.MIN_BRANCH_LABEL)) / Double.parseDouble(props.getProperty(DefaultParams.IMAGE_RES_LABEL)));
-        double var, meanSq, objArea, objCirc, xCent, yCent, curvature = Double.NaN;
+        double var, meanSq, objArea, objCirc, curvature = Double.NaN;
         double objectPerim = 1.0, lac = 1.0, distfracDim = Double.NaN;
         double xSum = 0.0, ySum = 0.0, growthUnit = 0.0, totalLength = 0.0;
         Rectangle objBox, imageBox = new Rectangle(0, 0, binProc.getWidth(), binProc.getHeight());
@@ -560,17 +559,13 @@ public class Batch_Analyser implements PlugIn {
          * A perfect circle has circularity = 1. As perimeter increases relative
          * to area, circularity tends to zero.
          */
-        objCirc = (4 * Math.PI * pixArea) / (objectPerim * objectPerim);
-        if (objCirc > 1.0) {
-            objCirc = 1.0;
-        }
+        objCirc = circularity(pixArea, objectPerim);
         if (useMorphFilters) {
             /*
              * Check area and circularity against user-specified threshold
              * values.
              */
-            if ((objArea < Double.parseDouble(props.getProperty(DefaultParams.MIN_AREA_LABEL))) || (objArea > MAX_AREA)
-                    || (objCirc < MIN_CIRC) || (objCirc > Double.parseDouble(props.getProperty(DefaultParams.MAX_CIRC_LABEL)))) {
+            if (!meetsMorphologicalCriteria(objArea, objCirc)) {
                 IJ.log("Object does not meet morphological criteria for further analysis.");
                 return false;
             }
@@ -604,7 +599,7 @@ public class Batch_Analyser implements PlugIn {
                     Measurements.MEAN + Measurements.STD_DEV, null);
             var = Math.pow(objStats.stdDev, 2);
             meanSq = Math.pow(objStats.mean, 2);
-            lac = Math.abs((var / meanSq) - 1.0);
+            lac = lacunarity(var, meanSq);
             if (((outputData & HYPHAL_GROWTH_UNIT) != 0) || ((outputData & NUMBER_OF_ENDPOINTS) != 0)
                     || ((outputData & TOTAL_HYPHAL_LENGTH) != 0) || ((outputData & CURVATURE) != 0)) {
                 binProc.invert(); // Reverse inversion above
@@ -658,44 +653,14 @@ public class Batch_Analyser implements PlugIn {
 
         if ((outputData & FOURIER_FRACTAL_DIMENSION) != 0 && objRoi != null) {
             IJ.log(String.format("Calculating %s", DefaultParams.FOURIER_FRAC_LABEL));
-            /*
-             * A different form of <i>PolygonRoi</i> (<i>Roi.POLYGON</i>) is
-             * contructed to provide an accurate determination of the number of
-             * points on the object boundary
-             */
-            PolygonRoi polyObjRoi = new PolygonRoi(objRoi.getXCoordinates(),
-                    objRoi.getYCoordinates(), objRoi.getNCoordinates(), Roi.POLYGON);
-            ByteProcessor polyproc = new ByteProcessor(binProc.getWidth(), binProc.getHeight());
-            polyproc.setColor(Color.white);
-            polyproc.draw(polyObjRoi);
-            xCent = xSum / pixArea;
-            yCent = ySum / pixArea;
-            Pixel boundPoints[] = DSPProcessor.getDistanceSignal(polyObjRoi.getNCoordinates(),
-                    xCent, yCent, polyObjRoi.getXCoordinates(),
-                    polyObjRoi.getYCoordinates(), Double.parseDouble(props.getProperty(DefaultParams.IMAGE_RES_LABEL)));
-            double dist[] = new double[boundPoints.length];
-            for (int i = 0; i < boundPoints.length; i++) {
-                dist[i] = boundPoints[i].getZ();
-            }
-            double[] upscaledDistInput = DSPProcessor.upScale(dist);
-            double sampleRate = (1.0d / Double.parseDouble(props.getProperty(DefaultParams.IMAGE_RES_LABEL)))
-                    * upscaledDistInput.length / dist.length;
-            double distfracparams[] = DSPProcessor.calcFourierDim(DSPProcessor.calcFourierSpec(upscaledDistInput, sampleRate), sampleRate, 1.0);
-            if (distfracparams != null) {
-                distfracDim = (5.0 - Math.abs(distfracparams[1])) / 2.0;
-            } else {
-                distfracDim = Double.NaN;
-            }
+            distfracDim = fourierFractalDimension(pixArea, xSum, ySum, objRoi,
+                    Double.parseDouble(props.getProperty(DefaultParams.IMAGE_RES_LABEL)));
         }
 
         if ((outputData & BOX_FRACTAL_DIMENSION) != 0) {
             IJ.log(String.format("Calculating %s", DefaultParams.BOX_COUNT_LABEL));
-            if (Boolean.parseBoolean(props.getProperty(DefaultParams.WHOLE_IMAGE_LABEL))) {
-                boxFracDims = (new FractalEstimator()).do2DEstimate(binProc);
-            } else {
-                binProc.setRoi(objBox);
-                boxFracDims = (new FractalEstimator()).do2DEstimate(binProc.crop());
-            }
+            boxFracDims = boxFractalDimension(binProc, objBox,
+                    Boolean.parseBoolean(props.getProperty(DefaultParams.WHOLE_IMAGE_LABEL)));
         }
 
         if (outputResults && (outputData != 0)) {
@@ -749,6 +714,49 @@ public class Batch_Analyser implements PlugIn {
             resultsTable.addLabel("Image", imageName);
         }
         return true;
+    }
+
+    static double circularity(double pixArea, double objectPerim) {
+        return Math.min(1.0, (4.0 * Math.PI * pixArea) / (objectPerim * objectPerim));
+    }
+
+    static double lacunarity(double variance, double meanSq) {
+        return Math.abs((variance / meanSq) - 1.0);
+    }
+
+    boolean meetsMorphologicalCriteria(double objArea, double objCirc) {
+        return objArea >= Double.parseDouble(props.getProperty(DefaultParams.MIN_AREA_LABEL))
+                && objArea <= MAX_AREA
+                && objCirc >= MIN_CIRC
+                && objCirc <= Double.parseDouble(props.getProperty(DefaultParams.MAX_CIRC_LABEL));
+    }
+
+    double fourierFractalDimension(int pixArea, double xSum, double ySum, PolygonRoi objRoi, double imageRes) {
+        PolygonRoi polyObjRoi = new PolygonRoi(objRoi.getXCoordinates(),
+                objRoi.getYCoordinates(), objRoi.getNCoordinates(), Roi.POLYGON);
+        double xCent = xSum / pixArea;
+        double yCent = ySum / pixArea;
+        Pixel boundPoints[] = DSPProcessor.getDistanceSignal(polyObjRoi.getNCoordinates(),
+                xCent, yCent, polyObjRoi.getXCoordinates(), polyObjRoi.getYCoordinates(), imageRes);
+        double dist[] = new double[boundPoints.length];
+        for (int i = 0; i < boundPoints.length; i++) {
+            dist[i] = boundPoints[i].getZ();
+        }
+        double[] upscaledDistInput = DSPProcessor.upScale(dist);
+        double sampleRate = (1.0d / imageRes) * upscaledDistInput.length / dist.length;
+        double distfracparams[] = DSPProcessor.calcFourierDim(DSPProcessor.calcFourierSpec(upscaledDistInput, sampleRate), sampleRate, 1.0);
+        if (distfracparams != null) {
+            return (5.0 - Math.abs(distfracparams[1])) / 2.0;
+        }
+        return Double.NaN;
+    }
+
+    double[] boxFractalDimension(ImageProcessor binProc, Rectangle objBox, boolean wholeImage) {
+        if (wholeImage) {
+            return new FractalEstimator().do2DEstimate(binProc);
+        }
+        binProc.setRoi(objBox);
+        return new FractalEstimator().do2DEstimate(binProc.crop());
     }
 
     /**

@@ -58,6 +58,8 @@ package-private for this). No lint/format tooling.
 
 - `bin/install-to-fiji.cmd` — build + install plugin → `Fiji/plugins/`, IACL →
   `Fiji/jars/`.
+- `bin/launch-fiji.cmd` — launch Fiji using the `FIJI_DIR`/`JAVA_HOME` from
+  `local-env.cmd`.
 - `bin/smoke-test-fiji.cmd` — headless `Class.forName` load-check.
 - `bin/run-anamorf.cmd` — headless pipeline run over `src/test/resources/images/`.
 - `bin/compute-baseline.cmd` / `verify-baseline.cmd` — SHA-256 `results.csv`
