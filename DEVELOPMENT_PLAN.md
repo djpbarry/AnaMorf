@@ -459,9 +459,10 @@ gate for C4, matching ADAPT's convention.
 3. ✅ **D3 — remove the dead `while (!valid)` loop in `showGUI()`** (done
    2026-10-14). The loop body unconditionally returned, so the method was a plain
    dialog call; reduced to construct → `setVisible(true)` → `return !exitProgram()`.
-4. **D4** Give `fill(...)`'s sentinel a named constant, or set the flood-fill
+4. ✅ **D4** Give `fill(...)`'s sentinel a named constant, or set the flood-fill
    colour to a value outside the image's range (4.5). Note the duplicated copy in
-   `BinaryMaker.fill`.
+   `BinaryMaker.fill`. **Done 2026-10-14** (constant `FLOOD_FILL_SENTINEL = 127`;
+   duplicate remains in IACL `BinaryMaker.fill`, out of scope).
 5. **D5** Make `setOutputs` self-describing — replace positional indexing with an
    explicit label-to-flag map (4.3). The C2 test locks the current behaviour first.
 6. **D6** Review `searchImage`'s bounds handling (4.7) and either fix it or

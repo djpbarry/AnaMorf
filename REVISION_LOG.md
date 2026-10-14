@@ -26,6 +26,18 @@ dated narrative plus the "what not to do again" notes.
 
 ---
 
+## 2026-10-14 — D4 done: named `fill()` flood-fill sentinel
+
+`Batch_Analyser.fill()` hardcoded `127` as its flood-fill marker (both the
+`setColor(127)` seed and the `pixels[i] == 127` remap test). Extracted a
+`FLOOD_FILL_SENTINEL = 127` constant so the magic value is self-documenting and
+has one definition point. No behaviour change; `mvn test` 13/13 green.
+
+The same `fill` logic is duplicated in IACL's `BinaryMaker.fill` (out of scope —
+we consume it, we don't own it). Noted in `DEVELOPMENT_PLAN.md` D4.
+
+---
+
 ## 2026-10-14 — D3 done: removed dead loop in `showGUI()`
 
 `Batch_Analyser.showGUI()` had a `while (!valid)` loop whose body

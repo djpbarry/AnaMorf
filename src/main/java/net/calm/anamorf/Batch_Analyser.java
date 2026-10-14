@@ -88,6 +88,7 @@ public class Batch_Analyser implements PlugIn {
     private boolean outputResults, useMorphFilters;
     private int outputData = 0; // Determines what metrics will be output to Results Table
     private static final int FOREGROUND = 0, BACKGROUND = 255; // Values for foreground & background pixels
+    private static final int FLOOD_FILL_SENTINEL = 127;
     private ByteProcessor maskImage, refProc;
     private ColorProcessor colorSkelImage;
     private ImageProcessor bwSkelImage;
@@ -793,7 +794,7 @@ public class Batch_Analyser implements PlugIn {
         int width = ip.getWidth();
         int height = ip.getHeight();
         FloodFiller ff = new FloodFiller(ip);
-        ip.setColor(127);
+        ip.setColor(FLOOD_FILL_SENTINEL);
         for (int y = 0; y < height; y++) {
             if (ip.getPixel(0, y) == background) {
                 ff.fill(0, y);
@@ -813,7 +814,7 @@ public class Batch_Analyser implements PlugIn {
         byte[] pixels = (byte[]) ip.getPixels();
         int n = width * height;
         for (int i = 0; i < n; i++) {
-            if (pixels[i] == 127) {
+            if (pixels[i] == FLOOD_FILL_SENTINEL) {
                 pixels[i] = (byte) background;
             } else {
                 pixels[i] = (byte) foreground;
