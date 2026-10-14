@@ -319,6 +319,20 @@ Ordered by risk-to-correctness:
    the critical path, and record a plan to find alternatives (vendor or migrate)
    if IACL removes them. `OnlyExt`/`DataStatistics` still migrate in B2/B4.
 
+   **B7 note (2026-10-14) — `SkeletonProcessor` replacement candidate.** For the
+   `SkeletonProcessor` half of B7, the unmaintained-but-more-complete
+   [AnalyzeSkeleton](https://github.com/fiji/AnalyzeSkeleton) ImageJ plugin
+   (GPL-3.0, last push 2022) is a candidate **source for vendoring** the
+   deprecated logic — not a dependency. Its `GraphPruning`/`Vertex`/`Edge`
+   implement the same endpoint/branchpoint detection and branch-length tracing
+   AnaMorf gets from `SkeletonProcessor`, plus junction/triple/quadruple-point
+   classification. Overlap is confined to this one skeleton-analysis stage;
+   everything else AnaMorf does (segmentation, fractal dimension, lacunarity,
+   curvature) has no counterpart there, and AnalyzeSkeleton additionally covers
+   3D and takes a pre-skeletonised input. GPL-3.0 is compatible with AnaMorf
+   (Decision 1), so a self-contained, attributed vendor is permissible if/when
+   IACL removes `SkeletonProcessor`. No action until then.
+
 **Exit criteria:** compiles and runs against IACL 2.0.23 with no deprecated
 symbols on the critical path or a recorded decision for each remaining one
 (`SkeletonProcessor`, `FractalEstimator`), and results verified by B6.
@@ -434,12 +448,10 @@ gate for C4, matching ADAPT's convention.
 
 ### Phase D — Code hygiene, mirroring IACL D1/D2
 
-1. **D1** Delete the scratchpad: remove `Main.java` entirely and drop the
-   `main-class` property (no standalone entry point). The ImageJ macro surface
+1. ✅ **D1 — remove the scratchpad** (done 2026-10-14). Deleted `Main.java` and
+   the `main-class` property (no standalone entry point). The ImageJ macro surface
    (`AnaMorfMacroExecutor` + `AnaMorf_Macro_Extensions`) is the scriptable entry
-   point and is preserved/enhanced, not replaced. Remove the `ResultSummariser`
-   dead code (3.2) and the `build.xml` Perl hook (3.3) — the latter falls out of
-   A1.
+   point and is preserved/enhanced, not replaced. `mvn test` still 13/13 green.
 2. **D2** Decompose `Batch_Analyser.analyseImage` (4.6) into
    single-responsibility helpers, extracting the pure math first so Phase C can
    cover it. Run this **before** Phase E so the threading work is not churning

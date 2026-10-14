@@ -26,6 +26,35 @@ dated narrative plus the "what not to do again" notes.
 
 ---
 
+## 2026-10-14 — D1 done: removed the `Main` scratchpad
+
+Removed the `Main.java` scratchpad (which ran `Batch_Analyser.run(null)` then
+`System.exit(0)`, with commented-out OneDrive experiment paths) and dropped the
+now-unreferenced `main-class` property from `pom.xml`. AnaMorf is loaded solely
+via its two `plugins.config` commands (the macro layer is the scriptable entry
+point and is unchanged). `mvn test` still 13/13 green. `AGENTS.md` updated to
+remove the `Main` row and state there is no standalone entry point.
+
+---
+
+## 2026-10-14 — AnalyzeSkeleton overlap reviewed (B7 note, planning only)
+
+Reviewed [fiji/AnalyzeSkeleton](https://github.com/fiji/AnalyzeSkeleton) (GPL-3.0,
+unmaintained since 2022) against AnaMorf's aim. Conclusion: overlap is confined to
+the single skeleton-analysis stage — AnaMorf's `HyphalAnalyser`/`SkeletonPruner`
+(endpoint/branchpoint counts + branch-length tracing) maps onto AnalyzeSkeleton's
+branch/junction/end-point/triple/quadruple-point classification. Everything else
+AnaMorf does (segmentation→skeletonisation pipeline, fractal dimension,
+lacunarity, curvature, per-object area/circularity) has no counterpart there, and
+AnalyzeSkeleton additionally handles 3D and assumes a pre-skeletonised input.
+
+**Relevance to B7:** AnalyzeSkeleton is a candidate **source to vendor** the
+deprecated IACL `SkeletonProcessor` logic (its `GraphPruning`/`Vertex`/`Edge`) if
+IACL ever removes it — not a dependency. GPL-3.0 is licence-compatible (Decision 1).
+Recorded as a B7 note in `DEVELOPMENT_PLAN.md`; no code changed.
+
+---
+
 ## 2026-10-13 — C4 scaffolding landed (live-Fiji `bin/` convention)
 
 Created the `bin/` live-test infrastructure, mirroring ADAPT's convention:

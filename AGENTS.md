@@ -66,9 +66,9 @@ package-private for this). No lint/format tooling.
 Machine-specific `FIJI_DIR`/`JAVA_HOME` live in `bin/local-env.cmd` (gitignored;
 template is `bin/local-env.cmd.example`). This mirrors ADAPT's convention.
 
-`net.calm.anamorf.Main` is the `main-class`; its `main` method opens the
-interactive (GUI) path and calls `System.exit(0)` at the end (a scratchpad, slated
-for removal in Phase D1).
+There is **no standalone `main-class`** — AnaMorf is a Fiji plugin loaded via the
+two `plugins.config` commands, not run via `java -jar`. The old `Main` scratchpad
+(which opened the GUI path and called `System.exit(0)`) was removed in Phase D1.
 
 ## Code layout
 
@@ -76,7 +76,6 @@ All production code lives under `src/main/java/net/calm/anamorf/`.
 
 | File | Role |
 | --- | --- |
-| `Main.java` | Entry point. Historically a scratchpad for launching specific paths. |
 | `Batch_Analyser.java` | The heart of the plug-in. Implements `ij.plugin.PlugIn`. Owns the whole pipeline. |
 | `UserInterface.java` / `.form` | NetBeans-generated Swing parameter dialog. |
 | `ExitDialog.java` / `.form` | NetBeans-generated confirmation dialog. |
@@ -231,9 +230,9 @@ coordinate, and TWOMBLI also pins a specific commit (`d610176007`).
   TWOMBLI.
 - The G2 package-root rename (`net.calm` → `io.github.djpbarry`) **must include
   TWOMBLI** as a lockstep party, or it breaks TWOMBLI's imports.
-- `Main` / `main-class` removal is safe (TWOMBLI does not use `Main`); the macro
-  layer (`AnaMorfMacroExecutor`) is also not used by TWOMBLI, but keep it for
-  other consumers.
+- `Main` / `main-class` removal is **done** (Phase D1; TWOMBLI does not use
+  `Main`); the macro layer (`AnaMorfMacroExecutor`) is also not used by TWOMBLI,
+  but keep it for other consumers.
 
 ## Gotchas
 

@@ -122,7 +122,6 @@
 
     <properties>
         <package-name>net.calm.anamorf</package-name>
-        <main-class>net.calm.anamorf.Main</main-class>
         <scijava.jvm.version>21</scijava.jvm.version>
         <license.licenseName>bsd_2</license.licenseName>
         <license.copyrightOwners>TU Dublin</license.copyrightOwners>
