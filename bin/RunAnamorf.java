@@ -60,5 +60,10 @@ public class RunAnamorf {
         analyser.run(null);
 
         System.out.println("RunAnamorf complete; results.csv is in a sibling *_Output directory of " + workDir);
+
+        // AnaMorf leaves ImageJ/AWT non-daemon threads running after main()
+        // returns, which keeps the headless JVM alive (and hangs any calling
+        // shell). Explicitly exit once the run is done.
+        System.exit(0);
     }
 }
