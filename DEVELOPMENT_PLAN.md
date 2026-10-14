@@ -456,7 +456,9 @@ gate for C4, matching ADAPT's convention.
    single-responsibility helpers, extracting the pure math first so Phase C can
    cover it. Run this **before** Phase E so the threading work is not churning
    the same code twice — the same ordering IACL chose (G7).
-3. **D3** Remove the dead `while (!valid)` loop in `showGUI()` (4.2).
+3. ✅ **D3 — remove the dead `while (!valid)` loop in `showGUI()`** (done
+   2026-10-14). The loop body unconditionally returned, so the method was a plain
+   dialog call; reduced to construct → `setVisible(true)` → `return !exitProgram()`.
 4. **D4** Give `fill(...)`'s sentinel a named constant, or set the flood-fill
    colour to a value outside the image's range (4.5). Note the duplicated copy in
    `BinaryMaker.fill`.

@@ -26,6 +26,16 @@ dated narrative plus the "what not to do again" notes.
 
 ---
 
+## 2026-10-14 — D3 done: removed dead loop in `showGUI()`
+
+`Batch_Analyser.showGUI()` had a `while (!valid)` loop whose body
+unconditionally returned (it set `valid = true` then returned either way), so
+the "loop" was dead control flow. Reduced to: construct the `UserInterface`,
+`setVisible(true)`, `return !gui.exitProgram()`. No behaviour change. `mvn test`
+still 13/13 green.
+
+---
+
 ## 2026-10-14 — D1 done: removed the `Main` scratchpad
 
 Removed the `Main.java` scratchpad (which ran `Batch_Analyser.run(null)` then

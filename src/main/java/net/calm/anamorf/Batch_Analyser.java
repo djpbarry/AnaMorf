@@ -361,21 +361,12 @@ public class Batch_Analyser implements PlugIn {
      * @return false if the dialog was closed/exited by the user, true otherwise
      */
     public boolean showGUI() {
-        boolean valid = false;
         if (Batch_Analyser.props == null) {
             Batch_Analyser.props = new DefaultParams();
         }
-        while (!valid) {
-            valid = true;
-            UserInterface gui = new UserInterface(IJ.getInstance(), true, title, props);
-            gui.setVisible(true);
-            if (!gui.exitProgram()) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        return true;
+        UserInterface gui = new UserInterface(IJ.getInstance(), true, title, props);
+        gui.setVisible(true);
+        return !gui.exitProgram();
     }
 
     private void setOutputs() {
