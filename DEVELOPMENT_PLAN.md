@@ -285,15 +285,18 @@ Ordered by risk-to-correctness:
    decision. `mvn verify` green; a runtime eyeball against a dir with
    `.tiff`/`.jpeg` is the remaining confirmation.
 
-   **Deferred — Bio-Formats-based discovery.** Instead of a hardcoded extension
-   list, accept anything Bio-Formats can read (`ImageReader.isThisType`) and open
-   via `BF.openImagePlus`/FIJI registration. More robust, but a behaviour change
-   touching TWOMBLI's frozen `IMAGE_FORMAT_LABEL` key and "which files get
-   processed"; also needs bio-formats as a direct dependency. **Headless caveat:**
-   Bio-Formats readers are probably headless-safe when called from inside an
-   ImageJ/FIJI plugin, but standalone headless scripts have been observed to fail;
-   TWOMBLI drives AnaMorf headlessly from Java, so verify before adopting. Track
-   as a separate step, coordinated with TWOMBLI.
+   **Deferred / future — use Bio-Formats to open files (recommended).** Instead
+   of a hardcoded extension list, accept anything Bio-Formats can read
+   (`ImageReader.isThisType`) and open via `BF.openImagePlus`/FIJI registration.
+   The filename-filter approach is antiquated and fragile — the 2026-10-14 PNG
+   case-sensitivity bug (`FilenameUtils.isExtension` is case-sensitive, so
+   uppercase "PNG" missed lowercase ".png") is a concrete example. More robust,
+   but a behaviour change touching TWOMBLI's frozen `IMAGE_FORMAT_LABEL` key and
+   "which files get processed"; also needs bio-formats as a direct dependency.
+   **Headless caveat:** Bio-Formats readers are probably headless-safe when called
+   from inside an ImageJ/FIJI plugin, but standalone headless scripts have been
+   observed to fail; TWOMBLI drives AnaMorf headlessly from Java, so verify before
+   adopting. Track as a separate step, coordinated with TWOMBLI.
 3. ✅ **B4 — `ResultSummariser` off `DataStatistics` → `DescriptiveStatistics`
    (2.2).** **Done 2026-10-13.** Rewrote `printStats`/`removeZeros` to mean +
    population std-dev only (Decision 7; confidence interval stays disabled), and
