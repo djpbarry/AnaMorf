@@ -64,8 +64,10 @@ if not defined INSTALLED (
     exit /b 1
 )
 
-rem Install the IAClassLibrary dependency into jars/ (replace any old version).
+rem Install the IAClassLibrary dependency into jars/ (replace any old version,
+rem including a lowercase `iaclasslibrary-*.jar` left in plugins/ by old builds).
 del /q "%JARS%\IAClassLibrary-*.jar" 2>nul
+del /q "%PLUGINS%\iaclasslibrary-*.jar" 2>nul
 for %%f in ("%~dp0..\target\IAClassLibrary-*.jar") do (
     copy /y "%%f" "%JARS%\" >nul
     echo [install-to-fiji] Installed library %%~nxf

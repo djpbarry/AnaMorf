@@ -26,6 +26,23 @@ dated narrative plus the "what not to do again" notes.
 
 ---
 
+## 2026-10-14 — Fixed PNG file-filter case-sensitivity
+
+Live-testing in Fiji surfaced "no images of type PNG" for lowercase `Image_*.png`.
+Root cause: `getFileExtensions` returned `{"PNG"}` (uppercase) for the default
+case, while `FileExtensionFilter` → `FilenameUtils.isExtension` is case-sensitive
+(commons-io 2.20.0), so uppercase "PNG" did not match lowercase ".png". The TIF/JPG
+cases already returned lowercase, so the default was simply inconsistent.
+
+Fix: `getFileExtensions` now lowercases the default case (`upper.toLowerCase()`),
+and the `Batch_AnalyserTest` was updated (`getFileExtensionsLowercasesOtherFormats`).
+`mvn test` 13/13 green; re-installed into Fiji.
+
+Also made `install-to-fiji.cmd` clean a lowercase `iaclasslibrary-*.jar` left in
+`plugins/` by older builds.
+
+---
+
 ## 2026-10-14 — D2 done: decomposed `analyseImage` helpers
 
 Extracted five helpers from `Batch_Analyser.analyseImage` (the ~250-line god

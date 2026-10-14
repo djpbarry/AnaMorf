@@ -879,7 +879,7 @@ public class Batch_Analyser implements PlugIn {
             case "JPEG":
                 return new String[]{"jpg", "jpeg"};
             default:
-                return new String[]{format};
+                return new String[]{upper.toLowerCase()};
         }
     }
 

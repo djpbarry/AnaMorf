@@ -27,10 +27,11 @@ class Batch_AnalyserTest {
     }
 
     @Test
-    void getFileExtensionsPassesThroughOtherFormats() {
-        assertArrayEquals(new String[]{"PNG"}, Batch_Analyser.getFileExtensions("PNG"));
-        assertArrayEquals(new String[]{"BMP"}, Batch_Analyser.getFileExtensions("BMP"));
-        assertArrayEquals(new String[]{"GIF"}, Batch_Analyser.getFileExtensions("GIF"));
+    void getFileExtensionsLowercasesOtherFormats() {
+        assertArrayEquals(new String[]{"png"}, Batch_Analyser.getFileExtensions("PNG"));
+        assertArrayEquals(new String[]{"bmp"}, Batch_Analyser.getFileExtensions("BMP"));
+        assertArrayEquals(new String[]{"gif"}, Batch_Analyser.getFileExtensions("GIF"));
+        assertArrayEquals(new String[]{"png"}, Batch_Analyser.getFileExtensions("png"));
     }
 
     @Test
