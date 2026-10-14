@@ -179,8 +179,6 @@ public class Batch_Analyser implements PlugIn {
         IJ.log(currentDirectory.getAbsolutePath());
         resultsTable = Analyzer.getResultsTable();
         resultsTable.reset();
-        resultsTable.incrementCounter();
-        resultsTable.addLabel(currentDirectory.getAbsolutePath());
         long startTime = System.currentTimeMillis();
         File resultsDirectory = new File(GenUtils.openResultsDirectory(currentDirectory.getAbsolutePath() + File.separator + title));
         if (analyseFiles(currentDirectory, resultsDirectory)) {

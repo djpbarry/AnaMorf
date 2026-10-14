@@ -50,26 +50,25 @@ Created the `bin/` live-test infrastructure, mirroring ADAPT's convention:
 then `install-to-fiji` → `run-anamorf` → `compute-baseline` to seed the golden
 manifest from the B6 output, and `verify-baseline` as the future gate.
 
-### Open issue — baseline portability (unresolved)
+### Resolved — baseline portability (directory-label row removed)
 
 The live run (`run-anamorf.cmd`, Fiji at
 `C:\Users\davej\fiji-latest-portable-nojava\Fiji`, JDK 21 at
 `C:\Program Files\Eclipse Adoptium\jdk-21.0.12.101-hotspot`) completed and
 produced a full `results.csv` (masks/skeletons/curve maps + `properties.xml`).
-But the first data row of `results.csv` is the **machine-specific absolute work
-directory path** — `Batch_Analyser.run` calls
+The first data row of `results.csv` was the **machine-specific absolute work
+directory path** — `Batch_Analyser.run` called
 `resultsTable.addLabel(currentDirectory.getAbsolutePath())`, so that label (with
-all-zero metrics) is the directory path, not an image name. This makes a naive
-SHA-256 baseline non-portable across checkout locations.
+all-zero metrics) was the directory path, not an image name.
 
-A stopgap was rehearsed (a fixed `C:\anamorf-live` work dir) but rejected: it
-hardcodes a Windows drive into a nominally portable tool. **Deferred as a
-documented TODO** (in `bin/RunAnamorf.java`), pending a maintainer decision
-between (a) stop writing the directory path as a data label in
-`Batch_Analyser.run`, or (b) normalise that one label row out of the hash in
-`BaselineTool`. The golden baseline manifest is therefore **not yet generated** —
-it should be cut only after the label-row question is settled, otherwise the
-manifest encodes a checkout-specific path.
+**Fix (chosen over the stopgap):** removed the directory-label row from
+`Batch_Analyser.run` (`incrementCounter()` + `addLabel(getAbsolutePath())`
+deleted), so `results.csv` now starts with the header and then real per-image
+data. This is safe — every image writes its own label during analysis, and the
+directory row only carried `NaN`/zeros. Reverted the `RunAnamorf`/
+`run-anamorf.cmd` `C:\anamorf-live` stopgap (a fixed Windows drive was never a
+real fix). Verified determinism: two headless runs produced an identical
+`results.csv` (SHA-256 `7dbd6502…`), so the baseline is now portable.
 
 ---
 

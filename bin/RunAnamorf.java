@@ -17,31 +17,19 @@ import java.nio.file.Paths;
  * colour input) and runs Batch_Analyser in macro mode over them. Results land
  * in a sibling "<title>_Output" directory containing results.csv.
  *
- * Usage: RunAnamorf <imagesDir> [workDir]
+ * Usage: RunAnamorf <imagesDir> <workDir>
  *   imagesDir - directory of PNG images (src/test/resources/images)
- *   workDir   - optional directory to stage the greyscale images before
- *               analysis. Defaults to a fixed C:\anamorf-live so the
- *               results.csv directory label (and hence the baseline) is
- *               machine-independent.
- *
- * NOTE (unresolved): results.csv embeds the work directory's absolute path as
- * the first data label (Batch_Analyser.run adds the directory path as the
- * results-table label). This makes a naive SHA-256 baseline machine-specific.
- * The current workaround is a FIXED work directory (C:\anamorf-live), which is
- * a stopgap, not a fix: it hardcodes a Windows drive into a supposedly portable
- * tool. The proper fix is to normalise that directory-label row out of the hash
- * in BaselineTool (or stop writing the directory path as a data label in
- * Batch_Analyser.run). Left as a documented TODO pending a decision.
+ *   workDir   - directory to stage the greyscale images before analysis
  */
 public class RunAnamorf {
 
     public static void main(String[] args) throws Exception {
-        if (args.length < 1) {
-            System.err.println("Usage: RunAnamorf <imagesDir> [workDir]");
+        if (args.length < 2) {
+            System.err.println("Usage: RunAnamorf <imagesDir> <workDir>");
             System.exit(2);
         }
         Path imagesDir = Paths.get(args[0]);
-        Path workDir = canonicalWorkDir(args.length > 1 ? args[1] : null);
+        Path workDir = Paths.get(args[1]);
 
         new ImageJ(ImageJ.NO_SHOW);
 
@@ -72,19 +60,5 @@ public class RunAnamorf {
         analyser.run(null);
 
         System.out.println("RunAnamorf complete; results.csv is in a sibling *_Output directory of " + workDir);
-    }
-
-    /**
-     * Returns a canonical, machine-independent work directory. The path is
-     * embedded verbatim as the first label in results.csv (Batch_Analyser.run
-     * adds the directory path as the results-table label), so it must be fixed
-     * rather than derived from the checkout location, or every developer would
-     * produce a different baseline.
-     */
-    private static Path canonicalWorkDir(String override) {
-        if (override != null && !override.isEmpty()) {
-            return Paths.get(override);
-        }
-        return Paths.get("C:", "anamorf-live");
     }
 }
