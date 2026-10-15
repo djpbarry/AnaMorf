@@ -308,7 +308,7 @@ public class Batch_Analyser implements PlugIn {
                 }
             }
         } else {
-            IJ.log("Greyscale images required - " + imageName + " will not be analysed.");
+            IJ.log("Skipping " + imageName + ": colour (RGB) images are not supported. Convert to 8-bit greyscale (Image > Type > 8-bit) and re-run.");
         }
     }
 
