@@ -1,9 +1,12 @@
 # AnaMorf Modernisation & IAClassLibrary Compatibility Plan
 
-Status: **Phases A–D complete; Phase E3 (UI rewrite) done.** Build green on JDK 21
-/ IACL `v2.0.23` (no compile break); B6 characterisation found **no numerical
-drift** between IACL 1.0.32 and 2.0.23. Version is now `4.0.0-SNAPSHOT` (B3).
-Maintainer decisions resolved (2026-10-11, 2026-10-12) and recorded in section 5.
+Status: **Phases A–E complete; Phase F (documentation/release) in progress.**
+Build green on JDK 21 / IACL `v2.0.23` (no compile break); B6 characterisation
+found **no numerical drift** between IACL 1.0.32 and 2.0.23. Version is
+`4.0.0-SNAPSHOT` (B3). ReadTheDocs scaffolding + first content pass done; README
+refreshed with badges and a docs link. Maintainer decisions resolved (2026-10-11,
+2026-10-12) and recorded in section 5; the G2 namespace rename is the only open
+decision.
 
 Scope: bring AnaMorf back into compatibility with the current IAClassLibrary and
 modernise the project on the same terms, and in the same style, as
@@ -534,9 +537,10 @@ gate for C4, matching ADAPT's convention.
 
 ### Phase F — Documentation, packaging, and release
 
-1. **F1** Rewrite `README.md` on the IACL template: what it is, build
-   (`./mvnw verify`), how it is consumed (FIJI/ImageJ, and as a JitPack
-   dependency), and a package map.
+1. **F1** Rewrite `README.md` on the IACL template. **Done 2026-10-15.** Now has
+   what it is, build (`./mvnw verify` + PAT note), how it is consumed (Fiji plugin
+   and JitPack `com.github.djpbarry:Anamorf`), and a package map; links to
+   ReadTheDocs and carries Build / ReadTheDocs / commit-activity / license badges.
 2. **F2** Keep `AGENTS.md` in sync as each phase lands — IACL treats this as a
    per-change obligation, and it is what makes the next migration cheap.
 3. **F3** Maintain the three-file source of truth — `DEVELOPMENT_PLAN.md` (what
