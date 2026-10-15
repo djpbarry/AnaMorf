@@ -26,6 +26,35 @@ dated narrative plus the "what not to do again" notes.
 
 ---
 
+## 2026-10-15 — Fixed cross-plugin version resource collision
+
+A GUI run in Fiji produced an output folder named `AnaMorf v4.0.29_Output`, while
+the headless runner produced the expected `AnaMorf v4.0.0-SNAPSHOT_Output`.
+Root cause: `Batch_Analyser.getVersion()` read the root-level
+`/project.properties` resource, and **ADAPT ships the same generic resource name**
+(`version=4.0.29`). With both `adapt-4.0.29.jar` and `anamorf-4.0.0-SNAPSHOT.jar`
+in Fiji's `plugins/`, the classloader returned whichever `project.properties` came
+first in its search order — ADAPT, alphabetically — so AnaMorf titled itself with
+ADAPT's version. The headless runner was unaffected because it runs from
+`target/classes` and never loads ADAPT.
+
+Fix: moved the filtered template from `src/main/resources/project.properties` to
+`src/main/resources/net/calm/anamorf/version.properties` and updated `getVersion()`
+to read `/net/calm/anamorf/version.properties`. The package-qualified path is
+unique to AnaMorf, so the collision is gone.
+
+**Lesson.** Never put a plugin's version (or any lookup) resource at the classpath
+root under a generic name. Two plugins can both legitimately ship `project.properties`
+(or `version.properties`, `plugins.config`, etc.), and `ClassLoader.getResource`
+is first-match-wins with no ownership guarantee. Scope shared-resource lookups to
+the plugin's own package path, or use a clearly namespaced filename.
+
+Verified: `mvn test` 12/12 green; reflection check with `adapt-4.0.29.jar` first
+on the classpath returns `4.0.0-SNAPSHOT`; reinstalled jar contains
+`net/calm/anamorf/version.properties` and no root `project.properties`.
+
+---
+
 ## 2026-10-15 — D6 done: fixed `searchImage` ROI bounds
 
 `searchImage` iterated its raster scan with `y < bounds.height` and

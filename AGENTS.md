@@ -157,11 +157,15 @@ Results always land in a sibling directory named after the plug-in title, produc
   `ResultSummariser` and others carry GPLv3 headers, while `pom.xml` declares BSD-2 for
   the project. Match the header style of the file you are editing.
 - Version strings are resolved at build time via Maven resource filtering: the
-  `src/main/resources/project.properties` template (`version=${project.version}`)
-  is filtered into the JAR, and `Batch_Analyser.getVersion()` reads it at runtime
-  to build the `title` / output-directory name. The version therefore comes from
-  `pom.xml` `<version>` and is not dependent on a `pom.xml` being next to the
-  process working directory.
+  `src/main/resources/net/calm/anamorf/version.properties` template
+  (`version=${project.version}`) is filtered into the JAR, and
+  `Batch_Analyser.getVersion()` reads it at runtime to build the `title` /
+  output-directory name. The resource lives under the `net/calm/anamorf` package
+  path (not a root-level `project.properties`) to avoid colliding with other
+  plugins that ship the same generic resource name (e.g. ADAPT, which would
+  otherwise shadow the version and yield an `AnaMorf v4.0.29` folder). The
+  version therefore comes from `pom.xml` `<version>` and is not dependent on a
+  `pom.xml` being next to the process working directory.
 
 ## Dependency posture and modernisation
 

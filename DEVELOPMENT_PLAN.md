@@ -317,6 +317,17 @@ Ordered by risk-to-correctness:
    `Output` suffix (not the version prefix), so it is safe. *(Note: the properties
    template itself was missing until 2026-10-13, so `getVersion()` would have
    returned `"unknown"`.)*
+
+   **B3 follow-up (2026-10-15) — version resource renamed to avoid cross-plugin
+   collision.** The root-level `/project.properties` name collided with ADAPT's
+   own `project.properties` (`version=4.0.29`). With both jars in Fiji's
+   `plugins/`, the classloader returned whichever resource came first (ADAPT
+   sorts first), so a GUI run titled itself `AnaMorf v4.0.29` while the headless
+   runner (which uses `target/classes` and never sees ADAPT) produced the correct
+   `v4.0.0-SNAPSHOT`. Fixed by moving the resource to
+   `src/main/resources/net/calm/anamorf/version.properties` and reading
+   `/net/calm/anamorf/version.properties` in `getVersion()`. Verified via
+   reflection with `adapt-4.0.29.jar` first on the classpath → `4.0.0-SNAPSHOT`.*
 6. **B7 — Deprecated-symbol policy.** `SkeletonProcessor` and `FractalEstimator`
    have no drop-in replacement. **Decision 3 (Q1):** accept the risk — keep them on
    the critical path, and record a plan to find alternatives (vendor or migrate)
@@ -378,8 +389,8 @@ Added `junit-jupiter-api` + `junit-jupiter-engine` (scope `test`, **no
 3. `Batch_Analyser.toOutputData(boolean[])` — pin the bitmask: each `true` at
    index *n* contributes *2ⁿ*; spot-check the flag constants (`AREAS=1`,
    `CIRC=2`, … `CURVATURE=512`).
-4. `Batch_Analyser.getVersion()` — returns the filtered `project.properties`
-   value (non-`"unknown"`).
+4. `Batch_Analyser.getVersion()` — returns the filtered
+   `net/calm/anamorf/version.properties` value (non-`"unknown"`).
 5. `ResultSummariser.removeZeros(float[], int)` — positive-only in-place
    compaction returns the count.
 

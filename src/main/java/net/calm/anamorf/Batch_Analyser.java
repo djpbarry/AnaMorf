@@ -877,7 +877,7 @@ public class Batch_Analyser implements PlugIn {
 
     static String getVersion() {
         Properties versionProps = new Properties();
-        try (InputStream in = Batch_Analyser.class.getResourceAsStream("/project.properties")) {
+        try (InputStream in = Batch_Analyser.class.getResourceAsStream("/net/calm/anamorf/version.properties")) {
             if (in != null) {
                 versionProps.load(in);
             }

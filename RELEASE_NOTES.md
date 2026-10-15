@@ -53,6 +53,10 @@ the dependency and toolchain break.
   `nbproject/`) has been removed from the tree, and a Maven wrapper (pinned to
   Maven 3.9.16) is now included for reproducible builds.
 - **CI now builds on JDK 21** using the Maven wrapper, with dependency caching.
+- **Version lookup is collision-proof.** The version resource is now stored under
+  the plugin's own package path (`net/calm/anamorf/version.properties`) instead of
+  a root-level `project.properties`, so a co-installed ADAPT plugin can no longer
+  shadow AnaMorf's version and mislabel the output folder.
 
 ### Notes for upgraders
 
