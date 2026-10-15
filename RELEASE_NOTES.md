@@ -57,6 +57,13 @@ the dependency and toolchain break.
   the plugin's own package path (`net/calm/anamorf/version.properties`) instead of
   a root-level `project.properties`, so a co-installed ADAPT plugin can no longer
   shadow AnaMorf's version and mislabel the output folder.
+- **The parameter dialog has been rewritten** as a hand-managed Swing layout (the
+  NetBeans `.form` files are gone), with the same two tabs and parameter surface.
+  This also fixes three long-standing dialog bugs: the "Mean Branch Length"
+  checkbox now loads its saved state correctly; the "Threshold Method" selector
+  now actually applies the chosen method instead of always using `Default`; and a
+  non-numeric manual threshold value is now caught at the dialog instead of
+  failing later during analysis.
 
 ### Notes for upgraders
 

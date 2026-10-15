@@ -26,6 +26,51 @@ dated narrative plus the "what not to do again" notes.
 
 ---
 
+## 2026-10-15 — E3 done: hand-managed Swing UI (dropped NetBeans forms)
+
+`UserInterface` and `ExitDialog` were NetBeans-generated (`//GEN-BEGIN` fences in
+the `.java` and matching `.form` files), so any hand-edit risked being overwritten
+on regeneration. Rewrote both as plain, hand-managed Swing:
+
+- Deleted `UserInterface.form` and `ExitDialog.form`.
+- Rebuilt the two-tab layout (Basic / Advanced) with the same parameter surface,
+  keeping the `PropertyExtractor` write-back contract: labels use
+  `setLabelFor(...)` for text fields/combos and toggles use their own text as the
+  property key.
+- Removed ~30 dead per-parameter getters (`isArea`, `getRes`, `isCurvature`,
+  etc.) and all the `static` mutable state they mirrored. These were orphaned when
+  D5 replaced the positional `getOptions()`/`toOutputData()` bitmask with
+  `computeOutputData(Properties)`, and the `static` fields were also a latent bug
+  (state leaked between dialog sessions). The constructor, `exitProgram()`,
+  `setVariables()`, `setProperties(...)` and `getProps()` remain.
+- Introduced proper `ButtonGroup`s for the light/dark-background and
+  auto/manual-threshold radio pairs (previously exclusivity was hand-toggled in
+  action listeners).
+
+Three latent UI bugs were fixed in passing:
+
+1. The "Mean Branch Length" checkbox read its initial state from
+   `FOURIER_FRAC_LABEL` instead of `MEAN_BRANCH_LABEL`.
+2. The "Threshold Method" combo never applied the saved value: its model is
+   `AutoThresholder.Method.values()` (an enum), and `setSelectedItem(String)`
+   does not match enum entries by name, so it silently stayed on `Default`. Now
+   selected via `Method.valueOf(...)`.
+3. The manual threshold field was never validated because the obsolete `static
+   boolean autoThreshold` was always `true`, so `if (!autoThreshold)` never
+   fired. Validation now keys off the actual `manualThresholdRadio` state.
+
+**Lesson.** Don't hand-edit NetBeans-generated code at all — replace it. The
+fences make every edit a future clobber, and the designer's property bindings are
+opaque enough that three real bugs (wrong key, no-op combo, dead validation flag)
+survived unnoticed. A hand-managed layout with the property-key convention
+documented in `AGENTS.md` is both shorter and safer.
+
+Verified: `mvn test` 12/12 green; reflection-based write-back check (checkbox,
+text field, combo, radio pair all round-trip into `props`); Fiji smoke test
+`ALL_ANAMORF_PLUGINS_LOADABLE`.
+
+---
+
 ## 2026-10-15 — Fixed cross-plugin version resource collision
 
 A GUI run in Fiji produced an output folder named `AnaMorf v4.0.29_Output`, while

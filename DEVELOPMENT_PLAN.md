@@ -1,10 +1,9 @@
 # AnaMorf Modernisation & IAClassLibrary Compatibility Plan
 
-Status: **Phase A complete; Phase B nearly done (B6, B3, B2, B4, B5 done; B7 is a
-recorded decision).** Build green on JDK 21 / IACL `v2.0.23` (no compile break);
-B6 characterisation found **no numerical drift** between IACL 1.0.32 and 2.0.23.
-Version is now `4.0.0-SNAPSHOT` (B3). Maintainer decisions resolved (2026-10-11,
-2026-10-12) and recorded in section 5.
+Status: **Phases A–D complete; Phase E3 (UI rewrite) done.** Build green on JDK 21
+/ IACL `v2.0.23` (no compile break); B6 characterisation found **no numerical
+drift** between IACL 1.0.32 and 2.0.23. Version is now `4.0.0-SNAPSHOT` (B3).
+Maintainer decisions resolved (2026-10-11, 2026-10-12) and recorded in section 5.
 
 Scope: bring AnaMorf back into compatibility with the current IAClassLibrary and
 modernise the project on the same terms, and in the same style, as
@@ -509,10 +508,18 @@ gate for C4, matching ADAPT's convention.
    processed in a serial loop), adopt IACL's `MultiThreadedProcess.runWorkers`
    idiom rather than hand-rolling threads. If it is not parallelised, do not add
    concurrency just for its own sake.
-3. **E3** **Decision (Q4): rewrite the UI.** Drop the NetBeans `.form`/`GEN`-fenced
-   Swing (`UserInterface`, `ExitDialog`) in favour of a hand-managed layout,
-   following ADAPT's M5 step 3. Keep the same fields and tab structure so the
-   parameter surface is unchanged.
+3. **E3** **Decision (Q4): rewrite the UI.** **Done 2026-10-15.** Dropped the
+   NetBeans `.form`/`GEN`-fenced Swing (`UserInterface`, `ExitDialog`) in favour of
+   a hand-managed layout (two tabs, same parameter surface). Deleted
+   `UserInterface.form` / `ExitDialog.form`, removed the dead per-parameter
+   getters and static mutable state, and fixed three latent UI bugs in passing:
+   (1) the "Mean Branch Length" checkbox initialised from the wrong property
+   (`FOURIER_FRAC_LABEL` instead of `MEAN_BRANCH_LABEL`); (2) the "Threshold
+   Method" combo never applied the saved method because `setSelectedItem(String)`
+   does not match an enum model, so it stayed on `Default`; and (3) the manual
+   threshold field was never validated because the obsolete static `autoThreshold`
+   flag was always `true`. Verified with `mvn test` (12/12), a reflection-based
+   write-back check, and the Fiji smoke test.
 4. **E4** Only now consider modern language features (`switch` expressions,
    pattern matching, `var`). IACL sequenced this last (G6) because doing it
    earlier churns code the structural phases then rewrite.

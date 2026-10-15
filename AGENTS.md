@@ -43,7 +43,7 @@ Notes:
 
 **JUnit 5 unit tests** exist under `src/test/java/net/calm/anamorf/` (13 tests
 across 5 classes). They cover pure logic and headless ImageJ primitives
-(`getFileExtensions`, `getOptions`/`toOutputData`, `getVersion`, `removeZeros`,
+(`getFileExtensions`, `computeOutputData`, `getVersion`, `removeZeros`,
 `saveResults`, `SkeletonPruner.traceBranch`, `HyphalAnalyser`). The
 `junit-jupiter-api`/`-engine` deps are parent-managed (no `<version>`); the
 `pom-scijava:45.1.0` parent wires surefire + JUnit Platform + JaCoCo. Run with
@@ -79,8 +79,8 @@ All production code lives under `src/main/java/net/calm/anamorf/`.
 | File | Role |
 | --- | --- |
 | `Batch_Analyser.java` | The heart of the plug-in. Implements `ij.plugin.PlugIn`. Owns the whole pipeline. |
-| `UserInterface.java` / `.form` | NetBeans-generated Swing parameter dialog. |
-| `ExitDialog.java` / `.form` | NetBeans-generated confirmation dialog. |
+| `UserInterface.java` | Hand-managed Swing parameter dialog. |
+| `ExitDialog.java` | Hand-managed confirmation dialog. |
 | `AnaMorf_Macro_Extensions.java` | ImageJ `PlugIn` that registers macro extensions; its `toString()` doubles as the user-facing help text. |
 | `AnaMorfMacroExecutor.java` | Implements `ij.macro.MacroExtension`; backs the `Ext.*` macro functions. |
 | `HyphalAnalyser.java` | Skeleton analysis: total length, tips, branchpoints, hyphal growth unit. |
@@ -131,23 +131,25 @@ Results always land in a sibling directory named after the plug-in title, produc
   a static block, with a public `getProps()` setter used by the macro layer. Everything
   shares one mutable parameter set per JVM. Be careful with anything that assumes
   instance-scoped configuration.
-- **Outputs are a bitmask.** `ASetOutputs()` builds `outputData` by treating the
-  `boolean[]` from `getOptions()` positionally as powers of two. The ordering of that
-  array must stay in sync with the `public static final int` flags declared in
-  `Batch_Analyser` (`AREAS`, `CIRC`, `HYPHAL_GROWTH_UNIT`, ...). Reordering either side
-  silently corrupts output selection.
+- **Outputs are a bitmask.** `setOutputs()` calls `computeOutputData(Properties)`,
+  which maps each `DefaultParams` label to a `public static final int` flag in
+  `Batch_Analyser` (`AREAS=1`, `CIRC=2`, `HYPHAL_GROWTH_UNIT=4`, ...) via `|=`.
+  The mapping is keyed by label string (not array position), so it cannot drift
+  silently; a new output still needs both a flag constant and a line in
+  `computeOutputData`.
 - **Pixel polarity is inverted from intuition here.** `FOREGROUND = 0` and
   `BACKGROUND = 255`. Several places set `Prefs.blackBackground = false` and warn about
   inverted LUTs. Check which convention a method expects before comparing pixel values.
 - **Macro mode vs GUI mode** is the `macroMode` constructor flag. In macro mode the
   directory and properties come from `AnaMorfMacroExecutor.initialise()`, no dialogs are
   shown, and errors are logged rather than surfaced.
-- **NetBeans-generated code is off limits for hand-editing.** `initComponents()` in
-  `UserInterface` and `ExitDialog` is fenced with
-  `//GEN-BEGIN:initComponents` / `//GEN-END:initComponents` and the event handlers carry
-  `//GEN-FIRST:` / `//GEN-LAST:` markers. Editing inside those fences gets overwritten
-  the next time the form is regenerated in the designer. Put logic in the hand-written
-  methods (`okButtonActionPerformed`, `getOptions`, the getters) instead.
+- **The Swing dialogs are hand-managed, not NetBeans forms.** `UserInterface` and
+  `ExitDialog` no longer have `.form` files or `//GEN-BEGIN`/`//GEN-END` fences; edit
+  them directly. `UserInterface` keys every control to a `DefaultParams` property by
+  its label text (`JLabel.setLabelFor(...)` for text fields/combos, and the checkbox /
+  radio button's own text for toggles) and writes choices back through
+  `PropertyExtractor.setProperties(props, this, WRITE)` — keep that convention intact
+  when adding or renaming parameters, or the write-back silently stops working.
 - **`IAClassLibrary` provides a lot of the primitives** — `GenUtils`, `GenVariables`,
   `PropertyWriter`, `DataWriter`, `Utilities`, `FractalEstimator`, `CurveAnalyser`,
   `FuzzyThresholder`, `BinaryMaker`, `Dijkstra`/`Graph`/`Node`. Before writing your own

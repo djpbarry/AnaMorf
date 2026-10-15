@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2015 David Barry <david.barry at cancer.org.uk>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -14,82 +14,62 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package net.calm.anamorf;
 
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Toolkit;
+import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 /**
- * A dialog displayed in response to a request from the user to exit the
- * application.
+ * A confirmation dialog shown when the user asks to exit the application.
  */
-public class ExitDialog extends javax.swing.JDialog {
+public class ExitDialog extends JDialog {
 
-    private static boolean exitProgram = false;
+    private boolean exitProgram;
 
     /**
-     * Creates new form ExitDialog
+     * Creates the confirmation dialog.
+     *
+     * @param parent the parent dialog
+     * @param modal whether the dialog is modal
      */
     public ExitDialog(JDialog parent, boolean modal) {
         super(parent, modal);
-        initComponents();
-        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-        this.setLocation(dim.width / 2 - this.getWidth() / 2, dim.height / 2 - this.getHeight() / 2);
+        this.exitProgram = false;
+        buildUI();
+        centreOnScreen();
     }
 
-    /**
-     * This method is called from within the constructor to initialize the form.
-     */
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-
-        jPanel1 = new javax.swing.JPanel();
-        questionLabel = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
-        okButton = new javax.swing.JButton();
-        cancelButton = new javax.swing.JButton();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+    private void buildUI() {
         setTitle("Exit Program?");
-        getContentPane().setLayout(new java.awt.GridLayout(2, 2));
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        getContentPane().setLayout(new java.awt.BorderLayout());
 
-        questionLabel.setText("Do you really want to exit?");
-        jPanel1.add(questionLabel);
+        JPanel questionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        questionPanel.add(new JLabel("Do you really want to exit?"));
+        getContentPane().add(questionPanel, java.awt.BorderLayout.CENTER);
 
-        getContentPane().add(jPanel1);
-
-        okButton.setText("OK");
-        okButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                okButtonActionPerformed(evt);
-            }
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JButton okButton = new JButton("OK");
+        okButton.addActionListener(e -> {
+            exitProgram = true;
+            dispose();
         });
-        jPanel2.add(okButton);
-
-        cancelButton.setText("Cancel");
-        cancelButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cancelButtonActionPerformed(evt);
-            }
+        JButton cancelButton = new JButton("Cancel");
+        cancelButton.addActionListener(e -> {
+            exitProgram = false;
+            dispose();
         });
-        jPanel2.add(cancelButton);
-
-        getContentPane().add(jPanel2);
+        buttonPanel.add(okButton);
+        buttonPanel.add(cancelButton);
+        getContentPane().add(buttonPanel, java.awt.BorderLayout.SOUTH);
 
         pack();
-    }// </editor-fold>//GEN-END:initComponents
-
-    private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
-        exitProgram = false;
-        dispose();
-    }//GEN-LAST:event_cancelButtonActionPerformed
-
-    private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-        exitProgram = true;
-        dispose();
-    }//GEN-LAST:event_okButtonActionPerformed
+    }
 
     /**
      * Returns true if the OK button was clicked, false otherwise.
@@ -97,11 +77,9 @@ public class ExitDialog extends javax.swing.JDialog {
     public boolean okButtonPressed() {
         return exitProgram;
     }
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton cancelButton;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JButton okButton;
-    private javax.swing.JLabel questionLabel;
-    // End of variables declaration//GEN-END:variables
+
+    private void centreOnScreen() {
+        Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+        setLocation(screen.width / 2 - getWidth() / 2, screen.height / 2 - getHeight() / 2);
+    }
 }
