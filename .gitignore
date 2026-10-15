@@ -2,6 +2,7 @@
 /build/
 /dist/
 /target/
+/docs/_build/
 .idea/
 *.iml
 .junie/
