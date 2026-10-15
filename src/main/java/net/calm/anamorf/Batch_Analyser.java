@@ -99,14 +99,13 @@ public class Batch_Analyser implements PlugIn {
     private DescriptiveStatistics wholeImageCurvature;
     ArrayList<ArrayList<Double>> cumulativeCurveStats;
     ArrayList<String> cumulativeCurveStatsLabels;
-    private static Properties props;
+    private static Properties sharedProps;
+    private Properties props;
     private final boolean macroMode;
 
     static {
-        if (props == null) {
-            IJ.log("Initialising properties...");
-            props = new DefaultParams();
-        }
+        IJ.log("Initialising properties...");
+        sharedProps = new DefaultParams();
     }
 
     /*
@@ -149,7 +148,10 @@ public class Batch_Analyser implements PlugIn {
     public Batch_Analyser(boolean macroMode, File currentDirectory, Properties props) {
         this.macroMode = macroMode;
         this.currentDirectory = currentDirectory;
-        Batch_Analyser.props = props;
+        this.props = props;
+        if (props != null) {
+            sharedProps = props;
+        }
     }
 
     /**
@@ -361,8 +363,9 @@ public class Batch_Analyser implements PlugIn {
      * @return false if the dialog was closed/exited by the user, true otherwise
      */
     public boolean showGUI() {
-        if (Batch_Analyser.props == null) {
-            Batch_Analyser.props = new DefaultParams();
+        if (props == null) {
+            props = new DefaultParams();
+            sharedProps = props;
         }
         UserInterface gui = new UserInterface(IJ.getInstance(), true, title, props);
         gui.setVisible(true);
@@ -888,7 +891,7 @@ public class Batch_Analyser implements PlugIn {
     }
 
     public static Properties getProps() {
-        return props;
+        return sharedProps;
     }
 
 }

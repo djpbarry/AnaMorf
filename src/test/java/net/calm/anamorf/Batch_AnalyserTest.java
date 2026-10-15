@@ -1,5 +1,7 @@
 package net.calm.anamorf;
 
+import java.io.File;
+
 import net.calm.anamorf.params.DefaultParams;
 import org.junit.jupiter.api.Test;
 
@@ -7,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 class Batch_AnalyserTest {
 
@@ -80,5 +83,17 @@ class Batch_AnalyserTest {
         assertNotNull(version);
         assertFalse(version.isEmpty());
         assertFalse(version.equals("unknown"));
+    }
+
+    @Test
+    void getPropsReturnsNonNullSharedProperties() {
+        assertNotNull(Batch_Analyser.getProps());
+    }
+
+    @Test
+    void constructorPublishesPropsToGetProps() {
+        DefaultParams props = new DefaultParams();
+        new Batch_Analyser(true, new File("."), props);
+        assertSame(props, Batch_Analyser.getProps());
     }
 }

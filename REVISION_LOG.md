@@ -26,6 +26,38 @@ dated narrative plus the "what not to do again" notes.
 
 ---
 
+## 2026-10-15 — E1 done: de-static `props` with a backward-compatible accessor
+
+`Batch_Analyser.props` was a `static Properties`, so every instance in a JVM shared
+one mutable parameter set (and the no-arg GUI path even nulled it, relying on
+`showGUI()` to recreate it). That is the same shared-mutable-state smell IACL's
+`RegionGrower` work targets.
+
+Change: `props` is now an **instance** field, and every instance method reads/writes
+`this.props`. The frozen static `Batch_Analyser.getProps()` is preserved by
+delegating to a private static `sharedProps` holder:
+
+- the 3-arg constructor publishes a non-null `props` argument to `sharedProps`;
+- `showGUI()` publishes a freshly-created `DefaultParams` to `sharedProps` when the
+  GUI path has no supplied `props`.
+
+This keeps the TWOMBLI / macro-layer contract intact: both write through
+`Batch_Analyser.getProps().setProperty(...)` before (or between) runs, and those
+mutations reach the active instance because the constructor and `getProps()` return
+the same object.
+
+**Lesson.** "De-static with a backward-compatible accessor" does not mean removing
+the static method — it means splitting *field ownership* (instance) from *external
+access* (static holder). The static holder must be re-published at every point a new
+parameter set becomes the active one (constructor, and the GUI's fresh-default
+path), or `getProps()` silently points at a stale object.
+
+Verified: `mvn test` 14/14 green (two new tests assert `getProps()` is non-null and
+returns the exact object passed to the constructor); headless regression run is
+`BASELINE_PASS`.
+
+---
+
 ## 2026-10-15 — E3 done: hand-managed Swing UI (dropped NetBeans forms)
 
 `UserInterface` and `ExitDialog` were NetBeans-generated (`//GEN-BEGIN` fences in

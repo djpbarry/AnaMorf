@@ -495,15 +495,14 @@ gate for C4, matching ADAPT's convention.
 
 ### Phase E — Structural modernisation (the IACL G1/G2 equivalent)
 
-1. **E1** De-static `props` **with a backward-compatible accessor.**
-   `Batch_Analyser.props` is a `static Properties` shared per JVM. TWOMBLI mutates
-   it via the static `Batch_Analyser.getProps().setProperty(...)` between runs, so
-   the `getProps()` static method must survive (even if it delegates to a static
-   holder). Any instance-scoping of `props` has to be coordinated with TWOMBLI and
-   the macro layer, both of which write through `getProps()` **before** the
-   `Batch_Analyser` is constructed. This is the direct analogue of IACL's
-   `RegionGrower` work, but the consumer coupling makes it a breaking change if
-   done naively.
+1. **E1** De-static `props` **with a backward-compatible accessor.** **Done
+   2026-10-15.** `props` is now an instance `Properties` field; the frozen static
+   `getProps()` survives by delegating to a private static `sharedProps` holder that
+   the constructor and `showGUI()` keep in sync with the active instance. TWOMBLI and
+   the macro layer still write through `getProps()` before/during construction and
+   their mutations reach the run unchanged. Added two unit tests locking the
+   `getProps()` identity contract; `mvn test` 14/14 green and the headless regression
+   run is `BASELINE_PASS`.
 2. **E2** If any per-image work is parallelised (currently it is not — images are
    processed in a serial loop), adopt IACL's `MultiThreadedProcess.runWorkers`
    idiom rather than hand-rolling threads. If it is not parallelised, do not add

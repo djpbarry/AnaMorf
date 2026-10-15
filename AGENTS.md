@@ -127,10 +127,14 @@ Results always land in a sibling directory named after the plug-in title, produc
   (`Boolean.parseBoolean`, `Double.parseDouble`). Add a new parameter by adding a label
   + default to `DefaultParams`, then wiring it into `UserInterface` and
   `Batch_Analyser`. There is no central validation.
-- **`props` is static.** `Batch_Analyser.props` is a `static Properties` initialised in
-  a static block, with a public `getProps()` setter used by the macro layer. Everything
-  shares one mutable parameter set per JVM. Be careful with anything that assumes
-  instance-scoped configuration.
+- **`props` is per-instance, with a static accessor for backwards compatibility.**
+  `Batch_Analyser` stores its parameters in an instance `Properties props` field, so
+  each run operates on its own parameter set. The frozen static
+  `Batch_Analyser.getProps()` survives by delegating to a private static
+  `sharedProps` holder: the constructor publishes a non-null `props` argument to
+  `sharedProps` (and `showGUI()` does the same for a fresh `DefaultParams`), so the
+  macro layer and TWOMBLI can still call `getProps().setProperty(...)` and have it
+  affect the active run. Do not reintroduce a `static` `props` field.
 - **Outputs are a bitmask.** `setOutputs()` calls `computeOutputData(Properties)`,
   which maps each `DefaultParams` label to a `public static final int` flag in
   `Batch_Analyser` (`AREAS=1`, `CIRC=2`, `HYPHAL_GROWTH_UNIT=4`, ...) via `|=`.

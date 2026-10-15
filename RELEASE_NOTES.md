@@ -64,6 +64,10 @@ the dependency and toolchain break.
   now actually applies the chosen method instead of always using `Default`; and a
   non-numeric manual threshold value is now caught at the dialog instead of
   failing later during analysis.
+- **Parameters are now per-instance.** The shared static parameter set was replaced
+  with an instance-scoped one (keeping the public `getProps()` accessor for the
+  macro layer and TWOMBLI), eliminating the risk of one run's settings leaking into
+  the next. No behaviour or output change.
 
 ### Notes for upgraders
 
