@@ -26,6 +26,26 @@ dated narrative plus the "what not to do again" notes.
 
 ---
 
+## 2026-10-15 — ReadTheDocs scaffolding + wiki migration (first pass)
+
+Adopted ReadTheDocs for AnaMorf, mirroring ADAPT's setup: Sphinx + MyST (Markdown
+source) + `sphinx_rtd_theme`, driven by `.readthedocs.yaml` and `docs/{conf.py,
+requirements.txt,index.md}`. Migrated the single GitHub-wiki "Home" page (Feb 2020)
+into a multi-page layout — `getting_started`, `user_guide`, `concepts`,
+`developer` — with a `{toctree}` in `index.md`.
+
+Reconciled the wiki against the current code while porting: used the current menu
+label ("AnaMorf Batch Processor"), documented the **"Mean Branch Length" checkbox →
+`HGU (microns)`** naming quirk, added the post-2020 **Curvature** output, applied
+the renamed parameter labels, and dropped the dead Bitbucket-hosted screenshots.
+The **CALM** update site is confirmed as the install channel.
+
+**Parked for later:** replace the screenshots, refine wording, and retire the wiki
+(and swap the README link to ReadTheDocs). Recorded in `DEVELOPMENT_PLAN.md`
+Phase F.
+
+---
+
 ## 2026-10-15 — Phase E complete: E2 deferred, E4 language features done
 
 **E2 (parallelism) — deferred, no code change.** `analyseFiles` processes images in

@@ -548,7 +548,14 @@ gate for C4, matching ADAPT's convention.
    phases that follow are patches/minors.
 5. **F5** Optional: a Javadoc publishing workflow, once F1/F3 exist.
 
-### Phase G — Upstream coordination
+**Phase F progress (2026-10-15).** ReadTheDocs was adopted in place of a
+Javadoc-only F5 (mirroring ADAPT): `.readthedocs.yaml` + `docs/` scaffolding
+(Sphinx + MyST + `sphinx_rtd_theme`) and a first pass at the content pages
+(`getting_started`, `user_guide`, `concepts`, `developer`), migrating the single
+GitHub-wiki "Home" page into a multi-page layout. The **CALM** update site is
+confirmed as the install channel. **Parked to revisit later:** replace the dead
+Bitbucket-hosted screenshots, refine wording, and retire the wiki (F1 README link
+swap is still outstanding).
 
 AnaMorf is a consumer, but it sits on the same author's shelf as IACL,
 `TrackerLibrary`, `AdaptDataProcessing` and ADAPT. IACL's plan names a coordinated

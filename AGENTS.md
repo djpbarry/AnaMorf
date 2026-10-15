@@ -10,9 +10,12 @@ each image, traces each object, and writes tabulated morphology data (projected 
 circularity, total length, endpoints, branchpoints, hyphal growth unit, mean branch
 length, lacunarity, box-counting and Fourier fractal dimensions, curvature).
 
-This repository is the standalone project. Users normally consume it through FIJI, and
-the authoritative usage documentation lives in the
-[wiki](https://github.com/djpbarry/AnaMorf/wiki), not here.
+This repository is the standalone project. Users normally consume it through FIJI.
+Usage documentation is migrating from the
+[wiki](https://github.com/djpbarry/AnaMorf/wiki) to
+[ReadTheDocs](https://anamorf.readthedocs.io/) (`docs/`, Sphinx + MyST). The wiki
+is still live but will be retired once the ReadTheDocs pages (currently a first
+pass, missing screenshots) are complete.
 
 ## Build
 
