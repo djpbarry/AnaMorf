@@ -260,8 +260,7 @@ public class UserInterface extends JDialog implements GUIMethods {
         // Cache the labels created by addLabeledField so enable/disable logic
         // can reach them.
         for (java.awt.Component c : panel.getComponents()) {
-            if (c instanceof JLabel) {
-                JLabel label = (JLabel) c;
+            if (c instanceof JLabel label) {
                 if (DefaultParams.NOISE_RED_LABEL.equals(label.getText())) {
                     blurRadiusLabel = label;
                 } else if (DefaultParams.BACK_FILT_LABEL.equals(label.getText())) {

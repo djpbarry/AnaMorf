@@ -866,16 +866,11 @@ public class Batch_Analyser implements PlugIn {
 
     static String[] getFileExtensions(String format) {
         String upper = format == null ? "" : format.toUpperCase();
-        switch (upper) {
-            case "TIF":
-            case "TIFF":
-                return new String[]{"tif", "tiff"};
-            case "JPG":
-            case "JPEG":
-                return new String[]{"jpg", "jpeg"};
-            default:
-                return new String[]{upper.toLowerCase()};
-        }
+        return switch (upper) {
+            case "TIF", "TIFF" -> new String[]{"tif", "tiff"};
+            case "JPG", "JPEG" -> new String[]{"jpg", "jpeg"};
+            default -> new String[]{upper.toLowerCase()};
+        };
     }
 
     static String getVersion() {

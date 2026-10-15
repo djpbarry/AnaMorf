@@ -59,7 +59,7 @@ public class SkeletonPruner {
             return;
         }
         ImageProcessor ip = imp.getProcessor();
-        if (!(ip instanceof ByteProcessor)) {
+        if (!(ip instanceof ByteProcessor byteIp)) {
             return;
         }
         int min;
@@ -68,7 +68,7 @@ public class SkeletonPruner {
         } catch (NumberFormatException e) {
             return;
         }
-        SkeletonPruner sp = new SkeletonPruner(min, (ByteProcessor) ip);
+        SkeletonPruner sp = new SkeletonPruner(min, byteIp);
         if (sp.getPrunedImage() != null) {
             (new ImagePlus(imp.getTitle() + "_Pruned", sp.getPrunedImage())).show();
         }

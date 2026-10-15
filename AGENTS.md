@@ -172,6 +172,10 @@ Results always land in a sibling directory named after the plug-in title, produc
   otherwise shadow the version and yield an `AnaMorf v4.0.29` folder). The
   version therefore comes from `pom.xml` `<version>` and is not dependent on a
   `pom.xml` being next to the process working directory.
+- **Java 21 language style.** Prefer arrow-form `switch` and `instanceof` pattern
+  matching where they remove boilerplate; `var` was deliberately not adopted — the
+  explicit types read better for this codebase's Swing/ImageJ mix. Keep new code
+  consistent with that, and don't sweep in language features for their own sake.
 
 ## Dependency posture and modernisation
 

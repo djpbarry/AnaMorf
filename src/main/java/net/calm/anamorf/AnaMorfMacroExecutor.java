@@ -52,67 +52,54 @@ public class AnaMorfMacroExecutor implements MacroExtension {
 
     public String handleExtension(String name, Object[] args) {
         switch (name) {
-            case INITIALISE:
-                initialise(args);
-                break;
-            case SET_FILE_TYPE:
-                setFileType(args);
-                break;
-            case SET_CURVATURE:
-                setCurvature(args);
-                break;
-            case SET_MIN_BRANCH:
-                setMinBranchLength(args);
-                break;
-            case RUN:
-                run();
-                break;
-            case RESET_PARAMS:
-                resetParams();
-                break;
-            default:
-                IJ.log(String.format("Error: %s is not a valid command.", name));
+            case INITIALISE -> initialise(args);
+            case SET_FILE_TYPE -> setFileType(args);
+            case SET_CURVATURE -> setCurvature(args);
+            case SET_MIN_BRANCH -> setMinBranchLength(args);
+            case RUN -> run();
+            case RESET_PARAMS -> resetParams();
+            default -> IJ.log(String.format("Error: %s is not a valid command.", name));
         }
         return null;
     }
 
     void initialise(Object[] args) {
-        if (!(args[0] instanceof String && args[1] instanceof String)) {
+        if (!(args[0] instanceof String inputDir && args[1] instanceof String propsFile)) {
             invalidArguments();
             return;
         }
         DefaultParams props = new DefaultParams();
         try {
-            PropertyWriter.loadProperties(props, null, new File((String) args[1]));
+            PropertyWriter.loadProperties(props, null, new File(propsFile));
         } catch (Exception e) {
             GenUtils.logError(e, "Failed to load AnaMorf properties file.");
         }
-        ba = new Batch_Analyser(true, new File((String) args[0]), props);
+        ba = new Batch_Analyser(true, new File(inputDir), props);
     }
 
     void setFileType(Object[] args) {
-        if (!(args[0] instanceof String)) {
+        if (!(args[0] instanceof String fileType)) {
             invalidArguments();
             return;
         }
-        Batch_Analyser.getProps().setProperty(DefaultParams.IMAGE_FORMAT_LABEL, (String) args[0]);
+        Batch_Analyser.getProps().setProperty(DefaultParams.IMAGE_FORMAT_LABEL, fileType);
     }
 
     void setCurvature(Object[] args) {
-        if (!(args[0] instanceof Number)) {
+        if (!(args[0] instanceof Number window)) {
             invalidArguments();
             return;
         }
         Batch_Analyser.getProps().setProperty(DefaultParams.CURVE_LABEL, "true");
-        Batch_Analyser.getProps().setProperty(DefaultParams.CURVE_WIN_LABEL, String.valueOf(args[0]));
+        Batch_Analyser.getProps().setProperty(DefaultParams.CURVE_WIN_LABEL, String.valueOf(window));
     }
 
     void setMinBranchLength(Object[] args) {
-        if (!(args[0] instanceof Number)) {
+        if (!(args[0] instanceof Number minLength)) {
             invalidArguments();
             return;
         }
-        Batch_Analyser.getProps().setProperty(DefaultParams.MIN_BRANCH_LABEL, String.valueOf(args[0]));
+        Batch_Analyser.getProps().setProperty(DefaultParams.MIN_BRANCH_LABEL, String.valueOf(minLength));
     }
 
     void run() {

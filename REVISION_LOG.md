@@ -26,6 +26,38 @@ dated narrative plus the "what not to do again" notes.
 
 ---
 
+## 2026-10-15 — Phase E complete: E2 deferred, E4 language features done
+
+**E2 (parallelism) — deferred, no code change.** `analyseFiles` processes images in
+a serial loop and no concurrency primitives exist anywhere in the production code.
+Parallelising was rejected: the per-image path mutates shared instance state
+(`maskImage`, `curveMap`, `refProc`, `resultsTable`, `cumulativeCurveStats`, ...)
+and leans on ImageJ's non-thread-safe `ResultsTable`/`IJ.saveAs`, so it would need
+a real refactor for no user-facing gain. Recorded in the plan with a pointer to
+IACL's `MultiThreadedProcess.runWorkers` if a throughput need ever materialises.
+
+**E4 (modern language features) — done.** Two mechanical, behaviour-preserving
+upgrades:
+
+- `Batch_Analyser.getFileExtensions` and `AnaMorfMacroExecutor.handleExtension`
+  became arrow-form `switch` (the former as a `switch` expression).
+- `instanceof` + cast pairs became pattern-matching bindings in
+  `SkeletonPruner.prune`, the four `AnaMorfMacroExecutor` argument guards, and
+  `UserInterface`'s label-caching loop.
+
+`var` was considered and deliberately skipped: the codebase's explicit types read
+better for its mix of Swing and ImageJ types, and introducing `var` would be churn
+without clarity.
+
+**Lesson.** "Modernise language features" is a *surgical* task, not a sweep. Apply
+it only where a construct genuinely shrinks (a `switch` losing its `break`s, an
+`instanceof`+cast becoming one binding), and record the explicit decision to skip
+the rest (`var` here) so the next reader knows it was considered.
+
+Verified: `mvn test` 14/14 green; headless regression run `BASELINE_PASS`.
+
+---
+
 ## 2026-10-15 — E1 done: de-static `props` with a backward-compatible accessor
 
 `Batch_Analyser.props` was a `static Properties`, so every instance in a JVM shared

@@ -503,10 +503,14 @@ gate for C4, matching ADAPT's convention.
    their mutations reach the run unchanged. Added two unit tests locking the
    `getProps()` identity contract; `mvn test` 14/14 green and the headless regression
    run is `BASELINE_PASS`.
-2. **E2** If any per-image work is parallelised (currently it is not — images are
-   processed in a serial loop), adopt IACL's `MultiThreadedProcess.runWorkers`
-   idiom rather than hand-rolling threads. If it is not parallelised, do not add
-   concurrency just for its own sake.
+2. **E2** Parallelism. **No action — deferred 2026-10-15.** `analyseFiles` already
+   processes images in a serial loop, and nothing in the codebase uses `Thread`,
+   `Executor`, or `MultiThreadedProcess`. Parallelising is rejected for now: the
+   per-image path mutates shared instance fields (`maskImage`, `curveMap`,
+   `refProc`, `resultsTable`, `cumulativeCurveStats`, ...) and relies on ImageJ's
+   non-thread-safe `ResultsTable`/`IJ.saveAs`, so it would need a substantial
+   refactor with no user-facing benefit. Revisit only if a concrete throughput
+   need arises, using IACL's `MultiThreadedProcess.runWorkers`.
 3. **E3** **Decision (Q4): rewrite the UI.** **Done 2026-10-15.** Dropped the
    NetBeans `.form`/`GEN`-fenced Swing (`UserInterface`, `ExitDialog`) in favour of
    a hand-managed layout (two tabs, same parameter surface). Deleted
@@ -519,9 +523,14 @@ gate for C4, matching ADAPT's convention.
    threshold field was never validated because the obsolete static `autoThreshold`
    flag was always `true`. Verified with `mvn test` (12/12), a reflection-based
    write-back check, and the Fiji smoke test.
-4. **E4** Only now consider modern language features (`switch` expressions,
-   pattern matching, `var`). IACL sequenced this last (G6) because doing it
-   earlier churns code the structural phases then rewrite.
+4. **E4** Modern language features. **Done 2026-10-15.** Converted the two
+   `switch` statements (`getFileExtensions`, `AnaMorfMacroExecutor.handleExtension`)
+   to arrow-form switch statements/expressions, and applied `instanceof` pattern
+   matching where a cast followed (`SkeletonPruner.prune`, the four
+   `AnaMorfMacroExecutor` argument guards, `UserInterface` label caching). `var`
+   was considered and skipped — the explicit types are clearer for this codebase's
+   mixed Swing/ImageJ types. Behaviour unchanged; `mvn test` 14/14 and the headless
+   regression run are both green (`BASELINE_PASS`).
 
 ### Phase F — Documentation, packaging, and release
 

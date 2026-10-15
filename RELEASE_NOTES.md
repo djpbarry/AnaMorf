@@ -68,6 +68,9 @@ the dependency and toolchain break.
   with an instance-scoped one (keeping the public `getProps()` accessor for the
   macro layer and TWOMBLI), eliminating the risk of one run's settings leaking into
   the next. No behaviour or output change.
+- **Internal code modernisation.** `switch` statements now use arrow form and
+  `instanceof`+cast pairs use Java 21 pattern matching. No behaviour or output
+  change.
 
 ### Notes for upgraders
 
