@@ -429,9 +429,9 @@ public class Batch_Analyser implements PlugIn {
          * Image is scanned in a raster fashion searching for FOREGROUND pixels
          * that are not yet present in the reference image.
          */
-        for (y = bounds.y, objects = 0; y < bounds.height; y++) {
+        for (y = bounds.y, objects = 0; y < bounds.y + bounds.height; y++) {
             offset = y * width;
-            for (x = bounds.x; x < bounds.width; x++) {
+            for (x = bounds.x; x < bounds.x + bounds.width; x++) {
                 i = offset + x;
                 currentPixel = pixels[i] & 0xff;
                 if (roi.contains(x, y) && currentPixel == FOREGROUND

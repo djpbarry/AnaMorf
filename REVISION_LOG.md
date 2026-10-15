@@ -26,6 +26,17 @@ dated narrative plus the "what not to do again" notes.
 
 ---
 
+## 2026-10-15 — D6 done: fixed `searchImage` ROI bounds
+
+`searchImage` iterated its raster scan with `y < bounds.height` and
+`x < bounds.width`, which is correct only when the ROI starts at (0,0) — i.e. a
+full-image ROI. Fixed to `y < bounds.y + bounds.height` and
+`x < bounds.x + bounds.width`, so any ROI is handled. AnaMorf itself always passes
+a full-image ROI (the `roi` argument is `null` at the sole call site), so there is
+no behaviour change; `mvn test` 12/12 green.
+
+---
+
 ## 2026-10-15 — D5 done: explicit label-to-flag output bitmask
 
 Replaced the positional output-bitmask mechanism in `Batch_Analyser` — the

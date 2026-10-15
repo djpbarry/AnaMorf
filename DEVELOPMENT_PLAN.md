@@ -475,8 +475,11 @@ gate for C4, matching ADAPT's convention.
    **Done 2026-10-15** (replaced `getOptions()` + `toOutputData(boolean[])` with
    `computeOutputData(Properties)` doing explicit `label |= flag`; updated the C2
    test).
-6. **D6** Review `searchImage`'s bounds handling (4.7) and either fix it or
-   document that only full-image ROIs are supported.
+6. ✅ **D6** Review `searchImage`'s bounds handling (4.7) and either fix it or
+   document that only full-image ROIs are supported. **Done 2026-10-15** (fixed:
+   loop limits now `bounds.y + bounds.height` / `bounds.x + bounds.width`, so any
+   ROI is handled; AnaMorf itself always passes a full-image ROI, so behaviour is
+   unchanged).
 
 **Exit criteria:** no commented-out code, no dead control flow, no god methods.
 
