@@ -3,8 +3,6 @@ package net.calm.anamorf;
 import net.calm.anamorf.params.DefaultParams;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -35,39 +33,31 @@ class Batch_AnalyserTest {
     }
 
     @Test
-    void getOptionsOrderMatchesFlags() {
+    void computeOutputDataMapsLabelsToFlags() {
         DefaultParams props = new DefaultParams();
+        String[] labels = {DefaultParams.PROJ_AREA_LABEL, DefaultParams.CIRC_LABEL,
+                DefaultParams.MEAN_BRANCH_LABEL, DefaultParams.TOT_LENGTH_LABEL,
+                DefaultParams.NUM_END_LABEL, DefaultParams.NUM_BRANCH_LABEL,
+                DefaultParams.FOURIER_FRAC_LABEL, DefaultParams.BOX_COUNT_LABEL,
+                DefaultParams.LAC_LABEL, DefaultParams.CURVE_LABEL};
+        for (String label : labels) {
+            props.setProperty(label, "false");
+        }
+
+        assertEquals(0, Batch_Analyser.computeOutputData(props));
+
         props.setProperty(DefaultParams.PROJ_AREA_LABEL, "true");
-        props.setProperty(DefaultParams.CIRC_LABEL, "true");
-        props.setProperty(DefaultParams.MEAN_BRANCH_LABEL, "false");
-        props.setProperty(DefaultParams.TOT_LENGTH_LABEL, "true");
-        props.setProperty(DefaultParams.NUM_END_LABEL, "false");
-        props.setProperty(DefaultParams.NUM_BRANCH_LABEL, "false");
-        props.setProperty(DefaultParams.FOURIER_FRAC_LABEL, "true");
-        props.setProperty(DefaultParams.BOX_COUNT_LABEL, "false");
-        props.setProperty(DefaultParams.LAC_LABEL, "true");
-        props.setProperty(DefaultParams.CURVE_LABEL, "false");
+        props.setProperty(DefaultParams.MEAN_BRANCH_LABEL, "true");
+        props.setProperty(DefaultParams.CURVE_LABEL, "true");
 
-        boolean[] options = new Batch_Analyser(true, null, props).getOptions();
-
-        assertArrayEquals(
-                new boolean[]{true, true, false, true, false, false, true, false, true, false},
-                options);
+        assertEquals(Batch_Analyser.AREAS | Batch_Analyser.HYPHAL_GROWTH_UNIT | Batch_Analyser.CURVATURE,
+                Batch_Analyser.computeOutputData(props));
     }
 
     @Test
-    void toOutputDataSumsPowersOfTwo() {
-        boolean[] options = {true, false, true, false, false, false, false, false, false, false};
-        assertEquals(1 + 4, Batch_Analyser.toOutputData(options));
-    }
-
-    @Test
-    void toOutputDataEmptyAndFull() {
-        assertEquals(0, Batch_Analyser.toOutputData(new boolean[10]));
-
-        boolean[] allTrue = new boolean[10];
-        Arrays.fill(allTrue, true);
-        assertEquals(1023, Batch_Analyser.toOutputData(allTrue)); // 2^10 - 1
+    void computeOutputDataFull() {
+        DefaultParams props = new DefaultParams();
+        assertEquals(1023, Batch_Analyser.computeOutputData(props));
     }
 
     @Test

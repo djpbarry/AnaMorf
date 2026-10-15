@@ -26,6 +26,17 @@ dated narrative plus the "what not to do again" notes.
 
 ---
 
+## 2026-10-15 — D5 done: explicit label-to-flag output bitmask
+
+Replaced the positional output-bitmask mechanism in `Batch_Analyser` — the
+`getOptions()` boolean array and `toOutputData(boolean[])` (2^n indexing) — with
+`computeOutputData(Properties)`, which maps each `DefaultParams` label directly
+to its flag via `|=`. This removes the silent-corruption risk if the array order
+ever drifted. `getOptions()` and `toOutputData()` are deleted; the C2 test now
+asserts `computeOutputData` against explicit flags. `mvn test` 12/12 green.
+
+---
+
 ## 2026-10-14 — Fixed PNG file-filter case-sensitivity
 
 Live-testing in Fiji surfaced "no images of type PNG" for lowercase `Image_*.png`.

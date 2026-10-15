@@ -470,8 +470,11 @@ gate for C4, matching ADAPT's convention.
    colour to a value outside the image's range (4.5). Note the duplicated copy in
    `BinaryMaker.fill`. **Done 2026-10-14** (constant `FLOOD_FILL_SENTINEL = 127`;
    duplicate remains in IACL `BinaryMaker.fill`, out of scope).
-5. **D5** Make `setOutputs` self-describing — replace positional indexing with an
+5. ✅ **D5** Make `setOutputs` self-describing — replace positional indexing with an
    explicit label-to-flag map (4.3). The C2 test locks the current behaviour first.
+   **Done 2026-10-15** (replaced `getOptions()` + `toOutputData(boolean[])` with
+   `computeOutputData(Properties)` doing explicit `label |= flag`; updated the C2
+   test).
 6. **D6** Review `searchImage`'s bounds handling (4.7) and either fix it or
    document that only full-image ROIs are supported.
 

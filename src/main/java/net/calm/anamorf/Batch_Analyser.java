@@ -370,16 +370,21 @@ public class Batch_Analyser implements PlugIn {
     }
 
     private void setOutputs() {
-        outputData = toOutputData(getOptions());
+        outputData = computeOutputData(props);
     }
 
-    static int toOutputData(boolean[] options) {
+    static int computeOutputData(Properties props) {
         int data = 0;
-        for (int n = 0; n < options.length; n++) {
-            if (options[n]) {
-                data += (int) Math.round(Math.pow(2.0, n));
-            }
-        }
+        if (Boolean.parseBoolean(props.getProperty(DefaultParams.PROJ_AREA_LABEL))) data |= AREAS;
+        if (Boolean.parseBoolean(props.getProperty(DefaultParams.CIRC_LABEL))) data |= CIRC;
+        if (Boolean.parseBoolean(props.getProperty(DefaultParams.MEAN_BRANCH_LABEL))) data |= HYPHAL_GROWTH_UNIT;
+        if (Boolean.parseBoolean(props.getProperty(DefaultParams.TOT_LENGTH_LABEL))) data |= TOTAL_HYPHAL_LENGTH;
+        if (Boolean.parseBoolean(props.getProperty(DefaultParams.NUM_END_LABEL))) data |= NUMBER_OF_ENDPOINTS;
+        if (Boolean.parseBoolean(props.getProperty(DefaultParams.NUM_BRANCH_LABEL))) data |= NUMBER_OF_BRANCHES;
+        if (Boolean.parseBoolean(props.getProperty(DefaultParams.FOURIER_FRAC_LABEL))) data |= FOURIER_FRACTAL_DIMENSION;
+        if (Boolean.parseBoolean(props.getProperty(DefaultParams.BOX_COUNT_LABEL))) data |= BOX_FRACTAL_DIMENSION;
+        if (Boolean.parseBoolean(props.getProperty(DefaultParams.LAC_LABEL))) data |= LACUNARITY;
+        if (Boolean.parseBoolean(props.getProperty(DefaultParams.CURVE_LABEL))) data |= CURVATURE;
         return data;
     }
 
@@ -854,19 +859,6 @@ public class Batch_Analyser implements PlugIn {
             }
         }
         return stats.getMean();
-    }
-
-    public boolean[] getOptions() {
-        return new boolean[]{Boolean.parseBoolean(props.getProperty(DefaultParams.PROJ_AREA_LABEL)),
-            Boolean.parseBoolean(props.getProperty(DefaultParams.CIRC_LABEL)),
-            Boolean.parseBoolean(props.getProperty(DefaultParams.MEAN_BRANCH_LABEL)),
-            Boolean.parseBoolean(props.getProperty(DefaultParams.TOT_LENGTH_LABEL)),
-            Boolean.parseBoolean(props.getProperty(DefaultParams.NUM_END_LABEL)),
-            Boolean.parseBoolean(props.getProperty(DefaultParams.NUM_BRANCH_LABEL)),
-            Boolean.parseBoolean(props.getProperty(DefaultParams.FOURIER_FRAC_LABEL)),
-            Boolean.parseBoolean(props.getProperty(DefaultParams.BOX_COUNT_LABEL)),
-            Boolean.parseBoolean(props.getProperty(DefaultParams.LAC_LABEL)),
-            Boolean.parseBoolean(props.getProperty(DefaultParams.CURVE_LABEL))};
     }
 
     static String[] getFileExtensions(String format) {
